@@ -1,0 +1,65 @@
+name: Publish NuGet Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    name: Build and Publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # 用于创建 GitHub Release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 从 tag（如 v1.0.0）中提取纯版本号 1.0.0
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.x
+            9.x
+            10.x
+
+      - name: Restore dependencies
+        run: dotnet restore GaoXinLibrary.TencentSDK/GaoXinLibrary.TencentSDK.csproj
+
+      - name: Build
+        run: >
+          dotnet build GaoXinLibrary.TencentSDK/GaoXinLibrary.TencentSDK.csproj
+          --configuration Release
+          --no-restore
+          -p:Version=${{ steps.version.outputs.VERSION }}
+
+      - name: Pack
+        run: >
+          dotnet pack GaoXinLibrary.TencentSDK/GaoXinLibrary.TencentSDK.csproj
+          --configuration Release
+          --no-build
+          --output ./nupkgs
+          -p:Version=${{ steps.version.outputs.VERSION }}
+
+      # 推送到 NuGet.org
+      - name: Push to NuGet.org
+        run: >
+          dotnet nuget push ./nupkgs/*.nupkg
+          --api-key ${{ secrets.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
+
+      # 创建 GitHub Release 并上传 .nupkg
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          generate_release_notes: true
+          files: ./nupkgs/*.nupkg

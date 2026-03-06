@@ -1,0 +1,776 @@
+# GaoXinLibrary.TencentSDK
+
+腾讯平台统一 .NET 服务端 SDK，整合 **企业微信（Wecom）** 与 **微信（小程序、公众号、开放平台、QQ 互联）** 核心接口。
+
+一个包覆盖腾讯主流开放平台，开箱即用、接口对齐官方文档、支持依赖注入与多实例。
+
+[![NuGet](https://img.shields.io/nuget/v/GaoXinLibrary.TencentSDK.svg)](https://www.nuget.org/packages/GaoXinLibrary.TencentSDK)
+
+---
+
+## ✨ 特性
+
+- 🎯 **统一包** — 微信小程序、公众号、开放平台、QQ 互联、企业微信，一个 NuGet 包全部搞定
+- 🔌 **依赖注入友好** — 提供 `AddWechatMiniProgram` / `AddWechatOfficial` / `AddWechatOpen` / `AddQQConnect` / `AddWecom` 扩展方法，开箱即注入
+- 🔑 **Keyed Services 多实例** — 同一平台注册多套凭证（如多个企业微信应用），通过 `[FromKeyedServices("name")]` 注入
+- 🔄 **access_token 自动管理** — 内置缓存与自动刷新，无需手动维护 Token 生命周期
+- 🛡️ **消息回调加解密** — 企业微信与公众号回调消息的签名校验、AES 加解密一站式支持
+- 📦 **会话内容存档** — 企业微信会话存档原生 SDK 封装（含 RSA 解密）
+- 🎯 **多目标框架** — 同时支持 **.NET 8 / .NET 9 / .NET 10**，各版本自动匹配对应的 `Microsoft.Extensions.*` 包
+- 📖 **XML 文档注释** — 所有公开 API 均附带完整 XML 文档，IDE 智能提示开箱即用
+
+---
+
+## 📦 安装
+
+### NuGet 包管理器
+
+```bash
+dotnet add package GaoXinLibrary.TencentSDK
+```
+
+### Package Manager Console
+
+```powershell
+Install-Package GaoXinLibrary.TencentSDK
+```
+
+### 要求
+
+| 依赖 | 版本 |
+|------|------|
+| .NET | 8.0 / 9.0 / 10.0 |
+| `Microsoft.Extensions.DependencyInjection.Abstractions` | 对应 TFM 版本 |
+| `Microsoft.Extensions.Http` | 对应 TFM 版本 |
+| `Microsoft.Extensions.Options` | 对应 TFM 版本 |
+
+---
+
+## 🗂️ 功能概览
+
+### 微信（Wechat）
+
+#### 小程序 — `WechatMiniProgramClient`
+
+| 子服务 | 属性 | 功能 |
+|--------|------|------|
+| 登录与手机号 | `Auth` | `Code2Session`、获取手机号 |
+| 小程序码 | `QrCode` | 小程序码 / 小程序二维码生成 |
+| 订阅消息 | `SubscribeMessage` | 发送订阅消息、管理模板 |
+| 内容安全 | `Security` | 文本 / 图片内容安全检测 |
+| 发货信息 | `Shipping` | 发货信息管理与查询 |
+| OCR | `Ocr` | 身份证、银行卡、营业执照等 OCR 识别 |
+| 链接生成 | `Link` | URL Scheme / URL Link / Short Link |
+| 数据分析 | `DataAnalysis` | 访问趋势、来源分析等数据统计 |
+| 物流助手 | `Express` | 物流助手接口 |
+| 运维中心 | `Operation` | 错误日志、性能监控 |
+| 硬件设备 | `Device` | 硬件设备管理 |
+| 客服消息 | `CustomMessage` | 客服消息发送 |
+| OpenAPI | `OpenApi` | 接口调用额度查询与清零 |
+
+#### 公众号 — `WechatOfficialClient`
+
+| 子服务 | 属性 | 功能 |
+|--------|------|------|
+| OAuth 网页授权 | `OAuth` | 构造授权 URL、通过 code 换取用户信息 |
+| 自定义菜单 | `Menu` | 创建 / 查询 / 删除自定义菜单 |
+| 模板消息 | `TemplateMessage` | 发送模板消息 |
+| 用户管理 | `User` | 获取用户信息、关注者列表 |
+| 素材管理 | `Material` | 临时 / 永久素材的上传与获取 |
+| JS-SDK | `JsSdk` | JS-SDK 签名与配置 |
+| 用户标签 | `Tag` | 用户标签的增删改查 |
+| 草稿箱 | `Draft` | 草稿管理 |
+| 发布能力 | `Publish` | 发布 / 查询 / 删除已发布内容 |
+| 留言管理 | `Comment` | 留言管理 |
+| 客服消息 | `CustomMessage` | 客服消息发送 |
+| 群发消息 | `Message` | 群发 / 模板管理 |
+| 数据统计 | `DataAnalysis` | 用户、图文、消息等数据统计 |
+| 智能接口 | `Ai` | 语义理解、OCR |
+| 门店管理 | `Poi` | 微信门店管理 |
+| OpenAPI | `OpenApi` | 接口调用额度查询与清零 |
+| 消息回调 | `Callback` | 签名校验、消息加解密、被动回复 |
+
+#### 开放平台 — `WechatOpenClient`
+
+| 子服务 | 属性 | 功能 |
+|--------|------|------|
+| 网站登录 | `WebLogin` | 构造扫码登录 URL、code 换取 access_token、获取用户信息 |
+
+#### QQ 互联 — `QQConnectClient`
+
+| 子服务 | 属性 | 功能 |
+|--------|------|------|
+| QQ 登录 | `Login` | 构造 OAuth2.0 URL、code 换取 access_token / openid、获取用户信息 |
+
+---
+
+### 企业微信（Wecom） — `WecomClient`
+
+| 模块 | 属性 | 服务接口 | 核心功能 |
+|------|------|---------|---------|
+| 成员管理 | `User` | `IUserService` | 创建 / 读取 / 更新 / 删除 / 邀请 / 分页列表 |
+| 部门管理 | `Department` | `IDepartmentService` | 创建 / 更新 / 列表 / 详情 / 删除 |
+| 标签管理 | `Tag` | `ITagService` | 创建 / 删除 / 添加删除成员 / 列表 |
+| 应用消息 | `Message` | `IMessageService` | 文本 / Markdown / 图文 / 文本卡片 / 小程序通知 / 模版卡片 / 撤回 |
+| 群机器人 | `Webhook` | `IWebhookService` | 文本 / Markdown / 图文 / 图片 / 文件 Webhook 推送 |
+| 应用管理 | `Agent` | `IAgentService` | 获取应用信息 / 应用列表 / 设置应用 |
+| 自定义菜单 | `Menu` | `IMenuService` | 创建 / 获取 / 删除应用菜单 |
+| 素材管理 | `Media` | `IMediaService` | 上传临时素材 / 上传图片 / 获取素材 |
+| 群聊会话 | `GroupChat` | `IGroupChatService` | 创建群聊 / 修改 / 获取 / 发送群聊消息 |
+| OAuth | `OAuth` | `IOAuthService` | 构造授权 URL / code 换取用户身份 / user_ticket 换取敏感信息 |
+| JS-SDK | `JsSdk` | `IJsSdkService` | H5 / 小程序 JS-SDK 签名 |
+| 消息回调 | `Callback` | `ICallbackService` | URL 验证（明文/安全）/ 消息解析与解密 / 被动回复 / 回调 IP 段 |
+| 智能机器人 | `SmartRobot` | `ISmartRobotService` | 智能机器人管理 |
+| 微信客服 | `Kf` | `IKfService` | 微信客服管理 |
+| 打卡 | `Checkin` | `ICheckinService` | 打卡规则 / 打卡数据查询 |
+| 审批 | `Approval` | `IApprovalService` | 审批流程管理 |
+| 会话存档 | `MsgAudit` | `IMsgAuditService` | 会话内容存档（含 RSA 解密） |
+| 企业互联 | `CorpGroup` | `ICorpGroupService` | 上下游企业管理 |
+| 互联企业 | `LinkedCorp` | `ILinkedCorpService` | 互联企业通讯录 |
+| 异步导出 | `Export` | `IExportService` | 异步数据导出任务 |
+
+---
+
+## 🚀 快速开始
+
+### 微信小程序
+
+```csharp
+using GaoXinLibrary.TencentSDK.Wechat;
+using GaoXinLibrary.TencentSDK.Wechat.Core;
+
+// 创建客户端
+var client = WechatMiniProgramClient.Create(new WechatMiniProgramOptions
+{
+    AppId     = "your_appid",
+    AppSecret = "your_appsecret"
+});
+
+// 小程序登录：通过 js_code 换取 session 信息
+var session = await client.Auth.Code2SessionAsync("js_code_from_wx_login");
+Console.WriteLine($"OpenId: {session.OpenId}, SessionKey: {session.SessionKey}");
+
+// 获取手机号
+var phone = await client.Auth.GetPhoneNumberAsync("phone_code_from_button");
+Console.WriteLine($"手机号: {phone.PhoneNumber}");
+
+// 生成小程序码
+var qrCodeBytes = await client.QrCode.GetUnlimitedQrCodeAsync("scene_value", "pages/index/index");
+
+// 发送订阅消息
+await client.SubscribeMessage.SendAsync(new { /* ... */ });
+
+// 内容安全检测
+var result = await client.Security.MsgSecCheckAsync("待检测的文本内容");
+```
+
+### 微信公众号
+
+```csharp
+using GaoXinLibrary.TencentSDK.Wechat;
+using GaoXinLibrary.TencentSDK.Wechat.Core;
+
+var client = WechatOfficialClient.Create(new WechatOfficialOptions
+{
+    AppId                 = "your_appid",
+    AppSecret             = "your_appsecret",
+    CallbackToken         = "your_callback_token",         // 消息回调用
+    CallbackEncodingAesKey = "your_43char_encoding_aes_key" // 消息回调用
+});
+
+// OAuth 网页授权
+var authUrl = client.OAuth.BuildAuthUrl(redirectUri: "https://example.com/callback");
+// 用户同意后，通过 code 换取用户信息
+// var userInfo = await client.OAuth.GetUserInfoAsync("code_from_callback");
+
+// 发送模板消息
+await client.TemplateMessage.SendAsync(new
+{
+    touser      = "OPENID",
+    template_id = "TEMPLATE_ID",
+    url         = "https://example.com",
+    data        = new { /* 模板数据 */ }
+});
+
+// JS-SDK 签名
+var jsConfig = await client.JsSdk.GetConfigAsync("https://example.com/page");
+```
+
+### 微信开放平台（网站扫码登录）
+
+```csharp
+using GaoXinLibrary.TencentSDK.Wechat;
+using GaoXinLibrary.TencentSDK.Wechat.Core;
+
+var client = WechatOpenClient.Create(new WechatOpenOptions
+{
+    AppId     = "your_open_appid",
+    AppSecret = "your_open_appsecret"
+});
+
+// 构造扫码登录 URL
+var loginUrl = client.WebLogin.BuildAuthUrl("https://example.com/callback", state: "random_state");
+
+// 用户扫码后，通过 code 换取 access_token 和用户信息
+// var tokenInfo = await client.WebLogin.GetAccessTokenAsync("code_from_callback");
+// var userInfo  = await client.WebLogin.GetUserInfoAsync(tokenInfo.AccessToken, tokenInfo.OpenId);
+```
+
+### QQ 互联（网站 QQ 登录）
+
+```csharp
+using GaoXinLibrary.TencentSDK.Wechat;
+using GaoXinLibrary.TencentSDK.Wechat.Core;
+
+var client = QQConnectClient.Create(new QQConnectOptions
+{
+    AppId     = "your_qq_appid",
+    AppSecret = "your_qq_appkey"
+});
+
+// 构造 QQ 登录 URL
+var loginUrl = client.Login.BuildAuthUrl("https://example.com/callback", state: "random_state");
+
+// 用户授权后，通过 code 换取 access_token → openid → 用户信息
+// var token    = await client.Login.GetAccessTokenAsync("code_from_callback");
+// var openId   = await client.Login.GetOpenIdAsync(token.AccessToken);
+// var userInfo = await client.Login.GetUserInfoAsync(token.AccessToken, openId);
+```
+
+### 企业微信
+
+```csharp
+using GaoXinLibrary.TencentSDK.Wecom;
+using GaoXinLibrary.TencentSDK.Wecom.Core;
+
+var client = WecomClient.Create(new WecomOptions
+{
+    CorpId     = "your_corpid",
+    CorpSecret = "your_corpsecret",
+    AgentId    = 1000001
+});
+
+// 发送文本消息（@all 发送给所有人）
+var resp = await client.Message.SendTextAsync("Hello, 企业微信!", toUser: "@all");
+Console.WriteLine($"MsgId: {resp.MsgId}");
+
+// 发送 Markdown 消息
+await client.Message.SendMarkdownAsync("## 通知\n> 这是一条 **Markdown** 消息", toUser: "@all");
+
+// 获取成员信息
+var user = await client.User.GetUserAsync("zhangsan");
+Console.WriteLine($"姓名: {user.Name}, 手机: {user.Mobile}");
+
+// 获取部门列表
+var depts = await client.Department.GetDepartmentListAsync();
+
+// Webhook 群机器人
+await client.Webhook.SendTextAsync("YOUR_WEBHOOK_KEY", "机器人消息");
+await client.Webhook.SendMarkdownAsync("YOUR_WEBHOOK_KEY", "## 告警\n> 服务异常");
+
+// OAuth 网页授权
+var oauthUrl = client.OAuth.BuildAuthUrl(
+    redirectUri: "https://your-domain.com/callback",
+    agentId: 1000001);
+```
+
+---
+
+## 💉 依赖注入
+
+### 基本用法
+
+```csharp
+using GaoXinLibrary.TencentSDK.Wechat.Extensions;
+using GaoXinLibrary.TencentSDK.Wecom.Extensions;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// 注册微信小程序
+builder.Services.AddWechatMiniProgram(options =>
+{
+    options.AppId     = "mini_appid";
+    options.AppSecret = "mini_secret";
+});
+
+// 注册微信公众号
+builder.Services.AddWechatOfficial(options =>
+{
+    options.AppId                  = "official_appid";
+    options.AppSecret              = "official_secret";
+    options.CallbackToken          = "callback_token";
+    options.CallbackEncodingAesKey = "encoding_aes_key";
+});
+
+// 注册微信开放平台
+builder.Services.AddWechatOpen(options =>
+{
+    options.AppId     = "open_appid";
+    options.AppSecret = "open_secret";
+});
+
+// 注册 QQ 互联
+builder.Services.AddQQConnect(options =>
+{
+    options.AppId     = "qq_appid";
+    options.AppSecret = "qq_appkey";
+});
+
+// 注册企业微信
+builder.Services.AddWecom(options =>
+{
+    options.CorpId     = "your_corpid";
+    options.CorpSecret = "your_corpsecret";
+    options.AgentId    = 1000001;
+});
+```
+
+注册后可以通过**构造函数注入**门面客户端或子服务接口：
+
+```csharp
+// 方式一：注入门面客户端
+public class MyController(WecomClient wecom, WechatMiniProgramClient miniProgram)
+{
+    public async Task SendNotification()
+    {
+        await wecom.Message.SendTextAsync("通知内容", toUser: "@all");
+    }
+
+    public async Task<string> MiniProgramLogin(string code)
+    {
+        var session = await miniProgram.Auth.Code2SessionAsync(code);
+        return session.OpenId;
+    }
+}
+
+// 方式二：注入子服务接口（推荐，便于单元测试 Mock）
+public class NotificationService(IMessageService messageService, IUserService userService)
+{
+    public async Task NotifyUserAsync(string userId, string content)
+    {
+        var user = await userService.GetUserAsync(userId);
+        if (user != null)
+        {
+            await messageService.SendTextAsync(content, toUser: userId);
+        }
+    }
+}
+```
+
+### 多实例注册（Keyed Services）
+
+当同一平台需要注册多套凭证时（例如企业微信有多个应用），使用带 `name` 参数的重载：
+
+```csharp
+// 注册多个企业微信应用
+builder.Services.AddWecom("agent1", opt =>
+{
+    opt.CorpId = "corp1"; opt.CorpSecret = "secret1"; opt.AgentId = 1000001;
+});
+builder.Services.AddWecom("agent2", opt =>
+{
+    opt.CorpId = "corp1"; opt.CorpSecret = "secret2"; opt.AgentId = 1000002;
+});
+
+// 注册多个小程序
+builder.Services.AddWechatMiniProgram("appA", opt =>
+{
+    opt.AppId = "appid_a"; opt.AppSecret = "secret_a";
+});
+builder.Services.AddWechatMiniProgram("appB", opt =>
+{
+    opt.AppId = "appid_b"; opt.AppSecret = "secret_b";
+});
+```
+
+通过 `[FromKeyedServices]` 注入指定实例：
+
+```csharp
+public class MultiAgentService(
+    [FromKeyedServices("agent1")] IMessageService msgAgent1,
+    [FromKeyedServices("agent2")] IMessageService msgAgent2)
+{
+    public async Task NotifyBothAsync(string content)
+    {
+        await msgAgent1.SendTextAsync(content, toUser: "@all");
+        await msgAgent2.SendTextAsync(content, toUser: "@all");
+    }
+}
+```
+
+---
+
+## ⚙️ 配置参数
+
+### 微信配置 — `WechatOptions`（基类）
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `AppId` | `string` | `""` | 应用 ID（AppID） |
+| `AppSecret` | `string` | `""` | 应用密钥（AppSecret） |
+| `BaseUrl` | `string` | `https://api.weixin.qq.com` | API 基础地址 |
+| `HttpTimeout` | `TimeSpan` | 30 秒 | HTTP 请求超时时间 |
+| `ShareSecret` | `string?` | — | 共享 Token 密钥（ChaCha20-Poly1305，详见[跨服务共享 Token](#-跨服务共享-token)） |
+| `TokenShareUrl` | `string?` | — | 远端共享 Token 地址；设置后从此地址拉取加密 Token，而非直接请求微信 API |
+| `OnTokenChanged` | `Func<string, CancellationToken, Task>?` | — | Token 刷新成功后的变更通知回调，参数为新的明文 access_token |
+
+#### `WechatOfficialOptions`（继承 `WechatOptions`）
+
+| 属性 | 类型 | 说明 |
+|------|------|------|
+| `CallbackToken` | `string?` | 接收消息回调的 Token（签名校验） |
+| `CallbackEncodingAesKey` | `string?` | 接收消息回调的 EncodingAESKey（43 位字符） |
+
+#### `QQConnectOptions`（继承 `WechatOptions`）
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `BaseUrl` | `string` | `https://graph.qq.com` | QQ 互联 API 基础地址 |
+
+### 企业微信配置 — `WecomOptions`
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `CorpId` | `string` | `""` | 企业 ID（corpid） |
+| `CorpSecret` | `string` | `""` | 应用凭证密钥（corpsecret） |
+| `AgentId` | `int` | `0` | 自建应用 AgentId |
+| `BaseUrl` | `string` | `https://qyapi.weixin.qq.com` | API 基础地址 |
+| `HttpTimeout` | `TimeSpan` | 30 秒 | HTTP 请求超时时间 |
+| `CallbackToken` | `string?` | — | 接收消息回调的 Token |
+| `CallbackEncodingAesKey` | `string?` | — | 接收消息回调的 EncodingAESKey（43 位） |
+| `MsgAuditSecret` | `string?` | — | 会话内容存档密钥 |
+| `MsgAuditPrivateKey` | `string?` | — | 会话内容存档 RSA 私钥（PEM 格式） |
+| `ShareSecret` | `string?` | — | 共享 Token 密钥（ChaCha20-Poly1305，详见[跨服务共享 Token](#-跨服务共享-token)） |
+| `TokenShareUrl` | `string?` | — | 远端共享 Token 地址；设置后从此地址拉取加密 Token，而非直接请求企业微信 API |
+| `OnTokenChanged` | `Func<string, CancellationToken, Task>?` | — | Token 刷新成功后的变更通知回调，参数为新的明文 access_token |
+
+---
+
+## 🔐 消息回调（企业微信示例）
+
+在 ASP.NET Core 中接入企业微信消息回调：
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddWecom(opt =>
+{
+    opt.CorpId                 = "your_corpid";
+    opt.CorpSecret             = "your_corpsecret";
+    opt.AgentId                = 1000001;
+    opt.CallbackToken          = "your_callback_token";
+    opt.CallbackEncodingAesKey = "your_43char_encoding_aes_key";
+});
+
+var app = builder.Build();
+
+// ── 明文模式 ──────────────────────────────────────────────────────────────
+
+// GET — 验证回调 URL（明文模式）
+app.MapGet("/wecom/callback", (
+    string signature, string timestamp, string nonce, string echostr,
+    ICallbackService callback) =>
+{
+    var plain = callback.VerifyUrl(signature, timestamp, nonce, echostr);
+    return Results.Content(plain);
+});
+
+// POST — 接收消息（明文模式）
+app.MapPost("/wecom/callback", async (
+    HttpRequest request, ICallbackService callback) =>
+{
+    using var reader = new StreamReader(request.Body);
+    var body = await reader.ReadToEndAsync();
+
+    var msg = callback.ParseMessage(body);
+    switch (msg)
+    {
+        case CallbackTextMessage text:
+            var reply = CallbackReplyBuilder.BuildText(
+                text.FromUserName, text.ToUserName, "收到你的消息了！");
+            return Results.Content(reply, "application/xml");
+    }
+    return Results.Content("");
+});
+
+// ── 安全模式 ──────────────────────────────────────────────────────────────
+
+// GET — 验证回调 URL（安全模式）
+app.MapGet("/wecom/callback", (
+    string msg_signature, string timestamp, string nonce, string echostr,
+    ICallbackService callback) =>
+{
+    var plain = callback.VerifyUrlEncrypted(msg_signature, timestamp, nonce, echostr);
+    return Results.Content(plain);
+});
+
+// POST — 接收消息与事件（安全模式）
+app.MapPost("/wecom/callback", async (
+    string msg_signature, string timestamp, string nonce,
+    HttpRequest request, ICallbackService callback) =>
+{
+    using var reader = new StreamReader(request.Body);
+    var body = await reader.ReadToEndAsync();
+
+    var msg = callback.DecryptAndParse(msg_signature, timestamp, nonce, body);
+    switch (msg)
+    {
+        case CallbackTextMessage text:
+            var reply = CallbackReplyBuilder.BuildText(
+                text.FromUserName, text.ToUserName, "收到你的消息了！");
+            return Results.Content(callback.EncryptReply(reply), "application/xml");
+
+        case CallbackClickEvent click:
+            // 处理菜单点击事件
+            break;
+
+        case CallbackTemplateCardEvent cardEvent:
+            // 处理模版卡片事件
+            break;
+    }
+    return Results.Content("");
+});
+
+app.Run();
+```
+
+---
+
+## 📂 项目结构
+
+```
+GaoXinLibrary.TencentSDK/
+├── Core/                                  # 核心基础设施（共享基类 + 平台子类）
+│   ├── TencentConstants.cs                #   统一常量定义（HttpClient 名称、OAuth URL）
+│   ├── TencentBaseResponse.cs             #   响应基类（ErrCode / ErrMsg）
+│   ├── TencentException.cs                #   异常基类
+│   ├── TencentAccessTokenProvider.cs      #   access_token 管理基类（缓存 / 刷新 / 手动设置 / 共享 Token）
+│   ├── TencentTokenCrypto.cs              #   共享 Token 加解密工具（ChaCha20-Poly1305）
+│   ├── TencentHttpClient.cs               #   HTTP 客户端基类（Get / Post / 反序列化）
+│   ├── TencentCryptoHelper.cs             #   消息加解密基类（AES-256-CBC / SHA1 签名）
+│   ├── WechatOptions.cs                   #   微信配置基类
+│   ├── WechatMiniProgramOptions.cs        #   小程序配置
+│   ├── WechatOfficialOptions.cs           #   公众号配置
+│   ├── WechatOpenOptions.cs               #   开放平台配置
+│   ├── QQConnectOptions.cs                #   QQ 互联配置
+│   ├── WechatHttpClient.cs                #   微信 HTTP 客户端
+│   ├── WechatAccessTokenProvider.cs       #   微信 access_token 管理
+│   ├── WechatBaseResponse.cs              #   微信响应类
+│   ├── WechatCryptoHelper.cs              #   微信消息加解密
+│   ├── WecomOptions.cs                    #   企业微信配置类
+│   ├── WecomHttpClient.cs                 #   企业微信 HTTP 客户端
+│   ├── WecomAccessTokenProvider.cs        #   企业微信 access_token 管理
+│   ├── WecomBaseResponse.cs               #   企业微信响应类
+│   ├── WecomCryptoHelper.cs               #   企业微信消息加解密
+│   ├── HexHelper.cs                       #   十六进制工具
+│   └── Finance/                           #   会话内容存档原生 SDK
+│       ├── FinanceSdk.cs                  #     Finance SDK 封装
+│       └── FinanceNativeMethods.cs        #     P/Invoke 声明
+├── Models/                                # 数据模型（按产品 × 模块划分，每个类独立文件）
+│   ├── MiniProgram/                       #   小程序（104 个模型类）
+│   ├── OfficialAccount/                   #   公众号（187 个模型类，含回调消息）
+│   ├── OpenPlatform/                      #   开放平台
+│   ├── QQConnect/                         #   QQ 互联
+│   └── Wecom/                             #   企业微信
+│       ├── User/                          #     成员
+│       ├── Department/                    #     部门
+│       ├── Tag/                           #     标签
+│       ├── Message/                       #     消息（含模版卡片）
+│       ├── Webhook/                       #     群机器人
+│       ├── Agent/                         #     应用
+│       ├── Menu/                          #     菜单
+│       ├── Media/                         #     素材
+│       ├── GroupChat/                      #     群聊
+│       ├── OAuth/                         #     OAuth
+│       ├── JsSdk/                         #     JS-SDK
+│       ├── Callback/                      #     回调消息
+│       ├── Kf/                            #     客服
+│       ├── Checkin/                       #     打卡
+│       ├── Approval/                      #     审批
+│       ├── MsgAudit/                      #     会话存档
+│       ├── CorpGroup/                     #     企业互联
+│       ├── LinkedCorp/                    #     互联企业
+│       └── Export/                        #     异步导出
+├── Services/                              # 服务层（按产品 × 模块划分，每个接口 / 实现独立文件）
+│   ├── MiniProgram/                       #   小程序（13 对 I*Service / *Service）
+│   ├── OfficialAccount/                   #   公众号（17 对 I*Service / *Service）
+│   ├── OpenPlatform/                      #   开放平台
+│   ├── QQConnect/                         #   QQ 互联
+│   └── Wecom/                             #   企业微信
+│       ├── User/                          #     成员管理
+│       ├── Department/                    #     部门管理
+│       ├── Tag/                           #     标签管理
+│       ├── Message/                       #     应用消息
+│       ├── Webhook/                       #     群机器人
+│       ├── Agent/                         #     应用管理
+│       ├── Menu/                          #     菜单接口
+│       ├── Media/                         #     素材管理
+│       ├── GroupChat/                      #     群聊会话
+│       ├── OAuth/                         #     OAuth
+│       ├── JsSdk/                         #     JS-SDK
+│       ├── Callback/                      #     消息回调
+│       ├── SmartRobot/                    #     智能机器人
+│       ├── Kf/                            #     微信客服
+│       ├── Checkin/                       #     打卡
+│       ├── Approval/                      #     审批
+│       ├── MsgAudit/                      #     会话存档
+│       ├── CorpGroup/                     #     企业互联
+│       ├── LinkedCorp/                    #     互联企业
+│       └── Export/                        #     异步导出
+├── Extensions/                            # DI 扩展
+│   ├── WechatServiceCollectionExtensions.cs
+│   └── WecomServiceCollectionExtensions.cs
+├── WechatMiniProgramClient.cs             # 小程序主客户端
+├── WechatOfficialClient.cs                # 公众号主客户端
+├── WechatOpenClient.cs                    # 开放平台主客户端
+├── QQConnectClient.cs                     # QQ 互联主客户端
+├── WecomClient.cs                         # 企业微信主客户端
+└── GaoXinLibrary.TencentSDK.csproj        # 项目文件（多目标 net8.0;net9.0;net10.0）
+```
+
+---
+
+## 🔧 进阶用法
+
+### 跨服务共享 Token
+
+多台服务器部署时，只需一台**主服务器**持有真实的 `AppSecret` 向腾讯 API 获取 token，其他**备服务器**通过主服务器的接口获取加密后的 token，无需存储 `AppSecret`。
+
+加密算法使用 **ChaCha20-Poly1305**，密钥由 `ShareSecret` 经 SHA-256 派生，格式为 `Base64( nonce[12] + ciphertext[N] + tag[16] )`。
+
+#### 主服务器（持有 AppSecret，对外暴露加密 Token 接口）
+
+```csharp
+// Program.cs
+builder.Services.AddWecom(opt =>
+{
+    opt.CorpId     = "your_corpid";
+    opt.CorpSecret = "your_corpsecret"; // 仅主服务器配置
+    opt.AgentId    = 1000001;
+    opt.ShareSecret = "any-strong-shared-secret"; // 与备服务器约定
+
+    // 可选：Token 刷新时推送到 Redis / 消息队列等
+    opt.OnTokenChanged = async (newToken, ct) =>
+    {
+        await redis.StringSetAsync("wecom:token", newToken);
+    };
+});
+
+// Controller — 对外暴露加密 Token 接口（建议加鉴权）
+[HttpGet("/internal/wecom/token")]
+public async Task<IActionResult> GetSharedToken([FromServices] WecomClient client)
+{
+    var result = await client.GetSharedAccessTokenAsync();
+    // result.Token     — ChaCha20-Poly1305 加密后的 token（Base64）
+    // result.ExpiresIn — 主服务器侧 token 的剩余有效秒数
+    return Ok(new { token = result.Token, expires_in = result.ExpiresIn });
+}
+```
+
+#### 备服务器（无 AppSecret，从主服务器拉取加密 Token）
+
+```csharp
+// Program.cs
+builder.Services.AddWecom(opt =>
+{
+    opt.CorpId      = "your_corpid";
+    opt.AgentId     = 1000001;
+    opt.ShareSecret  = "any-strong-shared-secret"; // 与主服务器一致
+    opt.TokenShareUrl = "https://main-server/internal/wecom/token"; // 主服务器接口
+    // 不需要配置 CorpSecret
+});
+
+// 注入后正常使用，SDK 自动在 token 过期时请求主服务器接口并解密
+public class MyService(WecomClient client)
+{
+    public async Task NotifyAsync()
+        => await client.Message.SendTextAsync("Hello!", toUser: "@all");
+}
+```
+
+#### 也可直接使用加解密工具类
+
+```csharp
+using GaoXinLibrary.TencentSDK.Core;
+
+// 加密（主服务器侧）
+string encrypted = TencentTokenCrypto.Encrypt(plainToken, "shared-secret");
+
+// 解密（备服务器侧）
+string plainToken = TencentTokenCrypto.Decrypt(encrypted, "shared-secret");
+```
+
+> 备服务器响应的 `expires_in` 会被 SDK 原样用于设置本地缓存过期时间，确保备服务器的缓存节奏与主服务器保持一致，避免过早或过晚失效。
+
+---
+
+### 自定义 HttpClient
+
+传入自定义的 `HttpClient` 实例（例如添加代理、自定义 Handler）：
+
+```csharp
+var handler = new HttpClientHandler
+{
+    Proxy = new WebProxy("http://proxy.example.com:8080"),
+    UseProxy = true
+};
+var httpClient = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(60) };
+
+var client = WecomClient.Create(new WecomOptions
+{
+    CorpId     = "your_corpid",
+    CorpSecret = "your_corpsecret",
+    AgentId    = 1000001
+}, httpClient);
+```
+
+### 手动管理 access_token
+
+```csharp
+// 获取当前有效的 access_token（自动缓存，未过期时直接返回）
+var token = await client.GetAccessTokenAsync();
+
+// 强制刷新并获取新的 access_token（异步，遇到 token 失效错误时推荐使用）
+var newToken = await client.RefreshAccessTokenAsync();
+
+// 仅使缓存失效（下次调用 GetAccessTokenAsync 时重新获取）
+client.InvalidateAccessTokenCache();
+
+// 手动设置 access_token（适用于外部统一管理 Token 的场景）
+client.SetAccessToken("your_external_token");
+
+// 手动设置 access_token 并指定有效期
+client.SetAccessToken("your_external_token", TimeSpan.FromSeconds(3600));
+```
+
+### 异常处理
+
+SDK 在 API 调用失败时会抛出 `TencentException`，包含错误码和错误信息：
+
+```csharp
+using GaoXinLibrary.TencentSDK.Core;
+
+try
+{
+    await client.Message.SendTextAsync("Hello!", toUser: "@all");
+}
+catch (TencentException ex)
+{
+    Console.WriteLine($"API 错误 [{ex.ErrCode}]: {ex.Message}");
+    // ex.ErrCode — 平台官方错误码
+    // ex.Message — 错误描述
+}
+```
+
+---
+
+## 📋 API 参考
+
+所有公开类型均附带完整的 XML 文档注释。在 Visual Studio / VS Code / Rider 中，悬停即可查看方法签名、参数说明和使用示例。
+
+构建时自动生成 XML 文档文件（`GenerateDocumentationFile = true`），也可集成 DocFX 等工具生成在线文档。
+
+---
+
+## 许可证
+
+MIT

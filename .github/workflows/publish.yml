@@ -55,6 +55,24 @@ jobs:
           --source https://api.nuget.org/v3/index.json
           --skip-duplicate
 
+      # 注册 GitHub Packages NuGet 源
+      - name: Add GitHub Packages source
+        run: >
+          dotnet nuget add source
+          --username ${{ github.actor }}
+          --password ${{ secrets.GITHUB_TOKEN }}
+          --store-password-in-clear-text
+          --name github
+          "https://nuget.pkg.github.com/GaoXinProduct/index.json"
+
+      # 推送到 GitHub Packages
+      - name: Push to GitHub Packages
+        run: >
+          dotnet nuget push ./nupkgs/*.nupkg
+          --api-key ${{ secrets.GITHUB_TOKEN }}
+          --source github
+          --skip-duplicate
+
       # 创建 GitHub Release 并上传 .nupkg
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

@@ -63,10 +63,10 @@ Install-Package GaoXinLibrary.TencentSDK
 | 链接生成 | `Link` | URL Scheme / URL Link / Short Link |
 | 数据分析 | `DataAnalysis` | 访问趋势、来源分析等数据统计 |
 | 物流助手 | `Express` | 物流助手接口 |
-| 运维中心 | `Operation` | 错误日志、性能监控 |
+| 运维中心 | `Operation` | 域名配置、性能数据、访问来源 / 版本统计、实时日志、用户反馈、JS 错误日志、分阶段发布详情 |
 | 硬件设备 | `Device` | 硬件设备管理 |
 | 客服消息 | `CustomMessage` | 客服消息发送 |
-| OpenAPI | `OpenApi` | 接口调用额度查询与清零 |
+| OpenAPI | `OpenApi` | 接口调用额度查询与清零、rid 信息查询、网络通信检测、微信服务器 IP 列表 |
 
 #### 公众号 — `WechatOfficialClient`
 
@@ -119,7 +119,7 @@ Install-Package GaoXinLibrary.TencentSDK
 | 群聊会话 | `GroupChat` | `IGroupChatService` | 创建群聊 / 修改 / 获取 / 发送群聊消息 |
 | OAuth | `OAuth` | `IOAuthService` | 构造授权 URL / code 换取用户身份 / user_ticket 换取敏感信息 |
 | JS-SDK | `JsSdk` | `IJsSdkService` | H5 / 小程序 JS-SDK 签名 |
-| 消息回调 | `Callback` | `ICallbackService` | URL 验证（明文/安全）/ 消息解析与解密 / 被动回复 / 回调 IP 段 |
+| 消息回调 | `Callback` | `ICallbackService` | URL 验证 / 消息解析与解密 / 被动回复加密 / 回调 IP 段 |
 | 智能机器人 | `SmartRobot` | `ISmartRobotService` | 智能机器人管理 |
 | 微信客服 | `Kf` | `IKfService` | 微信客服管理 |
 | 打卡 | `Checkin` | `ICheckinService` | 打卡规则 / 打卡数据查询 |
@@ -463,47 +463,16 @@ builder.Services.AddWecom(opt =>
 
 var app = builder.Build();
 
-// ── 明文模式 ──────────────────────────────────────────────────────────────
-
-// GET — 验证回调 URL（明文模式）
-app.MapGet("/wecom/callback", (
-    string signature, string timestamp, string nonce, string echostr,
-    ICallbackService callback) =>
-{
-    var plain = callback.VerifyUrl(signature, timestamp, nonce, echostr);
-    return Results.Content(plain);
-});
-
-// POST — 接收消息（明文模式）
-app.MapPost("/wecom/callback", async (
-    HttpRequest request, ICallbackService callback) =>
-{
-    using var reader = new StreamReader(request.Body);
-    var body = await reader.ReadToEndAsync();
-
-    var msg = callback.ParseMessage(body);
-    switch (msg)
-    {
-        case CallbackTextMessage text:
-            var reply = CallbackReplyBuilder.BuildText(
-                text.FromUserName, text.ToUserName, "收到你的消息了！");
-            return Results.Content(reply, "application/xml");
-    }
-    return Results.Content("");
-});
-
-// ── 安全模式 ──────────────────────────────────────────────────────────────
-
-// GET — 验证回调 URL（安全模式）
+// GET — 验证回调 URL
 app.MapGet("/wecom/callback", (
     string msg_signature, string timestamp, string nonce, string echostr,
     ICallbackService callback) =>
 {
-    var plain = callback.VerifyUrlEncrypted(msg_signature, timestamp, nonce, echostr);
+    var plain = callback.VerifyUrl(msg_signature, timestamp, nonce, echostr);
     return Results.Content(plain);
 });
 
-// POST — 接收消息与事件（安全模式）
+// POST — 接收消息与事件
 app.MapPost("/wecom/callback", async (
     string msg_signature, string timestamp, string nonce,
     HttpRequest request, ICallbackService callback) =>

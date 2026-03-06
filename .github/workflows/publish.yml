@@ -30,18 +30,18 @@ jobs:
             10.x
 
       - name: Restore dependencies
-        run: dotnet restore GaoXinLibrary.TencentSDK/GaoXinLibrary.TencentSDK.csproj
+        run: dotnet restore GaoXinLibrary.TencentSDK.csproj
 
       - name: Build
         run: >
-          dotnet build GaoXinLibrary.TencentSDK/GaoXinLibrary.TencentSDK.csproj
+          dotnet build GaoXinLibrary.TencentSDK.csproj
           --configuration Release
           --no-restore
           -p:Version=${{ steps.version.outputs.VERSION }}
 
       - name: Pack
         run: >
-          dotnet pack GaoXinLibrary.TencentSDK/GaoXinLibrary.TencentSDK.csproj
+          dotnet pack GaoXinLibrary.TencentSDK.csproj
           --configuration Release
           --no-build
           --output ./nupkgs

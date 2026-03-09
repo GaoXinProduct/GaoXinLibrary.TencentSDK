@@ -8,13 +8,18 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 public class AgentService : IAgentService, IMenuService
 {
     private readonly WecomHttpClient _http;
+    private readonly WecomOptions _options;
 
-    public AgentService(WecomHttpClient http) => _http = http;
+    public AgentService(WecomHttpClient http, WecomOptions options)
+    {
+        _http = http;
+        _options = options;
+    }
 
-    public async Task<AgentInfo> GetAgentAsync(int agentId, CancellationToken ct = default)
+    public async Task<AgentInfo> GetAgentAsync(CancellationToken ct = default)
     {
         var resp = await _http.GetAsync<GetAgentResponse>("/cgi-bin/agent/get",
-            new() { ["agentid"] = agentId.ToString() }, ct);
+            new() { ["agentid"] = _options.AgentId.ToString() }, ct);
         return resp.ToAgentInfo();
     }
 
@@ -27,20 +32,20 @@ public class AgentService : IAgentService, IMenuService
     public async Task SetAgentAsync(SetAgentRequest request, CancellationToken ct = default)
         => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/agent/set", request, ct);
 
-    public async Task CreateMenuAsync(int agentId, CreateMenuRequest request, CancellationToken ct = default)
+    public async Task CreateMenuAsync(CreateMenuRequest request, CancellationToken ct = default)
         => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/menu/create", request,
-            new() { ["agentid"] = agentId.ToString() }, ct);
+            new() { ["agentid"] = _options.AgentId.ToString() }, ct);
 
-    public async Task<MenuButton[]> GetMenuAsync(int agentId, CancellationToken ct = default)
+    public async Task<MenuButton[]> GetMenuAsync(CancellationToken ct = default)
     {
         var resp = await _http.GetAsync<GetMenuResponse>("/cgi-bin/menu/get",
-            new() { ["agentid"] = agentId.ToString() }, ct);
+            new() { ["agentid"] = _options.AgentId.ToString() }, ct);
         return resp.Button ?? [];
     }
 
-    public async Task DeleteMenuAsync(int agentId, CancellationToken ct = default)
+    public async Task DeleteMenuAsync(CancellationToken ct = default)
         => await _http.GetAsync<WecomBaseResponse>("/cgi-bin/menu/delete",
-            new() { ["agentid"] = agentId.ToString() }, ct);
+            new() { ["agentid"] = _options.AgentId.ToString() }, ct);
 
     public async Task SetWorkbenchTemplateAsync(SetWorkbenchTemplateRequest request, CancellationToken ct = default)
         => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/agent/set_workbench_template", request, ct);

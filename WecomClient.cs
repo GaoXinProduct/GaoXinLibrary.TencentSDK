@@ -6,10 +6,14 @@ namespace GaoXinLibrary.TencentSDK.Wecom;
 
 /// <summary>
 /// 企业微信服务端 SDK 主客户端
+/// </summary>
+/// <remarks>
+/// 通过 <see cref="Create(WecomOptions)"/> 或 <see cref="Create(WecomOptions, HttpClient)"/> 工厂方法创建实例；
+/// 使用完毕后请调用 <see cref="Dispose"/> 或通过 <c>using</c> 语句释放资源。
 /// <para>
-/// 使用示例：
+/// 快速入门：
 /// <code>
-/// var client = WecomClient.Create(new WecomOptions
+/// using var client = WecomClient.Create(new WecomOptions
 /// {
 ///     CorpId     = "your_corpid",
 ///     CorpSecret = "your_corpsecret",
@@ -18,7 +22,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom;
 /// await client.Message.SendTextAsync("Hello!", toUser: "@all");
 /// </code>
 /// </para>
-/// </summary>
+/// </remarks>
 public sealed class WecomClient : IDisposable
 {
     private readonly HttpClient _httpClient;
@@ -42,7 +46,7 @@ public sealed class WecomClient : IDisposable
     /// <summary>群机器人消息推送</summary>
     public IWebhookService Webhook { get; }
 
-    /// <summary>应用管理</summary>
+    /// <summary>应用管理（查询/配置自建应用及自定义菜单）</summary>
     public IAgentService Agent { get; }
 
     /// <summary>素材管理</summary>
@@ -51,7 +55,8 @@ public sealed class WecomClient : IDisposable
     /// <summary>应用群聊会话管理</summary>
     public IGroupChatService GroupChat { get; }
 
-    /// <summary>自定义菜单管理（菜单与应用管理共用同一服务实例）</summary>
+    /// <summary>自定义菜单管理</summary>
+    /// <remarks>与 <see cref="Agent"/> 共用同一 <c>AgentService</c> 实例。</remarks>
     public IMenuService Menu { get; }
 
     /// <summary>网页授权登录（OAuth2）</summary>
@@ -104,7 +109,7 @@ public sealed class WecomClient : IDisposable
         Tag = new TagService(_http);
         Message = new MessageService(_http, options.AgentId);
         Webhook = new WebhookService(_http, options.BaseUrl);
-        var agentSvc = new AgentService(_http);
+        var agentSvc = new AgentService(_http, options);
         Agent = agentSvc;
         Menu = agentSvc;
         Media = new MediaService(_http, _tokenProvider, httpClient, options.BaseUrl);
@@ -123,8 +128,12 @@ public sealed class WecomClient : IDisposable
     }
 
     /// <summary>
-    /// 使用指定配置创建 WecomClient 实例
+    /// 使用指定配置创建 <see cref="WecomClient"/> 实例（内部自动创建 <see cref="HttpClient"/>）
     /// </summary>
+    /// <param name="options">企业微信配置，必须包含 <see cref="WecomOptions.CorpId"/> 和 <see cref="WecomOptions.CorpSecret"/>。</param>
+    /// <returns>已初始化的 <see cref="WecomClient"/> 实例。</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="options"/> 为 <c>null</c>。</exception>
+    /// <exception cref="ArgumentException"><see cref="WecomOptions.CorpId"/> 或 <see cref="WecomOptions.CorpSecret"/> 为空。</exception>
     public static WecomClient Create(WecomOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
@@ -136,8 +145,12 @@ public sealed class WecomClient : IDisposable
     }
 
     /// <summary>
-    /// 使用已有 HttpClient 创建 WecomClient 实例（便于注入自定义 Handler）
+    /// 使用已有 <see cref="HttpClient"/> 创建 <see cref="WecomClient"/> 实例
     /// </summary>
+    /// <param name="options">企业微信配置。</param>
+    /// <param name="httpClient">外部托管的 <see cref="HttpClient"/>，可注入自定义 <see cref="System.Net.Http.DelegatingHandler"/>（如日志、重试）。</param>
+    /// <returns>已初始化的 <see cref="WecomClient"/> 实例。</returns>
+    /// <exception cref="ArgumentNullException"><paramref name="options"/> 或 <paramref name="httpClient"/> 为 <c>null</c>。</exception>
     public static WecomClient Create(WecomOptions options, HttpClient httpClient)
     {
         ArgumentNullException.ThrowIfNull(options);
@@ -145,36 +158,57 @@ public sealed class WecomClient : IDisposable
         return new WecomClient(options, httpClient);
     }
 
-    /// <summary>使 access_token 缓存失效（下次 GetAccessTokenAsync 时自动重新获取）</summary>
+    /// <summary>
+    /// 使 access_token 缓存失效
+    /// </summary>
+    /// <remarks>下次调用 <see cref="GetAccessTokenAsync"/> 时将自动向企业微信重新申请 Token。</remarks>
     public void InvalidateAccessTokenCache() => _tokenProvider.InvalidateCache();
 
-    /// <summary>强制刷新 access_token（立即请求新 Token 并更新缓存）</summary>
+    /// <summary>
+    /// 强制刷新 access_token（立即向企业微信请求新 Token 并更新本地缓存）
+    /// </summary>
+    /// <param name="ct">取消令牌。</param>
+    /// <returns>最新的 access_token 字符串。</returns>
     public Task<string> RefreshAccessTokenAsync(CancellationToken ct = default)
         => _tokenProvider.RefreshTokenAsync(ct);
 
     /// <summary>
-    /// 手动设置 access_token（适用于从外部令牌服务获取 Token 的场景）
+    /// 手动写入 access_token（适用于从外部令牌共享服务获取 Token 的场景）
     /// </summary>
-    /// <param name="token">access_token 值</param>
-    /// <param name="expiresIn">有效期，默认 7200 秒（内部提前 60 秒过期以留出安全余量）</param>
+    /// <param name="token">access_token 字符串。</param>
+    /// <param name="expiresIn">
+    /// Token 有效期；为 <c>null</c> 时默认 7200 秒。<br/>
+    /// 内部将提前 60 秒判定过期，以预留安全余量。
+    /// </param>
     public void SetAccessToken(string token, TimeSpan? expiresIn = null)
         => _tokenProvider.SetToken(token, expiresIn);
 
-    /// <summary>直接获取当前有效的 access_token</summary>
+    /// <summary>
+    /// 获取当前有效的 access_token（缓存未过期时直接返回，否则自动刷新）
+    /// </summary>
+    /// <param name="ct">取消令牌。</param>
+    /// <returns>有效的 access_token 字符串。</returns>
     public Task<string> GetAccessTokenAsync(CancellationToken ct = default)
         => _tokenProvider.GetTokenAsync(ct);
 
     /// <summary>
     /// 获取当前 access_token 的共享加密形式（ChaCha20-Poly1305）
-    /// <para>
-    /// 用于主服务对外暴露 Token 共享接口，需在 Options 中配置 <c>ShareSecret</c>。<br/>
-    /// 将返回的 <see cref="SharedTokenResult.Token"/> 和 <see cref="SharedTokenResult.ExpiresIn"/> 原样写入响应 JSON，
-    /// 备服务据此同步本地缓存过期时间。
-    /// </para>
     /// </summary>
+    /// <param name="ct">取消令牌。</param>
+    /// <returns>
+    /// 包含加密 Token 字符串及剩余有效秒数的 <see cref="SharedTokenResult"/>。
+    /// </returns>
+    /// <remarks>
+    /// 用于主服务对外暴露 Token 共享接口，需在 <see cref="Options"/> 中配置 <see cref="WecomOptions.ShareSecret"/>。<br/>
+    /// 将返回的 <see cref="SharedTokenResult.Token"/> 与 <see cref="SharedTokenResult.ExpiresIn"/> 原样写入响应 JSON，
+    /// 备服务据此调用 <see cref="SetAccessToken"/> 同步本地缓存。
+    /// </remarks>
     public Task<SharedTokenResult> GetSharedAccessTokenAsync(CancellationToken ct = default)
         => _tokenProvider.GetSharedTokenAsync(ct);
 
+    /// <summary>
+    /// 释放托管资源（<see cref="IMsgAuditService"/> 及内部 <see cref="HttpClient"/>）。
+    /// </summary>
     public void Dispose()
     {
         MsgAudit.Dispose();

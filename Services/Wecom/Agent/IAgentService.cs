@@ -15,13 +15,12 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 public interface IAgentService
 {
     /// <summary>
-    /// 获取指定应用的详细信息
+    /// 获取当前应用的详细信息
     /// <para>对应接口：GET /cgi-bin/agent/get</para>
     /// </summary>
-    /// <param name="agentId">应用 AgentId</param>
     /// <param name="ct">取消令牌</param>
     /// <returns>应用详细信息</returns>
-    Task<AgentInfo> GetAgentAsync(int agentId, CancellationToken ct = default);
+    Task<AgentInfo> GetAgentAsync(CancellationToken ct = default);
 
     /// <summary>
     /// 获取当前企业所有自建应用列表
@@ -43,27 +42,24 @@ public interface IAgentService
     /// 创建或覆盖当前应用的自定义菜单
     /// <para>对应接口：POST /cgi-bin/menu/create</para>
     /// </summary>
-    /// <param name="agentId">应用 AgentId</param>
     /// <param name="request">菜单定义，最多3个一级菜单，每个一级菜单最多5个子菜单</param>
     /// <param name="ct">取消令牌</param>
-    Task CreateMenuAsync(int agentId, CreateMenuRequest request, CancellationToken ct = default);
+    Task CreateMenuAsync(CreateMenuRequest request, CancellationToken ct = default);
 
     /// <summary>
     /// 获取当前应用已创建的菜单
     /// <para>对应接口：GET /cgi-bin/menu/get</para>
     /// </summary>
-    /// <param name="agentId">应用 AgentId</param>
     /// <param name="ct">取消令牌</param>
     /// <returns>菜单按钮数组</returns>
-    Task<MenuButton[]> GetMenuAsync(int agentId, CancellationToken ct = default);
+    Task<MenuButton[]> GetMenuAsync(CancellationToken ct = default);
 
     /// <summary>
     /// 删除当前应用的自定义菜单
     /// <para>对应接口：GET /cgi-bin/menu/delete</para>
     /// </summary>
-    /// <param name="agentId">应用 AgentId</param>
     /// <param name="ct">取消令牌</param>
-    Task DeleteMenuAsync(int agentId, CancellationToken ct = default);
+    Task DeleteMenuAsync(CancellationToken ct = default);
 
     /// <summary>
     /// 设置工作台自定义展示（设置应用在工作台的展示模板和内容）

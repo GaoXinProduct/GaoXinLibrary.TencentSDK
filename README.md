@@ -113,8 +113,8 @@ Install-Package GaoXinLibrary.TencentSDK
 | 标签管理 | `Tag` | `ITagService` | 创建 / 删除 / 添加删除成员 / 列表 |
 | 应用消息 | `Message` | `IMessageService` | 文本 / Markdown / 图文 / 文本卡片 / 小程序通知 / 模版卡片 / 撤回 |
 | 群机器人 | `Webhook` | `IWebhookService` | 文本 / Markdown / 图文 / 图片 / 文件 Webhook 推送 |
-| 应用管理 | `Agent` | `IAgentService` | 获取应用信息 / 应用列表 / 设置应用 |
-| 自定义菜单 | `Menu` | `IMenuService` | 创建 / 获取 / 删除应用菜单 |
+| 应用管理 | `Agent` | `IAgentService` | 获取应用信息 / 应用列表 / 设置应用 / 设置工作台模板 / 自定义菜单管理 |
+| 自定义菜单 | `Menu` | `IMenuService` | 创建 / 获取 / 删除应用菜单（AgentId 自动取自 `WecomOptions`，无需手动传入） |
 | 素材管理 | `Media` | `IMediaService` | 上传临时素材 / 上传图片 / 获取素材 |
 | 群聊会话 | `GroupChat` | `IGroupChatService` | 创建群聊 / 修改 / 获取 / 发送群聊消息 |
 | OAuth | `OAuth` | `IOAuthService` | 构造授权 URL / code 换取用户身份 / user_ticket 换取敏感信息 |
@@ -267,6 +267,14 @@ var depts = await client.Department.GetDepartmentListAsync();
 // Webhook 群机器人
 await client.Webhook.SendTextAsync("YOUR_WEBHOOK_KEY", "机器人消息");
 await client.Webhook.SendMarkdownAsync("YOUR_WEBHOOK_KEY", "## 告警\n> 服务异常");
+
+// 获取当前应用信息（AgentId 自动取自 WecomOptions，无需手动传入）
+var agentInfo = await client.Agent.GetAgentAsync();
+Console.WriteLine($"应用名称: {agentInfo.Name}");
+
+// 获取 / 创建 / 删除应用自定义菜单（AgentId 自动注入）
+var buttons = await client.Menu.GetMenuAsync();
+await client.Menu.DeleteMenuAsync();
 
 // OAuth 网页授权
 var oauthUrl = client.OAuth.BuildAuthUrl(
@@ -433,7 +441,7 @@ public class MultiAgentService(
 |------|------|--------|------|
 | `CorpId` | `string` | `""` | 企业 ID（corpid） |
 | `CorpSecret` | `string` | `""` | 应用凭证密钥（corpsecret） |
-| `AgentId` | `int` | `0` | 自建应用 AgentId |
+| `AgentId` | `int` | `0` | 自建应用 AgentId；`Agent` / `Menu` / `Message` 等服务均自动从此处读取，无需在调用时重复传入 |
 | `BaseUrl` | `string` | `https://qyapi.weixin.qq.com` | API 基础地址 |
 | `HttpTimeout` | `TimeSpan` | 30 秒 | HTTP 请求超时时间 |
 | `CallbackToken` | `string?` | — | 接收消息回调的 Token |

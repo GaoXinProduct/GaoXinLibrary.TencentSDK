@@ -93,11 +93,11 @@ jobs:
           set -euo pipefail
           for pkg in artifacts/*.nupkg; do
             echo "Pushing $pkg to GitHub Packages"
-            dotnet nuget push "$pkg" --source github --skip-duplicate
+            dotnet nuget push "$pkg" --source github --api-key "$GITHUB_TOKEN" --skip-duplicate
           done
           for sym in artifacts/*.snupkg; do
             echo "Pushing $sym to GitHub Packages"
-            dotnet nuget push "$sym" --source github --skip-duplicate || true
+            dotnet nuget push "$sym" --source github --api-key "$GITHUB_TOKEN" --skip-duplicate || true
           done
 
       - name: Push to NuGet.org (only for stable releases)

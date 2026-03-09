@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write   # 用于创建 GitHub Release
+      packages: write   # 用于推送 GitHub Packages
 
     steps:
       - name: Checkout

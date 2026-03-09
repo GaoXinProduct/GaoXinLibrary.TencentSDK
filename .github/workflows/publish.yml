@@ -1,87 +1,153 @@
-name: Publish NuGet Package
+name: Publish NuGet & Release
 
 on:
   push:
     tags:
       - 'v*'
+      - '*.*.*'
+
+permissions:
+  contents: write
+  packages: write
+
+env:
+  PROJECT_PATH: GaoXinLibrary.TencentSDK.csproj
+  GHPKG_FEED: https://nuget.pkg.github.com/GaoXinProduct/index.json
+  NAMESPACE: GaoXinProduct
 
 jobs:
-  publish:
-    name: Build and Publish
+  build-pack-publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write   # 用于创建 GitHub Release
-      packages: write   # 用于推送 GitHub Packages
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 从 tag（如 v1.0.0）中提取纯版本号 1.0.0，并判断是否为预发布版本
       - name: Extract version from tag
-        id: version
+        id: tag
+        shell: bash
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
-          if [[ "$VERSION" =~ (alpha|beta|rc|preview) ]]; then
-            echo "PRERELEASE=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "PRERELEASE=false" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          ref="${GITHUB_REF_NAME:-${GITHUB_REF##*/}}"
+          ver="${ref#v}"
+          ver="$(printf '%s' "$ver" | tr -d '\r' | sed 's/[^[:print:]]//g' | xargs)"
+          echo "Raw tag: $ref"
+          if ! echo "$ver" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "Tag $ref is not valid semver" >&2
+            exit 1
           fi
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          if echo "$ver" | grep -q '-'; then
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+          echo "Detected version: $ver"
 
-      - name: Setup .NET
+      - name: Setup .NET SDKs
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: |
-            8.x
-            9.x
-            10.x
+            10.0.x
+            9.0.x
+            8.0.x
 
-      - name: Restore dependencies
-        run: dotnet restore GaoXinLibrary.TencentSDK.csproj
+      - name: Restore
+        run: dotnet restore "${{ env.PROJECT_PATH }}"
 
-      - name: Build
-        run: >
-          dotnet build GaoXinLibrary.TencentSDK.csproj
-          --configuration Release
-          --no-restore
-          -p:Version=${{ steps.version.outputs.VERSION }}
+      - name: Build (Release portable PDB)
+        run: dotnet build "${{ env.PROJECT_PATH }}" -c Release --no-restore /p:ContinuousIntegrationBuild=true /p:DebugType=portable /p:DebugSymbols=true
 
       - name: Pack
-        run: >
-          dotnet pack GaoXinLibrary.TencentSDK.csproj
-          --configuration Release
-          --no-build
-          --output ./nupkgs
-          -p:Version=${{ steps.version.outputs.VERSION }}
+        run: |
+          mkdir -p artifacts
+          dotnet pack "${{ env.PROJECT_PATH }}" -c Release -o artifacts \
+            -p:PackageVersion=${{ steps.tag.outputs.version }} \
+            -p:Version=${{ steps.tag.outputs.version }} \
+            --no-build
 
-      # 推送到 NuGet.org
-      - name: Push to NuGet.org
-        run: >
-          dotnet nuget push ./nupkgs/*.nupkg
-          --api-key ${{ secrets.NUGET_API_KEY }}
-          --source https://api.nuget.org/v3/index.json
-          --skip-duplicate
+      - name: Verify symbol package contains PDB
+        run: |
+          set -e
+          if ls artifacts/*.snupkg >/dev/null 2>&1; then
+            if ! unzip -l artifacts/*.snupkg | grep -Ei '\.pdb$' >/dev/null; then
+              echo "Symbol package missing PDB" >&2
+              exit 1
+            fi
+            echo "Symbol package OK"
+          else
+            echo "No snupkg produced."
+          fi
 
-      # 推送到 GitHub Packages
+      - name: Add GitHub Packages source
+        run: |
+          dotnet nuget remove source github || true
+          dotnet nuget add source --username "${{ env.NAMESPACE }}" \
+            --password "${{ secrets.GITHUB_TOKEN }}" \
+            --store-password-in-clear-text \
+            --name github "${{ env.GHPKG_FEED }}"
+
       - name: Push to GitHub Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: >
-          dotnet nuget push ./nupkgs/*.nupkg
-          --api-key $GITHUB_TOKEN
-          --source "https://nuget.pkg.github.com/GaoXinProduct/index.json"
-          --skip-duplicate
+        run: |
+          set -euo pipefail
+          for pkg in artifacts/*.nupkg; do
+            echo "Pushing $pkg to GitHub Packages"
+            dotnet nuget push "$pkg" --source github --skip-duplicate
+          done
+          for sym in artifacts/*.snupkg; do
+            echo "Pushing $sym to GitHub Packages"
+            dotnet nuget push "$sym" --source github --skip-duplicate || true
+          done
 
-      # 创建 GitHub Release 并上传 .nupkg
-      - name: Create GitHub Release
+      - name: Push to NuGet.org (only for stable releases)
+        if: steps.tag.outputs.prerelease == 'false'
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${NUGET_API_KEY}" ]; then
+            echo "NUGET_API_KEY missing; skip push to nuget.org" >&2
+            exit 1
+          fi
+          for pkg in artifacts/*.nupkg; do
+            echo "Pushing $pkg to nuget.org"
+            dotnet nuget push "$pkg" --api-key "$NUGET_API_KEY" \
+              --source https://api.nuget.org/v3/index.json --skip-duplicate
+          done
+          for sym in artifacts/*.snupkg; do
+            echo "Pushing $sym to nuget.org"
+            dotnet nuget push "$sym" --api-key "$NUGET_API_KEY" \
+              --source https://api.nuget.org/v3/index.json --skip-duplicate || true
+          done
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: artifacts/*
+
+      - name: Create / Update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          name: Release ${{ steps.version.outputs.VERSION }}
+          name: Release ${{ steps.tag.outputs.version }}
           draft: false
-          prerelease: ${{ steps.version.outputs.PRERELEASE }}
+          prerelease: ${{ steps.tag.outputs.prerelease }}
           generate_release_notes: true
-          files: ./nupkgs/*.nupkg
+          files: |
+            artifacts/*.nupkg
+            artifacts/*.snupkg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          {
+            echo "Version: ${{ steps.tag.outputs.version }}"
+            echo "PreRelease: ${{ steps.tag.outputs.prerelease }}"
+            echo "Published to: GitHub Packages $( [ ${{ steps.tag.outputs.prerelease }} = false ] && echo '+ NuGet.org (stable)' )"
+            echo ""
+            echo "Artifacts:"
+            ls -1 artifacts
+          } >> "$GITHUB_STEP_SUMMARY"

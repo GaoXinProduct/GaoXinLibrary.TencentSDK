@@ -100,8 +100,7 @@ jobs:
             dotnet nuget push "$sym" --source github --api-key "$GITHUB_TOKEN" --skip-duplicate || true
           done
 
-      - name: Push to NuGet.org (only for stable releases)
-        if: steps.tag.outputs.prerelease == 'false'
+      - name: Push to NuGet.org
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         run: |
@@ -146,7 +145,7 @@ jobs:
           {
             echo "Version: ${{ steps.tag.outputs.version }}"
             echo "PreRelease: ${{ steps.tag.outputs.prerelease }}"
-            echo "Published to: GitHub Packages $( [ ${{ steps.tag.outputs.prerelease }} = false ] && echo '+ NuGet.org (stable)' )"
+            echo "Published to: GitHub Packages + NuGet.org ($( [ ${{ steps.tag.outputs.prerelease }} = false ] && echo 'stable' || echo 'pre-release' ))"
             echo ""
             echo "Artifacts:"
             ls -1 artifacts

@@ -105,6 +105,28 @@ public static class WecomServiceCollectionExtensions
         services.TryAddSingleton<ICheckinService>(sp => sp.GetRequiredService<WecomClient>().Checkin);
         services.TryAddSingleton<IApprovalService>(sp => sp.GetRequiredService<WecomClient>().Approval);
         services.TryAddSingleton<IExportService>(sp => sp.GetRequiredService<WecomClient>().Export);
+        services.TryAddSingleton<IAsyncImportService>(sp => sp.GetRequiredService<WecomClient>().AsyncImport);
+        services.TryAddSingleton<ISecondVerifyService>(sp => sp.GetRequiredService<WecomClient>().SecondVerify);
+        services.TryAddSingleton<ISecurityService>(sp => sp.GetRequiredService<WecomClient>().Security);
+        services.TryAddSingleton<IAdvancedAccountService>(sp => sp.GetRequiredService<WecomClient>().AdvancedAccount);
+        services.TryAddSingleton<IOperationLogService>(sp => sp.GetRequiredService<WecomClient>().OperationLog);
+        services.TryAddSingleton<IAccountIdService>(sp => sp.GetRequiredService<WecomClient>().AccountId);
+        services.TryAddSingleton<IIpRangeService>(sp => sp.GetRequiredService<WecomClient>().IpRange);
+        services.TryAddSingleton<IExternalContactService>(sp => sp.GetRequiredService<WecomClient>().ExternalContact);
+        services.TryAddSingleton<ICorpPayService>(sp => sp.GetRequiredService<WecomClient>().CorpPay);
+        services.TryAddSingleton<IEmailService>(sp => sp.GetRequiredService<WecomClient>().Email);
+        services.TryAddSingleton<IDocumentService>(sp => sp.GetRequiredService<WecomClient>().Document);
+        services.TryAddSingleton<ICalendarService>(sp => sp.GetRequiredService<WecomClient>().Calendar);
+        services.TryAddSingleton<IMeetingService>(sp => sp.GetRequiredService<WecomClient>().Meeting);
+        services.TryAddSingleton<IWedriveService>(sp => sp.GetRequiredService<WecomClient>().Wedrive);
+        services.TryAddSingleton<ILivingService>(sp => sp.GetRequiredService<WecomClient>().Living);
+        services.TryAddSingleton<IDialService>(sp => sp.GetRequiredService<WecomClient>().Dial);
+        services.TryAddSingleton<IReportService>(sp => sp.GetRequiredService<WecomClient>().Report);
+        services.TryAddSingleton<IHrService>(sp => sp.GetRequiredService<WecomClient>().Hr);
+        services.TryAddSingleton<IMeetingRoomService>(sp => sp.GetRequiredService<WecomClient>().MeetingRoom);
+        services.TryAddSingleton<IInvoiceService>(sp => sp.GetRequiredService<WecomClient>().Invoice);
+        services.TryAddSingleton<ISmartSheetService>(sp => sp.GetRequiredService<WecomClient>().SmartSheet);
+        services.TryAddSingleton<ICollectFormService>(sp => sp.GetRequiredService<WecomClient>().CollectForm);
 
         return services;
     }
@@ -180,6 +202,28 @@ public static class WecomServiceCollectionExtensions
         services.AddKeyedSingleton<ICheckinService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Checkin);
         services.AddKeyedSingleton<IApprovalService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Approval);
         services.AddKeyedSingleton<IExportService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Export);
+        services.AddKeyedSingleton<IAsyncImportService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).AsyncImport);
+        services.AddKeyedSingleton<ISecondVerifyService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).SecondVerify);
+        services.AddKeyedSingleton<ISecurityService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Security);
+        services.AddKeyedSingleton<IAdvancedAccountService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).AdvancedAccount);
+        services.AddKeyedSingleton<IOperationLogService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).OperationLog);
+        services.AddKeyedSingleton<IAccountIdService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).AccountId);
+        services.AddKeyedSingleton<IIpRangeService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).IpRange);
+        services.AddKeyedSingleton<IExternalContactService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).ExternalContact);
+        services.AddKeyedSingleton<ICorpPayService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).CorpPay);
+        services.AddKeyedSingleton<IEmailService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Email);
+        services.AddKeyedSingleton<IDocumentService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Document);
+        services.AddKeyedSingleton<ICalendarService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Calendar);
+        services.AddKeyedSingleton<IMeetingService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Meeting);
+        services.AddKeyedSingleton<IWedriveService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Wedrive);
+        services.AddKeyedSingleton<ILivingService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Living);
+        services.AddKeyedSingleton<IDialService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Dial);
+        services.AddKeyedSingleton<IReportService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Report);
+        services.AddKeyedSingleton<IHrService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Hr);
+        services.AddKeyedSingleton<IMeetingRoomService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).MeetingRoom);
+        services.AddKeyedSingleton<IInvoiceService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Invoice);
+        services.AddKeyedSingleton<ISmartSheetService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).SmartSheet);
+        services.AddKeyedSingleton<ICollectFormService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).CollectForm);
 
         return services;
     }

@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -14,6 +15,14 @@ namespace GaoXinLibrary.TencentSDK.Core;
 /// </summary>
 public static class TencentTokenCrypto
 {
+    private static long _lastTimestampMs;
+    private static uint _counter;
+#if NET9_0_OR_GREATER
+    private static readonly Lock _nonceLock = new();
+#else
+    private static readonly object _nonceLock = new();
+#endif
+
     /// <summary>
     /// 加密 access_token（ChaCha20-Poly1305）
     /// </summary>
@@ -45,21 +54,65 @@ public static class TencentTokenCrypto
     internal static byte[] DeriveKey(string shareSecret)
         => SHA256.HashData(Encoding.UTF8.GetBytes(shareSecret));
 
+    /// <summary>
+    /// 生成 12 字节 nonce：时间戳毫秒（8 字节大端）+ uint 递增计数器（4 字节大端）。
+    /// 同一毫秒内计数器溢出时自旋等待下一毫秒，确保 nonce 不重复。
+    /// </summary>
+    private static void GenerateNonce(Span<byte> nonce)
+    {
+        long timestampMs;
+        uint counter;
+
+        lock (_nonceLock)
+        {
+            timestampMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            if (timestampMs == _lastTimestampMs)
+            {
+                if (_counter == uint.MaxValue)
+                {
+                    while (timestampMs == _lastTimestampMs)
+                    {
+                        Thread.SpinWait(100);
+                        timestampMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    }
+
+                    _counter = 0;
+                }
+                else
+                {
+                    _counter++;
+                }
+            }
+            else
+            {
+                _counter = 0;
+            }
+
+            _lastTimestampMs = timestampMs;
+            counter = _counter;
+        }
+
+        BinaryPrimitives.WriteInt64BigEndian(nonce[..8], timestampMs);
+        BinaryPrimitives.WriteUInt32BigEndian(nonce[8..], counter);
+    }
+
     internal static string EncryptWithKey(string token, byte[] key)
     {
-        var nonce = RandomNumberGenerator.GetBytes(12);
+        Span<byte> nonce = stackalloc byte[12];
+        GenerateNonce(nonce);
         var plaintext = Encoding.UTF8.GetBytes(token);
         var ciphertext = new byte[plaintext.Length];
-        var tag = new byte[16];
+        Span<byte> tag = stackalloc byte[16];
 
         using var chacha = new ChaCha20Poly1305(key);
         chacha.Encrypt(nonce, plaintext, ciphertext, tag);
 
         // combined = nonce(12) + ciphertext(N) + tag(16)
         var combined = new byte[12 + ciphertext.Length + 16];
-        nonce.CopyTo(combined, 0);
-        ciphertext.CopyTo(combined, 12);
-        tag.CopyTo(combined, 12 + ciphertext.Length);
+        nonce.CopyTo(combined.AsSpan(0, 12));
+        ciphertext.AsSpan().CopyTo(combined.AsSpan(12));
+        tag.CopyTo(combined.AsSpan(12 + ciphertext.Length));
         return Convert.ToBase64String(combined);
     }
 

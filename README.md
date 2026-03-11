@@ -128,6 +128,28 @@ Install-Package GaoXinLibrary.TencentSDK
 | 企业互联 | `CorpGroup` | `ICorpGroupService` | 上下游企业管理 |
 | 互联企业 | `LinkedCorp` | `ILinkedCorpService` | 互联企业通讯录 |
 | 异步导出 | `Export` | `IExportService` | 异步数据导出任务 |
+| 异步导入 | `AsyncImport` | `IAsyncImportService` | 增量更新成员 / 全量覆盖成员 / 全量覆盖部门 / 获取异步任务结果 |
+| 二次验证 | `SecondVerify` | `ISecondVerifyService` | 获取二次验证信息 / 登录二次验证确认 |
+| 安全管理 | `Security` | `ISecurityService` | 文件防泄漏规则 / 设备管理 |
+| 高级功能账号 | `AdvancedAccount` | `IAdvancedAccountService` | 分配 / 取消 / 列表查询高级功能账号 |
+| 操作日志 | `OperationLog` | `IOperationLogService` | 成员操作记录 / 管理端操作日志 |
+| 账号 ID 管理 | `AccountId` | `IAccountIdService` | tmp_external_userid 转换 |
+| IP 段查询 | `IpRange` | `IIpRangeService` | 获取接口 IP 段 / 获取回调 IP 段 |
+| 客户联系 | `ExternalContact` | `IExternalContactService` | 客户列表 / 详情 / 批量获取 / 备注 / 客户群 / 行为数据 / 欢迎语 |
+| 企业支付 | `CorpPay` | `ICorpPayService` | 对外收款记录查询 / 收款项目账单 |
+| 邮件 | `Email` | `IEmailService` | 发送邮件 / 获取未读数 |
+| 文档 | `Document` | `IDocumentService` | 新建 / 获取 / 重命名 / 删除 / 分享文档 |
+| 日程 | `Calendar` | `ICalendarService` | 日历增删改查 / 日程增删改查 / 按日历获取日程 |
+| 会议 | `Meeting` | `IMeetingService` | 创建 / 修改 / 取消 / 详情 / 成员会议列表 |
+| 微盘 | `Wedrive` | `IWedriveService` | 空间管理 / 文件列表 / 创建 / 重命名 / 删除 / 移动 |
+| 直播 | `Living` | `ILivingService` | 创建 / 修改 / 取消直播 / 删除回放 / 详情 / 成员直播列表 |
+| 公费电话 | `Dial` | `IDialService` | 获取公费电话拨打记录 |
+| 汇报 | `Report` | `IReportService` | 批量获取汇报记录单号 / 汇报详情 |
+| 人事助手 | `Hr` | `IHrService` | 员工字段配置 / 花名册信息查询与更新 |
+| 会议室 | `MeetingRoom` | `IMeetingRoomService` | 添加 / 列表 / 编辑 / 删除会议室 / 预定 / 取消预定 |
+| 电子发票 | `Invoice` | `IInvoiceService` | 查询 / 批量查询 / 更新 / 批量更新发票状态 |
+| 智能表格 | `SmartSheet` | `ISmartSheetService` | 子表增删改查 / 字段增删改查 / 记录增删改查 / 视图查询 |
+| 收集表 | `CollectForm` | `ICollectFormService` | 创建 / 修改 / 获取收集表 / 获取答案 |
 
 ---
 
@@ -566,7 +588,29 @@ GaoXinLibrary.TencentSDK/
 │       ├── MsgAudit/                      #     会话存档
 │       ├── CorpGroup/                     #     企业互联
 │       ├── LinkedCorp/                    #     互联企业
-│       └── Export/                        #     异步导出
+│       ├── Export/                        #     异步导出
+│       ├── AsyncImport/                   #     异步导入
+│       ├── SecondVerify/                  #     二次验证
+│       ├── Security/                      #     安全管理
+│       ├── AdvancedAccount/               #     高级功能账号
+│       ├── OperationLog/                  #     操作日志
+│       ├── AccountId/                     #     账号 ID 管理
+│       ├── IpRange/                       #     IP 段查询
+│       ├── ExternalContact/               #     客户联系
+│       ├── CorpPay/                       #     企业支付
+│       ├── Email/                         #     邮件
+│       ├── Document/                      #     文档
+│       ├── Calendar/                      #     日程
+│       ├── Meeting/                       #     会议
+│       ├── Wedrive/                       #     微盘
+│       ├── Living/                        #     直播
+│       ├── Dial/                          #     公费电话
+│       ├── Report/                        #     汇报
+│       ├── Hr/                            #     人事助手
+│       ├── MeetingRoom/                   #     会议室
+│       ├── Invoice/                       #     电子发票
+│       ├── SmartSheet/                    #     智能表格
+│       └── CollectForm/                   #     收集表
 ├── Services/                              # 服务层（按产品 × 模块划分，每个接口 / 实现独立文件）
 │   ├── MiniProgram/                       #   小程序（13 对 I*Service / *Service）
 │   ├── OfficialAccount/                   #   公众号（17 对 I*Service / *Service）
@@ -592,7 +636,29 @@ GaoXinLibrary.TencentSDK/
 │       ├── MsgAudit/                      #     会话存档
 │       ├── CorpGroup/                     #     企业互联
 │       ├── LinkedCorp/                    #     互联企业
-│       └── Export/                        #     异步导出
+│       ├── Export/                        #     异步导出
+│       ├── AsyncImport/                   #     异步导入
+│       ├── SecondVerify/                  #     二次验证
+│       ├── Security/                      #     安全管理
+│       ├── AdvancedAccount/               #     高级功能账号
+│       ├── OperationLog/                  #     操作日志
+│       ├── AccountId/                     #     账号 ID 管理
+│       ├── IpRange/                       #     IP 段查询
+│       ├── ExternalContact/               #     客户联系
+│       ├── CorpPay/                       #     企业支付
+│       ├── Email/                         #     邮件
+│       ├── Document/                      #     文档
+│       ├── Calendar/                      #     日程
+│       ├── Meeting/                       #     会议
+│       ├── Wedrive/                       #     微盘
+│       ├── Living/                        #     直播
+│       ├── Dial/                          #     公费电话
+│       ├── Report/                        #     汇报
+│       ├── Hr/                            #     人事助手
+│       ├── MeetingRoom/                   #     会议室
+│       ├── Invoice/                       #     电子发票
+│       ├── SmartSheet/                    #     智能表格
+│       └── CollectForm/                   #     收集表
 ├── Extensions/                            # DI 扩展
 │   ├── WechatServiceCollectionExtensions.cs
 │   └── WecomServiceCollectionExtensions.cs

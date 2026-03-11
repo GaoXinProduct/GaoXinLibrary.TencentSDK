@@ -92,6 +92,72 @@ public sealed class WecomClient : IDisposable
     /// <summary>异步导出</summary>
     public IExportService Export { get; }
 
+    /// <summary>异步导入</summary>
+    public IAsyncImportService AsyncImport { get; }
+
+    /// <summary>二次验证</summary>
+    public ISecondVerifyService SecondVerify { get; }
+
+    /// <summary>安全管理</summary>
+    public ISecurityService Security { get; }
+
+    /// <summary>高级功能账号管理</summary>
+    public IAdvancedAccountService AdvancedAccount { get; }
+
+    /// <summary>操作日志</summary>
+    public IOperationLogService OperationLog { get; }
+
+    /// <summary>账号ID管理</summary>
+    public IAccountIdService AccountId { get; }
+
+    /// <summary>IP段查询</summary>
+    public IIpRangeService IpRange { get; }
+
+    /// <summary>客户联系</summary>
+    public IExternalContactService ExternalContact { get; }
+
+    /// <summary>企业支付</summary>
+    public ICorpPayService CorpPay { get; }
+
+    /// <summary>邮件</summary>
+    public IEmailService Email { get; }
+
+    /// <summary>文档</summary>
+    public IDocumentService Document { get; }
+
+    /// <summary>日程</summary>
+    public ICalendarService Calendar { get; }
+
+    /// <summary>会议</summary>
+    public IMeetingService Meeting { get; }
+
+    /// <summary>微盘</summary>
+    public IWedriveService Wedrive { get; }
+
+    /// <summary>直播</summary>
+    public ILivingService Living { get; }
+
+    /// <summary>公费电话</summary>
+    public IDialService Dial { get; }
+
+    /// <summary>汇报</summary>
+    public IReportService Report { get; }
+
+    /// <summary>人事助手</summary>
+    public IHrService Hr { get; }
+
+    /// <summary>会议室</summary>
+    public IMeetingRoomService MeetingRoom { get; }
+
+    /// <summary>电子发票</summary>
+    public IInvoiceService Invoice { get; }
+
+    /// <summary>智能表格</summary>
+    public ISmartSheetService SmartSheet { get; }
+
+    /// <summary>收集表</summary>
+    public ICollectFormService CollectForm { get; }
+
     /// <summary>当前配置</summary>
     public WecomOptions Options { get; }
 
@@ -125,6 +191,28 @@ public sealed class WecomClient : IDisposable
         Checkin = new CheckinService(_http);
         Approval = new ApprovalService(_http);
         Export = new ExportService(_http);
+        AsyncImport = new AsyncImportService(_http);
+        SecondVerify = new SecondVerifyService(_http);
+        Security = new SecurityService(_http);
+        AdvancedAccount = new AdvancedAccountService(_http);
+        OperationLog = new OperationLogService(_http);
+        AccountId = new AccountIdService(_http);
+        IpRange = new IpRangeService(_http);
+        ExternalContact = new ExternalContactService(_http);
+        CorpPay = new CorpPayService(_http);
+        Email = new EmailService(_http);
+        Document = new DocumentService(_http);
+        Calendar = new CalendarService(_http);
+        Meeting = new MeetingService(_http);
+        Wedrive = new WedriveService(_http);
+        Living = new LivingService(_http);
+        Dial = new DialService(_http);
+        Report = new ReportService(_http);
+        Hr = new HrService(_http);
+        MeetingRoom = new MeetingRoomService(_http);
+        Invoice = new InvoiceService(_http);
+        SmartSheet = new SmartSheetService(_http);
+        CollectForm = new CollectFormService(_http);
     }
 
     /// <summary>

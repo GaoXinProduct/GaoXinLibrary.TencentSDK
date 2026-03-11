@@ -68,4 +68,56 @@ public class WecomOptions
     /// <para>每次成功刷新 access_token 后触发，参数为新的明文 access_token 及 CancellationToken。</para>
     /// </summary>
     public Func<string, CancellationToken, Task>? OnTokenChanged { get; set; }
+
+    // ─── 共享 JS-SDK Ticket 配置（企业级 jsapi_ticket） ──────────────────────
+
+    /// <summary>
+    /// 企业级 jsapi_ticket 共享密钥（ChaCha20-Poly1305 加密）
+    /// <para>
+    /// 设置后可通过 <c>GetSharedJsApiTicketAsync()</c> 获取加密形式的 Ticket 供其他服务消费，
+    /// 或配合 <see cref="JsApiTicketShareUrl"/> 从远端获取并自动解密。
+    /// </para>
+    /// </summary>
+    public string? JsApiTicketShareSecret { get; set; }
+
+    /// <summary>
+    /// 企业级 jsapi_ticket 共享远端地址
+    /// <para>
+    /// 设置后将从此地址（HTTP GET）获取加密 Ticket，而非直接向企业微信 API 请求。
+    /// 远端响应格式：<c>{"token":"BASE64加密数据","expires_in":7200}</c>，需与 <see cref="JsApiTicketShareSecret"/> 配合使用。
+    /// </para>
+    /// </summary>
+    public string? JsApiTicketShareUrl { get; set; }
+
+    /// <summary>
+    /// 企业级 jsapi_ticket 变更通知回调
+    /// <para>每次成功刷新 jsapi_ticket 后触发，参数为新的明文 jsapi_ticket 及 CancellationToken。</para>
+    /// </summary>
+    public Func<string, CancellationToken, Task>? OnJsApiTicketChanged { get; set; }
+
+    // ─── 共享 JS-SDK Ticket 配置（应用级 agent_ticket） ──────────────────────
+
+    /// <summary>
+    /// 应用级 jsapi_ticket 共享密钥（ChaCha20-Poly1305 加密）
+    /// <para>
+    /// 设置后可通过 <c>GetSharedAgentTicketAsync()</c> 获取加密形式的 Ticket 供其他服务消费，
+    /// 或配合 <see cref="AgentTicketShareUrl"/> 从远端获取并自动解密。
+    /// </para>
+    /// </summary>
+    public string? AgentTicketShareSecret { get; set; }
+
+    /// <summary>
+    /// 应用级 jsapi_ticket 共享远端地址
+    /// <para>
+    /// 设置后将从此地址（HTTP GET）获取加密 Ticket，而非直接向企业微信 API 请求。
+    /// 远端响应格式：<c>{"token":"BASE64加密数据","expires_in":7200}</c>，需与 <see cref="AgentTicketShareSecret"/> 配合使用。
+    /// </para>
+    /// </summary>
+    public string? AgentTicketShareUrl { get; set; }
+
+    /// <summary>
+    /// 应用级 jsapi_ticket 变更通知回调
+    /// <para>每次成功刷新应用 jsapi_ticket 后触发，参数为新的明文 jsapi_ticket 及 CancellationToken。</para>
+    /// </summary>
+    public Func<string, CancellationToken, Task>? OnAgentTicketChanged { get; set; }
 }

@@ -77,7 +77,7 @@ Install-Package GaoXinLibrary.TencentSDK
 | 模板消息 | `TemplateMessage` | 发送模板消息 |
 | 用户管理 | `User` | 获取用户信息、关注者列表 |
 | 素材管理 | `Material` | 临时 / 永久素材的上传与获取 |
-| JS-SDK | `JsSdk` | JS-SDK 签名与配置 |
+| JS-SDK | `JsSdk` | JS-SDK jsapi_ticket 自动缓存与共享、签名计算 |
 | 用户标签 | `Tag` | 用户标签的增删改查 |
 | 草稿箱 | `Draft` | 草稿管理 |
 | 发布能力 | `Publish` | 发布 / 查询 / 删除已发布内容 |
@@ -118,7 +118,7 @@ Install-Package GaoXinLibrary.TencentSDK
 | 素材管理 | `Media` | `IMediaService` | 上传临时素材 / 上传图片 / 获取素材 |
 | 群聊会话 | `GroupChat` | `IGroupChatService` | 创建群聊 / 修改 / 获取 / 发送群聊消息 |
 | OAuth | `OAuth` | `IOAuthService` | 构造授权 URL / code 换取用户身份 / user_ticket 换取敏感信息 |
-| JS-SDK | `JsSdk` | `IJsSdkService` | H5 / 小程序 JS-SDK 签名 |
+| JS-SDK | `JsSdk` | `IJsSdkService` | 企业级/应用级 jsapi_ticket 自动缓存与共享、H5 JS-SDK 签名 |
 | 消息回调 | `Callback` | `ICallbackService` | URL 验证 / 消息解析与解密 / 被动回复加密 / 回调 IP 段 |
 | 智能机器人 | `SmartRobot` | `ISmartRobotService` | 智能机器人管理 |
 | 微信客服 | `Kf` | `IKfService` | 微信客服管理 |
@@ -450,6 +450,9 @@ public class MultiAgentService(
 |------|------|------|
 | `CallbackToken` | `string?` | 接收消息回调的 Token（签名校验） |
 | `CallbackEncodingAesKey` | `string?` | 接收消息回调的 EncodingAESKey（43 位字符） |
+| `TicketShareSecret` | `string?` | jsapi_ticket 共享密钥（ChaCha20-Poly1305） |
+| `TicketShareUrl` | `string?` | jsapi_ticket 共享远端地址 |
+| `OnTicketChanged` | `Func<string, CancellationToken, Task>?` | jsapi_ticket 刷新成功后的变更通知回调 |
 
 #### `QQConnectOptions`（继承 `WechatOptions`）
 
@@ -473,6 +476,12 @@ public class MultiAgentService(
 | `ShareSecret` | `string?` | — | 共享 Token 密钥（ChaCha20-Poly1305，详见[跨服务共享 Token](#-跨服务共享-token)） |
 | `TokenShareUrl` | `string?` | — | 远端共享 Token 地址；设置后从此地址拉取加密 Token，而非直接请求企业微信 API |
 | `OnTokenChanged` | `Func<string, CancellationToken, Task>?` | — | Token 刷新成功后的变更通知回调，参数为新的明文 access_token |
+| `JsApiTicketShareSecret` | `string?` | — | 企业级 jsapi_ticket 共享密钥（ChaCha20-Poly1305） |
+| `JsApiTicketShareUrl` | `string?` | — | 企业级 jsapi_ticket 共享远端地址 |
+| `OnJsApiTicketChanged` | `Func<string, CancellationToken, Task>?` | — | 企业级 jsapi_ticket 刷新成功后的变更通知回调 |
+| `AgentTicketShareSecret` | `string?` | — | 应用级 jsapi_ticket 共享密钥（ChaCha20-Poly1305） |
+| `AgentTicketShareUrl` | `string?` | — | 应用级 jsapi_ticket 共享远端地址 |
+| `OnAgentTicketChanged` | `Func<string, CancellationToken, Task>?` | — | 应用级 jsapi_ticket 刷新成功后的变更通知回调 |
 
 ---
 
@@ -555,11 +564,13 @@ GaoXinLibrary.TencentSDK/
 │   ├── WechatAccessTokenProvider.cs       #   微信 access_token 管理
 │   ├── WechatBaseResponse.cs              #   微信响应类
 │   ├── WechatCryptoHelper.cs              #   微信消息加解密
+│   ├── JsApiTicketProvider.cs             #   公众号 JS-SDK Ticket 缓存与共享
 │   ├── WecomOptions.cs                    #   企业微信配置类
 │   ├── WecomHttpClient.cs                 #   企业微信 HTTP 客户端
 │   ├── WecomAccessTokenProvider.cs        #   企业微信 access_token 管理
 │   ├── WecomBaseResponse.cs               #   企业微信响应类
 │   ├── WecomCryptoHelper.cs               #   企业微信消息加解密
+│   ├── WecomTicketProvider.cs             #   企业微信 JS-SDK Ticket 缓存与共享
 │   ├── HexHelper.cs                       #   十六进制工具
 │   └── Finance/                           #   会话内容存档原生 SDK
 │       ├── FinanceSdk.cs                  #     Finance SDK 封装
@@ -743,6 +754,129 @@ string plainToken = TencentTokenCrypto.Decrypt(encrypted, "shared-secret");
 ```
 
 > 备服务器响应的 `expires_in` 会被 SDK 原样用于设置本地缓存过期时间，确保备服务器的缓存节奏与主服务器保持一致，避免过早或过晚失效。
+
+### 跨服务共享 jsapi_ticket
+
+jsapi_ticket 同样有调用频率限制（企业级每小时 400 次，应用级每小时 100 次），SDK 内置了与 access_token 相同的缓存与共享机制。
+
+#### 公众号 jsapi_ticket 共享
+
+```csharp
+// 主服务器
+builder.Services.AddWechatOfficial(opt =>
+{
+    opt.AppId     = "official_appid";
+    opt.AppSecret = "official_secret";
+    opt.TicketShareSecret = "ticket-shared-secret"; // 与备服务器约定
+
+    // 可选：Ticket 刷新时推送到 Redis 等
+    opt.OnTicketChanged = async (newTicket, ct) =>
+    {
+        await redis.StringSetAsync("official:ticket", newTicket);
+    };
+});
+
+// Controller — 对外暴露加密 Ticket 接口
+[HttpGet("/internal/official/ticket")]
+public async Task<IActionResult> GetSharedTicket([FromServices] WechatOfficialClient client)
+{
+    var result = await client.GetSharedTicketAsync();
+    return Ok(new { token = result.Token, expires_in = result.ExpiresIn });
+}
+
+// 备服务器
+builder.Services.AddWechatOfficial(opt =>
+{
+    opt.AppId     = "official_appid";
+    opt.AppSecret = "official_secret";
+    opt.TicketShareSecret = "ticket-shared-secret";
+    opt.TicketShareUrl    = "https://main-server/internal/official/ticket";
+});
+```
+
+#### 企业微信 jsapi_ticket 共享
+
+企业微信有 **两种** jsapi_ticket：
+- **企业级** `jsapi_ticket`（用于 `wx.config`）
+- **应用级** `jsapi_ticket`（用于 `wx.agentConfig`）
+
+两者均支持独立的缓存、共享、手动设置和刷新。
+
+```csharp
+// 主服务器
+builder.Services.AddWecom(opt =>
+{
+    opt.CorpId     = "your_corpid";
+    opt.CorpSecret = "your_corpsecret";
+    opt.AgentId    = 1000001;
+
+    // 企业级 jsapi_ticket 共享
+    opt.JsApiTicketShareSecret = "jsapi-ticket-secret";
+    opt.OnJsApiTicketChanged = async (ticket, ct) =>
+    {
+        await redis.StringSetAsync("wecom:jsapi_ticket", ticket);
+    };
+
+    // 应用级 jsapi_ticket 共享
+    opt.AgentTicketShareSecret = "agent-ticket-secret";
+    opt.OnAgentTicketChanged = async (ticket, ct) =>
+    {
+        await redis.StringSetAsync("wecom:agent_ticket", ticket);
+    };
+});
+
+// Controller — 对外暴露加密 Ticket 接口
+[HttpGet("/internal/wecom/jsapi-ticket")]
+public async Task<IActionResult> GetSharedJsApiTicket([FromServices] WecomClient client)
+{
+    var result = await client.GetSharedJsApiTicketAsync();
+    return Ok(new { token = result.Token, expires_in = result.ExpiresIn });
+}
+
+[HttpGet("/internal/wecom/agent-ticket")]
+public async Task<IActionResult> GetSharedAgentTicket([FromServices] WecomClient client)
+{
+    var result = await client.GetSharedAgentTicketAsync();
+    return Ok(new { token = result.Token, expires_in = result.ExpiresIn });
+}
+
+// 备服务器
+builder.Services.AddWecom(opt =>
+{
+    opt.CorpId  = "your_corpid";
+    opt.AgentId = 1000001;
+
+    // 企业级 jsapi_ticket 从主服务器获取
+    opt.JsApiTicketShareSecret = "jsapi-ticket-secret";
+    opt.JsApiTicketShareUrl    = "https://main-server/internal/wecom/jsapi-ticket";
+
+    // 应用级 jsapi_ticket 从主服务器获取
+    opt.AgentTicketShareSecret = "agent-ticket-secret";
+    opt.AgentTicketShareUrl    = "https://main-server/internal/wecom/agent-ticket";
+});
+```
+
+#### 手动管理 jsapi_ticket
+
+```csharp
+// ── 公众号 ──
+var ticket = await officialClient.GetTicketAsync();       // 自动缓存
+await officialClient.RefreshTicketAsync();                 // 强制刷新
+officialClient.InvalidateTicketCache();                    // 使缓存失效
+officialClient.SetTicket("external_ticket");               // 手动设置
+
+// ── 企业微信（企业级） ──
+var jsTicket = await wecomClient.GetJsApiTicketAsync();    // 自动缓存
+await wecomClient.RefreshJsApiTicketAsync();               // 强制刷新
+wecomClient.InvalidateJsApiTicketCache();                  // 使缓存失效
+wecomClient.SetJsApiTicket("external_ticket");             // 手动设置
+
+// ── 企业微信（应用级） ──
+var agentTicket = await wecomClient.GetAgentTicketAsync(); // 自动缓存
+await wecomClient.RefreshAgentTicketAsync();               // 强制刷新
+wecomClient.InvalidateAgentTicketCache();                  // 使缓存失效
+wecomClient.SetAgentTicket("external_ticket");             // 手动设置
+```
 
 ---
 

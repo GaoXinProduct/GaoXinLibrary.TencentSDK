@@ -22,6 +22,7 @@ public sealed class WechatOfficialClient : IDisposable
 {
     private readonly HttpClient _httpClient;
     private readonly AccessTokenProvider _tokenProvider;
+    private readonly JsApiTicketProvider _ticketProvider;
 
     /// <summary>OAuth 网页授权</summary>
     public IOfficialOAuthService OAuth { get; }
@@ -84,12 +85,16 @@ public sealed class WechatOfficialClient : IDisposable
         _tokenProvider = new AccessTokenProvider(options, httpClient);
         var http = new WechatHttpClient(httpClient, _tokenProvider, options);
 
+        _ticketProvider = new JsApiTicketProvider(http, httpClient);
+        _ticketProvider.ConfigureSharedTicket(options.TicketShareSecret, options.TicketShareUrl);
+        _ticketProvider.OnTicketChanged = options.OnTicketChanged;
+
         OAuth = new OfficialOAuthService(http, options);
         Menu = new OfficialMenuService(http);
         TemplateMessage = new OfficialTemplateMessageService(http);
         User = new OfficialUserService(http);
         Material = new OfficialMaterialService(http);
-        JsSdk = new OfficialJsSdkService(http, options.AppId);
+        JsSdk = new OfficialJsSdkService(_ticketProvider, options.AppId);
         Tag = new OfficialTagService(http);
         Draft = new OfficialDraftService(http);
         Publish = new OfficialPublishService(http);
@@ -152,6 +157,36 @@ public sealed class WechatOfficialClient : IDisposable
     /// </summary>
     public Task<SharedTokenResult> GetSharedAccessTokenAsync(CancellationToken ct = default)
         => _tokenProvider.GetSharedTokenAsync(ct);
+
+    // ─── jsapi_ticket 管理 ─────────────────────────────────────────────────
+
+    /// <summary>使 jsapi_ticket 缓存失效（下次 GetTicketAsync 时自动重新获取）</summary>
+    public void InvalidateTicketCache() => _ticketProvider.InvalidateCache();
+
+    /// <summary>强制刷新 jsapi_ticket（立即请求新 Ticket 并更新缓存）</summary>
+    public Task<string> RefreshTicketAsync(CancellationToken ct = default)
+        => _ticketProvider.RefreshTicketAsync(ct);
+
+    /// <summary>
+    /// 手动设置 jsapi_ticket（适用于从外部服务获取 Ticket 的场景）
+    /// </summary>
+    /// <param name="ticket">jsapi_ticket 值</param>
+    /// <param name="expiresIn">有效期，默认 7200 秒（内部提前 60 秒过期以留出安全余量）</param>
+    public void SetTicket(string ticket, TimeSpan? expiresIn = null)
+        => _ticketProvider.SetTicket(ticket, expiresIn);
+
+    /// <summary>直接获取当前有效的 jsapi_ticket</summary>
+    public Task<string> GetTicketAsync(CancellationToken ct = default)
+        => _ticketProvider.GetTicketAsync(ct);
+
+    /// <summary>
+    /// 获取当前 jsapi_ticket 的共享加密形式（ChaCha20-Poly1305）
+    /// <para>
+    /// 用于主服务对外暴露 Ticket 共享接口，需在 Options 中配置 <c>TicketShareSecret</c>。
+    /// </para>
+    /// </summary>
+    public Task<SharedTokenResult> GetSharedTicketAsync(CancellationToken ct = default)
+        => _ticketProvider.GetSharedTicketAsync(ct);
 
     private static void ValidateOptions(WechatOfficialOptions options)
     {

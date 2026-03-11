@@ -28,6 +28,8 @@ public sealed class WecomClient : IDisposable
     private readonly HttpClient _httpClient;
     private readonly AccessTokenProvider _tokenProvider;
     private readonly WecomHttpClient _http;
+    private readonly WecomTicketProvider _jsApiTicketProvider;
+    private readonly WecomTicketProvider _agentTicketProvider;
 
     // ─── 子服务 ──────────────────────────────────────────────────────────────
 
@@ -187,7 +189,30 @@ public sealed class WecomClient : IDisposable
         LinkedCorp = new LinkedCorpService(_http);
         Kf = new KfService(_http);
         MsgAudit = new MsgAuditService(_http, options);
-        JsSdk = new JsSdkService(_http, options.CorpId, options.AgentId);
+        _jsApiTicketProvider = new WecomTicketProvider(
+            async ct =>
+            {
+                var resp = await _http.GetAsync<GaoXinLibrary.TencentSDK.Wecom.Models.JsSdk.GetJsApiTicketResponse>(
+                    "/cgi-bin/get_jsapi_ticket", ct: ct);
+                return (resp.Ticket, resp.ExpiresIn);
+            },
+            httpClient);
+        _jsApiTicketProvider.ConfigureSharedTicket(options.JsApiTicketShareSecret, options.JsApiTicketShareUrl);
+        _jsApiTicketProvider.OnTicketChanged = options.OnJsApiTicketChanged;
+
+        _agentTicketProvider = new WecomTicketProvider(
+            async ct =>
+            {
+                var resp = await _http.GetAsync<GaoXinLibrary.TencentSDK.Wecom.Models.JsSdk.GetAgentTicketResponse>(
+                    "/cgi-bin/ticket/get",
+                    new Dictionary<string, string?> { ["type"] = "agent_config" }, ct);
+                return (resp.Ticket, resp.ExpiresIn);
+            },
+            httpClient);
+        _agentTicketProvider.ConfigureSharedTicket(options.AgentTicketShareSecret, options.AgentTicketShareUrl);
+        _agentTicketProvider.OnTicketChanged = options.OnAgentTicketChanged;
+
+        JsSdk = new JsSdkService(_jsApiTicketProvider, _agentTicketProvider, options.CorpId, options.AgentId);
         Checkin = new CheckinService(_http);
         Approval = new ApprovalService(_http);
         Export = new ExportService(_http);
@@ -293,6 +318,60 @@ public sealed class WecomClient : IDisposable
     /// </remarks>
     public Task<SharedTokenResult> GetSharedAccessTokenAsync(CancellationToken ct = default)
         => _tokenProvider.GetSharedTokenAsync(ct);
+
+    // ─── 企业级 jsapi_ticket 管理 ──────────────────────────────────────────
+
+    /// <summary>使企业级 jsapi_ticket 缓存失效</summary>
+    public void InvalidateJsApiTicketCache() => _jsApiTicketProvider.InvalidateCache();
+
+    /// <summary>强制刷新企业级 jsapi_ticket</summary>
+    public Task<string> RefreshJsApiTicketAsync(CancellationToken ct = default)
+        => _jsApiTicketProvider.RefreshTicketAsync(ct);
+
+    /// <summary>
+    /// 手动设置企业级 jsapi_ticket
+    /// </summary>
+    /// <param name="ticket">jsapi_ticket 值</param>
+    /// <param name="expiresIn">有效期，默认 7200 秒</param>
+    public void SetJsApiTicket(string ticket, TimeSpan? expiresIn = null)
+        => _jsApiTicketProvider.SetTicket(ticket, expiresIn);
+
+    /// <summary>获取当前有效的企业级 jsapi_ticket</summary>
+    public Task<string> GetJsApiTicketAsync(CancellationToken ct = default)
+        => _jsApiTicketProvider.GetTicketAsync(ct);
+
+    /// <summary>
+    /// 获取当前企业级 jsapi_ticket 的共享加密形式（ChaCha20-Poly1305）
+    /// </summary>
+    public Task<SharedTokenResult> GetSharedJsApiTicketAsync(CancellationToken ct = default)
+        => _jsApiTicketProvider.GetSharedTicketAsync(ct);
+
+    // ─── 应用级 jsapi_ticket 管理 ──────────────────────────────────────────
+
+    /// <summary>使应用级 jsapi_ticket 缓存失效</summary>
+    public void InvalidateAgentTicketCache() => _agentTicketProvider.InvalidateCache();
+
+    /// <summary>强制刷新应用级 jsapi_ticket</summary>
+    public Task<string> RefreshAgentTicketAsync(CancellationToken ct = default)
+        => _agentTicketProvider.RefreshTicketAsync(ct);
+
+    /// <summary>
+    /// 手动设置应用级 jsapi_ticket
+    /// </summary>
+    /// <param name="ticket">jsapi_ticket 值</param>
+    /// <param name="expiresIn">有效期，默认 7200 秒</param>
+    public void SetAgentTicket(string ticket, TimeSpan? expiresIn = null)
+        => _agentTicketProvider.SetTicket(ticket, expiresIn);
+
+    /// <summary>获取当前有效的应用级 jsapi_ticket</summary>
+    public Task<string> GetAgentTicketAsync(CancellationToken ct = default)
+        => _agentTicketProvider.GetTicketAsync(ct);
+
+    /// <summary>
+    /// 获取当前应用级 jsapi_ticket 的共享加密形式（ChaCha20-Poly1305）
+    /// </summary>
+    public Task<SharedTokenResult> GetSharedAgentTicketAsync(CancellationToken ct = default)
+        => _agentTicketProvider.GetSharedTicketAsync(ct);
 
     /// <summary>
     /// 释放托管资源（<see cref="IMsgAuditService"/> 及内部 <see cref="HttpClient"/>）。

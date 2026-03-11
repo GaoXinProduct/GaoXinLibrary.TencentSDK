@@ -9,31 +9,66 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 /// <summary>企业微信 H5 / JS-SDK 服务实现</summary>
 public class JsSdkService : IJsSdkService
 {
-    private readonly WecomHttpClient _http;
+    private readonly WecomTicketProvider _jsApiTicketProvider;
+    private readonly WecomTicketProvider _agentTicketProvider;
     private readonly string _corpId;
     private readonly int _agentId;
 
-    public JsSdkService(WecomHttpClient http, string corpId, int agentId)
+    public JsSdkService(
+        WecomTicketProvider jsApiTicketProvider,
+        WecomTicketProvider agentTicketProvider,
+        string corpId,
+        int agentId)
     {
-        _http = http;
+        _jsApiTicketProvider = jsApiTicketProvider;
+        _agentTicketProvider = agentTicketProvider;
         _corpId = corpId;
         _agentId = agentId;
     }
 
-    /// <inheritdoc/>
-    public async Task<GetJsApiTicketResponse> GetJsApiTicketAsync(CancellationToken ct = default)
-    {
-        return await _http.GetAsync<GetJsApiTicketResponse>(
-            "/cgi-bin/get_jsapi_ticket", ct: ct);
-    }
+    // ─── 企业级 jsapi_ticket ──────────────────────────────────────────────
 
     /// <inheritdoc/>
-    public async Task<GetAgentTicketResponse> GetAgentTicketAsync(CancellationToken ct = default)
-    {
-        return await _http.GetAsync<GetAgentTicketResponse>(
-            "/cgi-bin/ticket/get",
-            new Dictionary<string, string?> { ["type"] = "agent_config" }, ct);
-    }
+    public Task<string> GetJsApiTicketAsync(CancellationToken ct = default)
+        => _jsApiTicketProvider.GetTicketAsync(ct);
+
+    /// <inheritdoc/>
+    public void InvalidateJsApiTicketCache() => _jsApiTicketProvider.InvalidateCache();
+
+    /// <inheritdoc/>
+    public Task<string> RefreshJsApiTicketAsync(CancellationToken ct = default)
+        => _jsApiTicketProvider.RefreshTicketAsync(ct);
+
+    /// <inheritdoc/>
+    public void SetJsApiTicket(string ticket, TimeSpan? expiresIn = null)
+        => _jsApiTicketProvider.SetTicket(ticket, expiresIn);
+
+    /// <inheritdoc/>
+    public Task<SharedTokenResult> GetSharedJsApiTicketAsync(CancellationToken ct = default)
+        => _jsApiTicketProvider.GetSharedTicketAsync(ct);
+
+    // ─── 应用级 jsapi_ticket ──────────────────────────────────────────────
+
+    /// <inheritdoc/>
+    public Task<string> GetAgentTicketAsync(CancellationToken ct = default)
+        => _agentTicketProvider.GetTicketAsync(ct);
+
+    /// <inheritdoc/>
+    public void InvalidateAgentTicketCache() => _agentTicketProvider.InvalidateCache();
+
+    /// <inheritdoc/>
+    public Task<string> RefreshAgentTicketAsync(CancellationToken ct = default)
+        => _agentTicketProvider.RefreshTicketAsync(ct);
+
+    /// <inheritdoc/>
+    public void SetAgentTicket(string ticket, TimeSpan? expiresIn = null)
+        => _agentTicketProvider.SetTicket(ticket, expiresIn);
+
+    /// <inheritdoc/>
+    public Task<SharedTokenResult> GetSharedAgentTicketAsync(CancellationToken ct = default)
+        => _agentTicketProvider.GetSharedTicketAsync(ct);
+
+    // ─── 签名计算 ─────────────────────────────────────────────────────────
 
     /// <inheritdoc/>
     public JsSdkSignature CreateSignature(string ticket, string url)

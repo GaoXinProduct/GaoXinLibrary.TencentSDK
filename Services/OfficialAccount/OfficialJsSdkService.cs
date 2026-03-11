@@ -9,19 +9,33 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 /// <summary>公众号 JS-SDK 服务实现</summary>
 public class OfficialJsSdkService : IOfficialJsSdkService
 {
-    private readonly WechatHttpClient _http;
+    private readonly JsApiTicketProvider _ticketProvider;
     private readonly string _appId;
 
-    public OfficialJsSdkService(WechatHttpClient http, string appId)
+    public OfficialJsSdkService(JsApiTicketProvider ticketProvider, string appId)
     {
-        _http = http;
+        _ticketProvider = ticketProvider;
         _appId = appId;
     }
 
     /// <inheritdoc/>
-    public Task<GetJsApiTicketResponse> GetTicketAsync(CancellationToken ct = default)
-        => _http.GetAsync<GetJsApiTicketResponse>("/cgi-bin/ticket/getticket",
-            new Dictionary<string, string?> { ["type"] = "jsapi" }, ct);
+    public Task<string> GetTicketAsync(CancellationToken ct = default)
+        => _ticketProvider.GetTicketAsync(ct);
+
+    /// <inheritdoc/>
+    public void InvalidateTicketCache() => _ticketProvider.InvalidateCache();
+
+    /// <inheritdoc/>
+    public Task<string> RefreshTicketAsync(CancellationToken ct = default)
+        => _ticketProvider.RefreshTicketAsync(ct);
+
+    /// <inheritdoc/>
+    public void SetTicket(string ticket, TimeSpan? expiresIn = null)
+        => _ticketProvider.SetTicket(ticket, expiresIn);
+
+    /// <inheritdoc/>
+    public Task<SharedTokenResult> GetSharedTicketAsync(CancellationToken ct = default)
+        => _ticketProvider.GetSharedTicketAsync(ct);
 
     /// <inheritdoc/>
     public JsSdkSignature CreateSignature(string ticket, string url)

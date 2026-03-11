@@ -205,7 +205,7 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
     {
         var bytes = JsonSerializer.SerializeToUtf8Bytes(body, body.GetType(), JsonOptions);
         var content = new ByteArrayContent(bytes);
-        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json") { CharSet = "utf-8" };
         return content;
     }
 

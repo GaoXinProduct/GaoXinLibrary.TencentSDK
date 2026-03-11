@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -70,9 +71,8 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
         var token = await _tokenProvider.GetTokenAsync(ct);
         var query = BuildQuery(queryParams, token);
         var url = $"{_baseUrl}{path}?{query}";
-        var content = new StringContent(JsonSerializer.Serialize(body, JsonOptions), Encoding.UTF8, "application/json");
 
-        var response = await _httpClient.PostAsync(url, content, ct);
+        var response = await _httpClient.PostAsync(url, CreateJsonContent(body), ct);
         response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadAsStringAsync(ct);
 
@@ -93,8 +93,7 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
     public async Task<T> PostWithoutTokenAsync<T>(string url, object body, CancellationToken ct = default)
         where T : TResponse
     {
-        var content = new StringContent(JsonSerializer.Serialize(body, JsonOptions), Encoding.UTF8, "application/json");
-        var response = await _httpClient.PostAsync(url, content, ct);
+        var response = await _httpClient.PostAsync(url, CreateJsonContent(body), ct);
         response.EnsureSuccessStatusCode();
         var json = await response.Content.ReadAsStringAsync(ct);
 
@@ -172,9 +171,8 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
     {
         var token = await _tokenProvider.GetTokenAsync(ct);
         var url = $"{_baseUrl}{path}?access_token={Uri.EscapeDataString(token)}";
-        var content = new StringContent(JsonSerializer.Serialize(body, JsonOptions), Encoding.UTF8, "application/json");
 
-        var response = await _httpClient.PostAsync(url, content, ct);
+        var response = await _httpClient.PostAsync(url, CreateJsonContent(body), ct);
         response.EnsureSuccessStatusCode();
 
         // 如果返回 JSON 则可能是错误
@@ -201,6 +199,14 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
             throw CreateException(result.ErrCode, result.ErrMsg ?? "未知错误");
 
         return result;
+    }
+
+    private static ByteArrayContent CreateJsonContent(object body)
+    {
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(body, body.GetType(), JsonOptions);
+        var content = new ByteArrayContent(bytes);
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+        return content;
     }
 
     private static string BuildQuery(Dictionary<string, string?>? extra, string token)

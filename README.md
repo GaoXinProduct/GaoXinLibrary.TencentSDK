@@ -52,55 +52,55 @@ Install-Package GaoXinLibrary.TencentSDK
 
 #### 小程序 — `WechatMiniProgramClient`
 
-| 子服务 | 属性 | 功能 |
-|--------|------|------|
-| 登录与手机号 | `Auth` | `Code2Session`、获取手机号 |
-| 小程序码 | `QrCode` | 小程序码 / 小程序二维码生成 |
-| 订阅消息 | `SubscribeMessage` | 发送订阅消息、管理模板 |
-| 内容安全 | `Security` | 文本 / 图片内容安全检测 |
-| 发货信息 | `Shipping` | 发货信息管理与查询 |
-| OCR | `Ocr` | 身份证、银行卡、营业执照等 OCR 识别 |
-| 链接生成 | `Link` | URL Scheme / URL Link / Short Link |
-| 数据分析 | `DataAnalysis` | 访问趋势、来源分析等数据统计 |
-| 物流助手 | `Express` | 物流助手接口 |
-| 运维中心 | `Operation` | 域名配置、性能数据、访问来源 / 版本统计、实时日志、用户反馈、JS 错误日志、分阶段发布详情 |
-| 硬件设备 | `Device` | 硬件设备管理 |
-| 客服消息 | `CustomMessage` | 客服消息发送 |
-| OpenAPI | `OpenApi` | 接口调用额度查询与清零、rid 信息查询、网络通信检测、微信服务器 IP 列表 |
+| 模块 | 属性 | 服务接口 | 核心功能 |
+|------|------|---------|---------|
+| 登录与手机号 | `Auth` | `IMiniProgramAuthService` | `Code2SessionAsync` 登录凭证校验 / `GetPhoneNumberAsync` 获取手机号 / `CheckSessionKeyAsync` 校验 session_key / `ResetUserSessionKeyAsync` 重置 session_key |
+| 小程序码 | `QrCode` | `IMiniProgramQrCodeService` | `GetUnlimitedAsync` 不限制小程序码 / `GetQrCodeAsync` 有限小程序码 / `CreateQrCodeAsync` 小程序二维码 |
+| 订阅消息 | `SubscribeMessage` | `IMiniProgramSubscribeMessageService` | `SendAsync` 发送订阅消息 |
+| 内容安全 | `Security` | `IMiniProgramSecurityService` | `MsgSecCheckAsync` 文本内容安全检测 / `MediaCheckAsync` 音视频内容安全异步检测 / `GetUserRiskRankAsync` 获取用户安全等级 |
+| 发货信息 | `Shipping` | `IMiniProgramShippingService` | `UploadShippingInfoAsync` 发货信息录入 / `UploadCombinedShippingInfoAsync` 合单发货录入 / `GetOrderAsync` 查询订单发货状态 / `IsTradeManagedAsync` 查询交易结算确认 |
+| OCR | `Ocr` | `IMiniProgramOcrService` | `IdCardAsync` 身份证 / `BankCardAsync` 银行卡 / `DrivingAsync` 行驶证 / `DrivingLicenseAsync` 驾驶证 / `BizLicenseAsync` 营业执照 / `CommAsync` 通用印刷体 / `AiCropAsync` 图片智能裁切 |
+| 链接生成 | `Link` | `IMiniProgramLinkService` | `GenerateSchemeAsync` 生成 URL Scheme / `GenerateUrlLinkAsync` 生成 URL Link / `GenerateShortLinkAsync` 生成 Short Link |
+| 数据分析 | `DataAnalysis` | `IMiniProgramDataAnalysisService` | `GetDailySummaryTrendAsync` 概况趋势 / `GetDailyVisitTrendAsync` 访问趋势 / `GetVisitPageAsync` 访问页面 / `GetUserPortraitAsync` 用户画像 / `GetVisitDistributionAsync` 访问分布 |
+| 物流助手 | `Express` | `IMiniProgramExpressService` | `GetAllDeliveryAsync` 获取快递公司列表 / `GetOrderAsync` 查询运单 / `GetPathAsync` 获取运单轨迹 |
+| 运维中心 | `Operation` | `IMiniProgramOperationService` | `GetDomainInfoAsync` 域名配置 / `GetPerformanceAsync` 性能数据 / `GetSceneListAsync` 访问来源 / `GetVersionListAsync` 客户端版本 / `RealtimeLogSearchAsync` 实时日志 / `GetFeedbackListAsync` 用户反馈 / `GetFeedbackMediaAsync` 反馈图片 / `JsErrSearchAsync` JS 错误列表 / `GetJsErrDetailAsync` JS 错误详情 / `GetGrayReleasePlanAsync` 分阶段发布详情 |
+| 硬件设备 | `Device` | `IMiniProgramDeviceService` | `SendMessageAsync` 发送设备消息 |
+| 客服消息 | `CustomMessage` | `IMiniProgramCustomMessageService` | `SendAsync` 发送客服消息 / `SetTypingAsync` 下发输入状态 |
+| OpenAPI | `OpenApi` | `IMiniProgramOpenApiService` | `ClearQuotaAsync` 清除调用次数 / `ClearApiQuotaAsync` 重置指定 API 调用次数 / `ClearQuotaByAppSecretAsync` 使用 AppSecret 重置 / `GetQuotaAsync` 查询调用额度 / `GetRidInfoAsync` 查询 rid 信息 / `CallbackCheckAsync` 网络通信检测 / `GetApiDomainIpAsync` API 服务器 IP / `GetCallbackIpAsync` 推送服务器 IP |
 
 #### 公众号 — `WechatOfficialClient`
 
-| 子服务 | 属性 | 功能 |
-|--------|------|------|
-| OAuth 网页授权 | `OAuth` | 构造授权 URL、通过 code 换取用户信息 |
-| 自定义菜单 | `Menu` | 创建 / 查询 / 删除自定义菜单 |
-| 模板消息 | `TemplateMessage` | 发送模板消息 |
-| 用户管理 | `User` | 获取用户信息、关注者列表 |
-| 素材管理 | `Material` | 临时 / 永久素材上传、临时素材下载（`byte[]` / `ReadOnlyMemory<byte>`） |
-| JS-SDK | `JsSdk` | JS-SDK jsapi_ticket 自动缓存与共享、签名计算 |
-| 用户标签 | `Tag` | 用户标签的增删改查 |
-| 草稿箱 | `Draft` | 草稿管理 |
-| 发布能力 | `Publish` | 发布 / 查询 / 删除已发布内容 |
-| 留言管理 | `Comment` | 留言管理 |
-| 客服消息 | `CustomMessage` | 客服消息发送 |
-| 群发消息 | `Message` | 群发 / 模板管理 |
-| 数据统计 | `DataAnalysis` | 用户、图文、消息等数据统计 |
-| 智能接口 | `Ai` | 语义理解、OCR |
-| 门店管理 | `Poi` | 微信门店管理 |
-| OpenAPI | `OpenApi` | 接口调用额度查询与清零 |
-| 消息回调 | `Callback` | 签名校验、消息加解密、被动回复 |
+| 模块 | 属性 | 服务接口 | 核心功能 |
+|------|------|---------|---------|
+| OAuth 网页授权 | `OAuth` | `IOfficialOAuthService` | `BuildAuthUrl` 构造授权 URL / `GetAccessTokenAsync` code 换取 access_token / `RefreshTokenAsync` 刷新 token / `GetUserInfoAsync` 拉取用户信息 |
+| 自定义菜单 | `Menu` | `IOfficialMenuService` | `CreateAsync` 创建菜单 / `GetAsync` 查询菜单 / `DeleteAsync` 删除菜单 |
+| 模板消息 | `TemplateMessage` | `IOfficialTemplateMessageService` | `SendAsync` 发送模板消息 |
+| 用户管理 | `User` | `IOfficialUserService` | `GetInfoAsync` 获取用户信息 / `BatchGetInfoAsync` 批量获取 / `GetListAsync` 用户列表 / `GetAllOpenIdsAsync` 全部 OpenId（自动分页） / `UpdateRemarkAsync` 设置备注名 |
+| 素材管理 | `Material` | `IOfficialMaterialService` | `GetCountAsync` 素材总数 / `GetMaterialAsync` 获取永久素材 / `DeleteMaterialAsync` 删除永久素材 / `BatchGetAsync` 素材列表 / `UploadTempMaterialAsync` 上传临时素材（Stream / ReadOnlyMemory） / `DownloadTempMaterialBytesAsync` 下载临时素材 byte[] / `DownloadTempMaterialReadOnlyAsync` 下载 ReadOnlyMemory / `AddPermanentMaterialAsync` 新增永久素材（Stream / ReadOnlyMemory） |
+| JS-SDK | `JsSdk` | `IOfficialJsSdkService` | `GetTicketAsync` 获取 jsapi_ticket（自动缓存） / `CreateSignature` 计算签名 / `InvalidateTicketCache` 使缓存失效 / `RefreshTicketAsync` 强制刷新 / `SetTicket` 手动设置 / `GetSharedTicketAsync` 获取共享加密 Ticket |
+| 用户标签 | `Tag` | `IOfficialTagService` | `CreateAsync` 创建标签 / `GetAllAsync` 获取全部标签 / `UpdateAsync` 编辑标签 / `DeleteAsync` 删除标签 / `GetUsersAsync` 标签下粉丝列表 / `BatchTagAsync` 批量打标签 / `BatchUntagAsync` 批量取消 / `GetUserTagsAsync` 获取用户标签 |
+| 草稿箱 | `Draft` | `IOfficialDraftService` | `AddAsync` 新建草稿 / `GetAsync` 获取草稿 / `DeleteAsync` 删除草稿 / `BatchGetAsync` 草稿列表 / `GetCountAsync` 草稿总数 |
+| 发布能力 | `Publish` | `IOfficialPublishService` | `SubmitAsync` 发布草稿 / `GetAsync` 查询发布状态 / `DeleteAsync` 删除发布 / `GetArticleAsync` 获取已发布文章 / `BatchGetAsync` 成功发布列表 |
+| 留言管理 | `Comment` | `IOfficialCommentService` | `OpenAsync` 打开评论 / `CloseAsync` 关闭评论 / `ListAsync` 查看评论 / `ReplyAsync` 回复评论 / `DeleteAsync` 删除评论 / `DeleteReplyAsync` 删除回复 / `MarkElectAsync` 精选 / `UnmarkElectAsync` 取消精选 |
+| 客服消息 | `CustomMessage` | `IOfficialCustomMessageService` | `SendAsync` 发送客服消息 / `SetTypingAsync` 下发输入状态 / `AddKfAccountAsync` 添加客服帐号 / `UpdateKfAccountAsync` 修改客服帐号 / `DeleteKfAccountAsync` 删除客服帐号 / `GetKfListAsync` 获取所有客服 |
+| 群发消息 | `Message` | `IOfficialMessageService` | `MassSendAllAsync` 按标签群发 / `MassSendAsync` 按 OpenId 群发 / `MassDeleteAsync` 删除群发 / `MassPreviewAsync` 预览 / `MassGetAsync` 查询发送状态 / `SetIndustryAsync` 设置行业 / `GetIndustryAsync` 获取行业 / `AddTemplateAsync` 获得模板 ID / `GetTemplateListAsync` 模板列表 / `DeleteTemplateAsync` 删除模板 |
+| 数据统计 | `DataAnalysis` | `IOfficialDataAnalysisService` | `GetUserSummaryAsync` 用户增减 / `GetUserCumulateAsync` 累计用户 / `GetArticleSummaryAsync` 图文群发每日 / `GetArticleTotalAsync` 图文群发总数据 / `GetUserReadAsync` 图文统计 / `GetUserShareAsync` 分享转发 / `GetUpstreamMsgAsync` 消息发送概况 / `GetInterfaceSummaryAsync` 接口分析 |
+| 智能接口 | `Ai` | `IOfficialAiService` | `SemanticSearchAsync` 语义理解 / `OcrIdCardAsync` 身份证 OCR / `OcrBankCardAsync` 银行卡 OCR / `OcrDrivingAsync` 行驶证 OCR / `OcrBizLicenseAsync` 营业执照 OCR |
+| 门店管理 | `Poi` | `IOfficialPoiService` | `AddAsync` 创建门店 / `GetAsync` 查询门店 / `GetListAsync` 门店列表 / `UpdateAsync` 修改门店 / `DeleteAsync` 删除门店 |
+| OpenAPI | `OpenApi` | `IOfficialOpenApiService` | `ClearQuotaAsync` 清空调用 quota / `GetQuotaAsync` 查询调用额度 / `GetRidInfoAsync` 查询 rid 信息 |
+| 消息回调 | `Callback` | `IOfficialCallbackService` | `VerifyUrl` 明文模式验证 / `VerifyUrlEncrypted` 安全模式验证 / `ParseMessage` 解析明文消息 / `DecryptAndParse` 解密并解析消息 / `EncryptReply` 加密被动回复 / `GetCallbackIpAsync` 获取微信服务器 IP |
 
 #### 开放平台 — `WechatOpenClient`
 
-| 子服务 | 属性 | 功能 |
-|--------|------|------|
-| 网站登录 | `WebLogin` | 构造扫码登录 URL、code 换取 access_token、获取用户信息 |
+| 模块 | 属性 | 服务接口 | 核心功能 |
+|------|------|---------|---------|
+| 网站登录 | `WebLogin` | `IOpenPlatformService` | `BuildAuthUrl` 构造扫码登录 URL / `GetAccessTokenAsync` code 换取 access_token / `RefreshTokenAsync` 刷新 token / `GetUserInfoAsync` 获取用户信息 / `CheckAccessTokenAsync` 检验凭证有效性 / `GetPcOpenSdkTicketAsync` 获取 PC OpenSDK ticket |
 
 #### QQ 互联 — `QQConnectClient`
 
-| 子服务 | 属性 | 功能 |
-|--------|------|------|
-| QQ 登录 | `Login` | 构造 OAuth2.0 URL、code 换取 access_token / openid、获取用户信息 |
+| 模块 | 属性 | 服务接口 | 核心功能 |
+|------|------|---------|---------|
+| QQ 登录 | `Login` | `IQQConnectService` | `BuildAuthUrl` 构造授权页面 URL / `GetAccessTokenAsync` code 换取 access_token / `RefreshTokenAsync` 刷新 token / `GetOpenIdAsync` 获取用户 OpenID / `GetUserInfoAsync` 获取用户信息 |
 
 ---
 

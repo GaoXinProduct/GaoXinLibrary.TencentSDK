@@ -53,5 +53,33 @@ public interface IOfficialUserService
     /// <param name="remark">新的备注名</param>
     /// <param name="ct">取消令牌</param>
     Task<UpdateRemarkResponse> UpdateRemarkAsync(string openId, string remark, CancellationToken ct = default);
+
+    /// <summary>
+    /// 拉黑用户
+    /// </summary>
+    /// <param name="request">拉黑请求参数</param>
+    /// <param name="ct">取消令牌</param>
+    Task<WechatBaseResponse> BatchBlacklistAsync(BatchBlacklistRequest request, CancellationToken ct = default);
+
+    /// <summary>
+    /// 取消拉黑用户
+    /// </summary>
+    /// <param name="request">取消拉黑请求参数</param>
+    /// <param name="ct">取消令牌</param>
+    Task<WechatBaseResponse> BatchUnblacklistAsync(BatchBlacklistRequest request, CancellationToken ct = default);
+
+    /// <summary>
+    /// 获取公众号黑名单列表
+    /// </summary>
+    /// <param name="request">黑名单分页请求参数</param>
+    /// <param name="ct">取消令牌</param>
+    Task<UserListResponse> GetBlacklistAsync(GetBlacklistRequest request, CancellationToken ct = default);
+
+    /// <summary>
+    /// 迁移场景下转换 OpenId
+    /// </summary>
+    /// <param name="request">转换请求参数</param>
+    /// <param name="ct">取消令牌</param>
+    Task<ChangeOpenIdResponse> ChangeOpenIdAsync(ChangeOpenIdRequest request, CancellationToken ct = default);
 }
 

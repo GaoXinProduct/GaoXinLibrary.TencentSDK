@@ -75,7 +75,8 @@ Install-Package GaoXinLibrary.TencentSDK
 | OAuth 网页授权 | `OAuth` | `IOfficialOAuthService` | `BuildAuthUrl` 构造授权 URL / `GetAccessTokenAsync` code 换取 access_token / `RefreshTokenAsync` 刷新 token / `GetUserInfoAsync` 拉取用户信息 |
 | 自定义菜单 | `Menu` | `IOfficialMenuService` | `CreateAsync` 创建菜单 / `GetAsync` 查询菜单 / `DeleteAsync` 删除菜单 |
 | 模板消息 | `TemplateMessage` | `IOfficialTemplateMessageService` | `SendAsync` 发送模板消息 |
-| 用户管理 | `User` | `IOfficialUserService` | `GetInfoAsync` 获取用户信息 / `BatchGetInfoAsync` 批量获取 / `GetListAsync` 用户列表 / `GetAllOpenIdsAsync` 全部 OpenId（自动分页） / `UpdateRemarkAsync` 设置备注名 |
+| 用户管理 | `User` | `IOfficialUserService` | `GetInfoAsync` 获取用户信息 / `BatchGetInfoAsync` 批量获取 / `GetListAsync` 用户列表 / `GetAllOpenIdsAsync` 全部 OpenId（自动分页） / `UpdateRemarkAsync` 设置备注名 / `BatchBlacklistAsync` 拉黑用户 / `BatchUnblacklistAsync` 取消拉黑 / `GetBlacklistAsync` 黑名单列表 / `ChangeOpenIdAsync` 迁移后转换 OpenId |
+| 服务号二维码 | `QrCode` | `IOfficialQrCodeService` | 带参二维码：`CreateTemporaryAsync`/`CreatePermanentAsync`/`BuildShowUrl` / 扫码打开小程序：`AddOrUpdateJumpRuleAsync`/`GetJumpRulesAsync`/`PublishJumpRuleAsync`/`DeleteJumpRuleAsync` / 长短链：`GenerateShortLinkAsync`/`FetchShortLinkAsync` |
 | 素材管理 | `Material` | `IOfficialMaterialService` | `GetCountAsync` 素材总数 / `GetMaterialAsync` 获取永久素材 / `DeleteMaterialAsync` 删除永久素材 / `BatchGetAsync` 素材列表 / `UploadTempMaterialAsync` 上传临时素材（Stream / ReadOnlyMemory） / `DownloadTempMaterialBytesAsync` 下载临时素材 byte[] / `DownloadTempMaterialReadOnlyAsync` 下载 ReadOnlyMemory / `AddPermanentMaterialAsync` 新增永久素材（Stream / ReadOnlyMemory） |
 | JS-SDK | `JsSdk` | `IOfficialJsSdkService` | `GetTicketAsync` 获取 jsapi_ticket（自动缓存） / `CreateSignature` 计算签名 / `InvalidateTicketCache` 使缓存失效 / `RefreshTicketAsync` 强制刷新 / `SetTicket` 手动设置 / `GetSharedTicketAsync` 获取共享加密 Ticket |
 | 用户标签 | `Tag` | `IOfficialTagService` | `CreateAsync` 创建标签 / `GetAllAsync` 获取全部标签 / `UpdateAsync` 编辑标签 / `DeleteAsync` 删除标签 / `GetUsersAsync` 标签下粉丝列表 / `BatchTagAsync` 批量打标签 / `BatchUntagAsync` 批量取消 / `GetUserTagsAsync` 获取用户标签 |
@@ -87,6 +88,7 @@ Install-Package GaoXinLibrary.TencentSDK
 | 数据统计 | `DataAnalysis` | `IOfficialDataAnalysisService` | `GetUserSummaryAsync` 用户增减 / `GetUserCumulateAsync` 累计用户 / `GetArticleSummaryAsync` 图文群发每日 / `GetArticleTotalAsync` 图文群发总数据 / `GetUserReadAsync` 图文统计 / `GetUserShareAsync` 分享转发 / `GetUpstreamMsgAsync` 消息发送概况 / `GetInterfaceSummaryAsync` 接口分析 |
 | 智能接口 | `Ai` | `IOfficialAiService` | `SemanticSearchAsync` 语义理解 / `OcrIdCardAsync` 身份证 OCR / `OcrBankCardAsync` 银行卡 OCR / `OcrDrivingAsync` 行驶证 OCR / `OcrBizLicenseAsync` 营业执照 OCR |
 | 门店管理 | `Poi` | `IOfficialPoiService` | `AddAsync` 创建门店 / `GetAsync` 查询门店 / `GetListAsync` 门店列表 / `UpdateAsync` 修改门店 / `DeleteAsync` 删除门店 |
+| 微信发票 | `Invoice` | `IOfficialInvoiceService` | 商户开票：`SetAuthFieldAsync`/`GetAuthFieldAsync`/`SetPayMchAsync`/`GetPayMchAsync`/`SetContactAsync`/`GetContactAsync` / 开票平台：`GetPlatformInvoiceUrlAsync`/`GetPlatformPdfAsync`/`UpdatePlatformInvoiceStatusAsync`/`UploadPlatformPdfAsync`/`CreatePlatformCardAsync`/`InsertInvoiceAsync` / 发票报销&自助打印：`GetReimburseInvoiceAsync`/`UpdateReimburseInvoiceStatusAsync`/`BatchUpdateReimburseInvoiceStatusAsync`/`BatchGetReimburseInvoiceAsync` / 极速开发票：`GetUserTitleUrlAsync`/`GetSelectTitleUrlAsync`/`ScanTitleAsync` / 非税票据：`GetNonTaxAuthUrlAsync`/`CreateNonTaxCardAsync`/`InsertNonTaxInvoiceAsync` |
 | OpenAPI | `OpenApi` | `IOfficialOpenApiService` | `ClearQuotaAsync` 清空调用 quota / `GetQuotaAsync` 查询调用额度 / `GetRidInfoAsync` 查询 rid 信息 |
 | 消息回调 | `Callback` | `IOfficialCallbackService` | `VerifyUrl` 明文模式验证 / `VerifyUrlEncrypted` 安全模式验证 / `ParseMessage` 解析明文消息 / `DecryptAndParse` 解密并解析消息 / `EncryptReply` 加密被动回复 / `GetCallbackIpAsync` 获取微信服务器 IP |
 
@@ -191,6 +193,7 @@ var result = await client.Security.MsgSecCheckAsync("待检测的文本内容");
 ```csharp
 using GaoXinLibrary.TencentSDK.Wechat;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
+using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 var client = WechatOfficialClient.Create(new WechatOfficialOptions
 {
@@ -216,6 +219,78 @@ await client.TemplateMessage.SendAsync(new
 
 // JS-SDK 签名
 var jsConfig = await client.JsSdk.GetConfigAsync("https://example.com/page");
+
+// 拉黑用户 / 取消拉黑
+await client.User.BatchBlacklistAsync(new BatchBlacklistRequest
+{
+    OpenIdList = new() { "OPENID_1", "OPENID_2" }
+});
+await client.User.BatchUnblacklistAsync(new BatchBlacklistRequest
+{
+    OpenIdList = new() { "OPENID_1" }
+});
+
+// 迁移场景：转换 OpenId
+var changed = await client.User.ChangeOpenIdAsync(new ChangeOpenIdRequest
+{
+    FromAppId = "gh_91ae50dfeb1c",
+    OpenIdList = new() { "OLD_OPENID" }
+});
+
+// 服务号二维码（永久字符串场景值）
+var qr = await client.QrCode.CreatePermanentAsync("scene:campaign-2026");
+var qrImageUrl = client.QrCode.BuildShowUrl(qr.Ticket!);
+
+// 扫码打开小程序规则（服务号二维码）
+await client.QrCode.AddOrUpdateJumpRuleAsync(new QrcodeJumpAddRequest
+{
+    Prefix = "http://weixin.qq.com/q/kZgfwMTm72Wxxxx",
+    AppId = "wxxxxxx",
+    Path = "pages/index/index",
+    IsEdit = 0
+});
+
+// 长信息与短链
+var shortResp = await client.QrCode.GenerateShortLinkAsync(new ShortLinkGenerateRequest
+{
+    LongData = "https://example.com/very/long/path",
+    ExpireSeconds = 86400
+});
+var longResp = await client.QrCode.FetchShortLinkAsync(new ShortLinkFetchRequest
+{
+    ShortKey = shortResp.ShortKey!
+});
+
+// 微信发票（商户开票）—— 设置并查询联系方式
+await client.Invoice.SetContactAsync(new InvoiceSetContactRequest
+{
+    Contact = new InvoiceContactInfo
+    {
+        Phone = "88888888",
+        TimeOut = 12345
+    }
+});
+var contact = await client.Invoice.GetContactAsync();
+
+// 开票平台：获取识别码链接 / 创建卡券模板
+var invoiceUrl = await client.Invoice.GetPlatformInvoiceUrlAsync();
+var card = await client.Invoice.CreatePlatformCardAsync(new InvoicePlatformCreateCardRequest
+{
+    InvoiceInfo = new InvoicePlatformCardInfo
+    {
+        BaseInfo = new InvoicePlatformCardBaseInfo
+        {
+            Payee = "某某科技有限公司",
+            LogoUrl = "https://example.com/logo.png"
+        }
+    }
+});
+
+// 极速开发票：获取商户专属抬头链接
+var titleUrl = await client.Invoice.GetSelectTitleUrlAsync(new InvoiceGetSelectTitleUrlRequest
+{
+    BizName = "某某科技"
+});
 
 // 上传临时素材（ReadOnlyMemory 版本）
 ReadOnlyMemory<byte> imageBytes = await File.ReadAllBytesAsync("demo.jpg");

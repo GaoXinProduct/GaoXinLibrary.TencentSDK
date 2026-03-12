@@ -197,6 +197,7 @@ public static class WechatServiceCollectionExtensions
         services.TryAddSingleton<IOfficialMenuService>(sp => sp.GetRequiredService<WechatOfficialClient>().Menu);
         services.TryAddSingleton<IOfficialTemplateMessageService>(sp => sp.GetRequiredService<WechatOfficialClient>().TemplateMessage);
         services.TryAddSingleton<IOfficialUserService>(sp => sp.GetRequiredService<WechatOfficialClient>().User);
+        services.TryAddSingleton<IOfficialQrCodeService>(sp => sp.GetRequiredService<WechatOfficialClient>().QrCode);
         services.TryAddSingleton<IOfficialMaterialService>(sp => sp.GetRequiredService<WechatOfficialClient>().Material);
         services.TryAddSingleton<IOfficialJsSdkService>(sp => sp.GetRequiredService<WechatOfficialClient>().JsSdk);
         services.TryAddSingleton<IOfficialTagService>(sp => sp.GetRequiredService<WechatOfficialClient>().Tag);
@@ -208,6 +209,7 @@ public static class WechatServiceCollectionExtensions
         services.TryAddSingleton<IOfficialDataAnalysisService>(sp => sp.GetRequiredService<WechatOfficialClient>().DataAnalysis);
         services.TryAddSingleton<IOfficialAiService>(sp => sp.GetRequiredService<WechatOfficialClient>().Ai);
         services.TryAddSingleton<IOfficialPoiService>(sp => sp.GetRequiredService<WechatOfficialClient>().Poi);
+        services.TryAddSingleton<IOfficialInvoiceService>(sp => sp.GetRequiredService<WechatOfficialClient>().Invoice);
         services.TryAddSingleton<IOfficialOpenApiService>(sp => sp.GetRequiredService<WechatOfficialClient>().OpenApi);
         services.TryAddSingleton<IOfficialCallbackService>(sp => sp.GetRequiredService<WechatOfficialClient>().Callback);
 
@@ -256,6 +258,7 @@ public static class WechatServiceCollectionExtensions
         services.AddKeyedSingleton<IOfficialMenuService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Menu);
         services.AddKeyedSingleton<IOfficialTemplateMessageService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).TemplateMessage);
         services.AddKeyedSingleton<IOfficialUserService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).User);
+        services.AddKeyedSingleton<IOfficialQrCodeService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).QrCode);
         services.AddKeyedSingleton<IOfficialMaterialService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Material);
         services.AddKeyedSingleton<IOfficialJsSdkService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).JsSdk);
         services.AddKeyedSingleton<IOfficialTagService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Tag);
@@ -267,6 +270,7 @@ public static class WechatServiceCollectionExtensions
         services.AddKeyedSingleton<IOfficialDataAnalysisService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).DataAnalysis);
         services.AddKeyedSingleton<IOfficialAiService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Ai);
         services.AddKeyedSingleton<IOfficialPoiService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Poi);
+        services.AddKeyedSingleton<IOfficialInvoiceService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Invoice);
         services.AddKeyedSingleton<IOfficialOpenApiService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).OpenApi);
         services.AddKeyedSingleton<IOfficialCallbackService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Callback);
 

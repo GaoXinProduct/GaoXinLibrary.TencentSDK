@@ -36,6 +36,9 @@ public sealed class WechatOfficialClient : IDisposable
     /// <summary>用户管理</summary>
     public IOfficialUserService User { get; }
 
+    /// <summary>服务号二维码</summary>
+    public IOfficialQrCodeService QrCode { get; }
+
     /// <summary>素材管理</summary>
     public IOfficialMaterialService Material { get; }
 
@@ -69,6 +72,9 @@ public sealed class WechatOfficialClient : IDisposable
     /// <summary>微信门店</summary>
     public IOfficialPoiService Poi { get; }
 
+    /// <summary>微信发票（商户开票）</summary>
+    public IOfficialInvoiceService Invoice { get; }
+
     /// <summary>OpenAPI 管理</summary>
     public IOfficialOpenApiService OpenApi { get; }
 
@@ -93,6 +99,7 @@ public sealed class WechatOfficialClient : IDisposable
         Menu = new OfficialMenuService(http);
         TemplateMessage = new OfficialTemplateMessageService(http);
         User = new OfficialUserService(http);
+        QrCode = new OfficialQrCodeService(http);
         Material = new OfficialMaterialService(http);
         JsSdk = new OfficialJsSdkService(_ticketProvider, options.AppId);
         Tag = new OfficialTagService(http);
@@ -104,6 +111,7 @@ public sealed class WechatOfficialClient : IDisposable
         DataAnalysis = new OfficialDataAnalysisService(http);
         Ai = new OfficialAiService(http);
         Poi = new OfficialPoiService(http);
+        Invoice = new OfficialInvoiceService(http);
         OpenApi = new OfficialOpenApiService(http, options);
         Callback = new OfficialCallbackService(http, options);
     }

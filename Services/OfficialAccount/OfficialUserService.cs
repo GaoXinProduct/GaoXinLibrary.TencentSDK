@@ -60,6 +60,22 @@ public class OfficialUserService : IOfficialUserService
     public Task<UpdateRemarkResponse> UpdateRemarkAsync(string openId, string remark, CancellationToken ct = default)
         => _http.PostAsync<UpdateRemarkResponse>("/cgi-bin/user/info/updateremark",
             new UpdateRemarkRequest { OpenId = openId, Remark = remark }, ct);
+
+    /// <inheritdoc/>
+    public Task<WechatBaseResponse> BatchBlacklistAsync(BatchBlacklistRequest request, CancellationToken ct = default)
+        => _http.PostAsync<WechatBaseResponse>("/cgi-bin/tags/members/batchblacklist", request, ct);
+
+    /// <inheritdoc/>
+    public Task<WechatBaseResponse> BatchUnblacklistAsync(BatchBlacklistRequest request, CancellationToken ct = default)
+        => _http.PostAsync<WechatBaseResponse>("/cgi-bin/tags/members/batchunblacklist", request, ct);
+
+    /// <inheritdoc/>
+    public Task<UserListResponse> GetBlacklistAsync(GetBlacklistRequest request, CancellationToken ct = default)
+        => _http.PostAsync<UserListResponse>("/cgi-bin/tags/members/getblacklist", request, ct);
+
+    /// <inheritdoc/>
+    public Task<ChangeOpenIdResponse> ChangeOpenIdAsync(ChangeOpenIdRequest request, CancellationToken ct = default)
+        => _http.PostAsync<ChangeOpenIdResponse>("/cgi-bin/changeopenid", request, ct);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

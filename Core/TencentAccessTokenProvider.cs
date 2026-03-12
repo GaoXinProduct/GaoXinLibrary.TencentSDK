@@ -147,6 +147,13 @@ public abstract class TencentAccessTokenProvider
     public void InvalidateCache() => _expireAt = DateTimeOffset.MinValue;
 
     /// <summary>
+    /// 判断错误码是否为 Token 无效/过期相关（40001/40014/42001）
+    /// <para>当 API 返回这些错误码时，应自动失效缓存并重试。</para>
+    /// </summary>
+    public static bool IsTokenInvalidError(int errCode)
+        => errCode is 40001 or 40014 or 42001;
+
+    /// <summary>
     /// 强制刷新 access_token（立即请求新 Token 并更新缓存）
     /// </summary>
     public async Task<string> RefreshTokenAsync(CancellationToken ct = default)

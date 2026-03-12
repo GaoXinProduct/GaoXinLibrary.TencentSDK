@@ -45,18 +45,19 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
     /// <summary>创建平台特定的异常（含错误码）</summary>
     protected TencentException CreateException(int errCode, string errMsg) => new(errCode, errMsg, _platformName);
 
-    // ─── 带 Token 请求 ──────────────────────────────────────────────────
+    // ─── 带 Token 请求（含 Token 失效自动重试） ─────────────────────────
 
-    /// <summary>GET 请求，自动附加 access_token</summary>
+    /// <summary>GET 请求，自动附加 access_token（Token 失效时自动刷新重试一次）</summary>
     public async Task<T> GetAsync<T>(string path, Dictionary<string, string?>? queryParams = null, CancellationToken ct = default)
         where T : TResponse
     {
-        var token = await _tokenProvider.GetTokenAsync(ct);
-        var query = BuildQuery(queryParams, token);
-        var url = $"{_baseUrl}{path}?{query}";
-
-        var json = await _httpClient.GetStringAsync(url, ct);
-        return DeserializeAndValidate<T>(json);
+        return await ExecuteWithTokenRetryAsync(async token =>
+        {
+            var query = BuildQuery(queryParams, token);
+            var url = $"{_baseUrl}{path}?{query}";
+            var json = await _httpClient.GetStringAsync(url, ct);
+            return DeserializeAndValidate<T>(json);
+        }, ct);
     }
 
     /// <summary>POST 请求（JSON body），自动附加 access_token</summary>
@@ -64,19 +65,19 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
         where T : TResponse
         => PostAsync<T>(path, body, null, ct);
 
-    /// <summary>POST 请求（JSON body），自动附加 access_token 及额外查询参数</summary>
+    /// <summary>POST 请求（JSON body），自动附加 access_token 及额外查询参数（Token 失效时自动刷新重试一次）</summary>
     public async Task<T> PostAsync<T>(string path, object body, Dictionary<string, string?>? queryParams, CancellationToken ct = default)
         where T : TResponse
     {
-        var token = await _tokenProvider.GetTokenAsync(ct);
-        var query = BuildQuery(queryParams, token);
-        var url = $"{_baseUrl}{path}?{query}";
-
-        var response = await _httpClient.PostAsync(url, CreateJsonContent(body), ct);
-        response.EnsureSuccessStatusCode();
-        var json = await response.Content.ReadAsStringAsync(ct);
-
-        return DeserializeAndValidate<T>(json);
+        return await ExecuteWithTokenRetryAsync(async token =>
+        {
+            var query = BuildQuery(queryParams, token);
+            var url = $"{_baseUrl}{path}?{query}";
+            var response = await _httpClient.PostAsync(url, CreateJsonContent(body), ct);
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync(ct);
+            return DeserializeAndValidate<T>(json);
+        }, ct);
     }
 
     // ─── 无 Token 请求 ──────────────────────────────────────────────────
@@ -108,84 +109,112 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
         return DeserializeAndValidate<T>(json);
     }
 
-    /// <summary>POST 请求（multipart/form-data），自动附加 access_token 及额外查询参数</summary>
+    /// <summary>POST 请求（multipart/form-data），自动附加 access_token 及额外查询参数（Token 失效时自动刷新重试一次）</summary>
     public async Task<T> PostMultipartAsync<T>(string path, MultipartFormDataContent multipart, Dictionary<string, string?>? queryParams = null, CancellationToken ct = default)
         where T : TResponse
     {
-        var token = await _tokenProvider.GetTokenAsync(ct);
-        var query = BuildQuery(queryParams, token);
-        var url = $"{_baseUrl}{path}?{query}";
+        return await ExecuteWithTokenRetryAsync(async token =>
+        {
+            var query = BuildQuery(queryParams, token);
+            var url = $"{_baseUrl}{path}?{query}";
 
-        // 微信服务器不支持 boundary 带引号，需要去除
-        var boundary = multipart.Headers.ContentType!.Parameters.First(p => p.Name == "boundary");
-        boundary.Value = boundary.Value!.Trim('"');
+            // 微信服务器不支持 boundary 带引号，需要去除
+            var boundary = multipart.Headers.ContentType!.Parameters.First(p => p.Name == "boundary");
+            boundary.Value = boundary.Value!.Trim('"');
 
-        var response = await _httpClient.PostAsync(url, multipart, ct);
-        response.EnsureSuccessStatusCode();
-        var json = await response.Content.ReadAsStringAsync(ct);
+            var response = await _httpClient.PostAsync(url, multipart, ct);
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync(ct);
 
-        return DeserializeAndValidate<T>(json);
+            return DeserializeAndValidate<T>(json);
+        }, ct);
     }
 
-    /// <summary>POST 请求（预构建原始 multipart 体），自动附加 access_token 及额外查询参数</summary>
+    /// <summary>POST 请求（预构建原始 multipart 体），自动附加 access_token 及额外查询参数（Token 失效时自动刷新重试一次）</summary>
     public async Task<T> PostRawFormAsync<T>(string path, ByteArrayContent rawForm, Dictionary<string, string?>? queryParams = null, CancellationToken ct = default)
         where T : TResponse
     {
-        var token = await _tokenProvider.GetTokenAsync(ct);
-        var query = BuildQuery(queryParams, token);
-        var url = $"{_baseUrl}{path}?{query}";
+        return await ExecuteWithTokenRetryAsync(async token =>
+        {
+            var query = BuildQuery(queryParams, token);
+            var url = $"{_baseUrl}{path}?{query}";
 
-        var response = await _httpClient.PostAsync(url, rawForm, ct);
-        response.EnsureSuccessStatusCode();
-        var json = await response.Content.ReadAsStringAsync(ct);
+            var response = await _httpClient.PostAsync(url, rawForm, ct);
+            response.EnsureSuccessStatusCode();
+            var json = await response.Content.ReadAsStringAsync(ct);
 
-        return DeserializeAndValidate<T>(json);
+            return DeserializeAndValidate<T>(json);
+        }, ct);
     }
 
     // ─── 二进制响应 ─────────────────────────────────────────────────────
 
-    /// <summary>GET 请求，返回原始字节流（如获取反馈图片）</summary>
+    /// <summary>GET 请求，返回原始字节流（如获取反馈图片）（Token 失效时自动刷新重试一次）</summary>
     public async Task<byte[]> GetForBytesAsync(string path, Dictionary<string, string?>? queryParams = null, CancellationToken ct = default)
     {
-        var token = await _tokenProvider.GetTokenAsync(ct);
-        var query = BuildQuery(queryParams, token);
-        var url = $"{_baseUrl}{path}?{query}";
-
-        var response = await _httpClient.GetAsync(url, ct);
-        response.EnsureSuccessStatusCode();
-
-        var contentType = response.Content.Headers.ContentType?.MediaType;
-        if (contentType != null && contentType.Contains("json", StringComparison.OrdinalIgnoreCase))
+        return await ExecuteWithTokenRetryAsync(async token =>
         {
-            var json = await response.Content.ReadAsStringAsync(ct);
-            var error = JsonSerializer.Deserialize<TResponse>(json, JsonOptions);
-            if (error is { ErrCode: not 0 })
-                throw CreateException(error.ErrCode, error.ErrMsg ?? "未知错误");
-        }
+            var query = BuildQuery(queryParams, token);
+            var url = $"{_baseUrl}{path}?{query}";
 
-        return await response.Content.ReadAsByteArrayAsync(ct);
+            var response = await _httpClient.GetAsync(url, ct);
+            response.EnsureSuccessStatusCode();
+
+            var contentType = response.Content.Headers.ContentType?.MediaType;
+            if (contentType != null && contentType.Contains("json", StringComparison.OrdinalIgnoreCase))
+            {
+                var json = await response.Content.ReadAsStringAsync(ct);
+                var error = JsonSerializer.Deserialize<TResponse>(json, JsonOptions);
+                if (error is { ErrCode: not 0 })
+                    throw CreateException(error.ErrCode, error.ErrMsg ?? "未知错误");
+            }
+
+            return await response.Content.ReadAsByteArrayAsync(ct);
+        }, ct);
     }
 
-    /// <summary>POST 请求，返回原始字节流（如获取小程序码）</summary>
+    /// <summary>POST 请求，返回原始字节流（如获取小程序码）（Token 失效时自动刷新重试一次）</summary>
     public async Task<byte[]> PostForBytesAsync(string path, object body, CancellationToken ct = default)
     {
-        var token = await _tokenProvider.GetTokenAsync(ct);
-        var url = $"{_baseUrl}{path}?access_token={Uri.EscapeDataString(token)}";
-
-        var response = await _httpClient.PostAsync(url, CreateJsonContent(body), ct);
-        response.EnsureSuccessStatusCode();
-
-        // 如果返回 JSON 则可能是错误
-        var contentType = response.Content.Headers.ContentType?.MediaType;
-        if (contentType != null && contentType.Contains("json", StringComparison.OrdinalIgnoreCase))
+        return await ExecuteWithTokenRetryAsync(async token =>
         {
-            var json = await response.Content.ReadAsStringAsync(ct);
-            var error = JsonSerializer.Deserialize<TResponse>(json, JsonOptions);
-            if (error is { ErrCode: not 0 })
-                throw CreateException(error.ErrCode, error.ErrMsg ?? "未知错误");
-        }
+            var url = $"{_baseUrl}{path}?access_token={Uri.EscapeDataString(token)}";
 
-        return await response.Content.ReadAsByteArrayAsync(ct);
+            var response = await _httpClient.PostAsync(url, CreateJsonContent(body), ct);
+            response.EnsureSuccessStatusCode();
+
+            // 如果返回 JSON 则可能是错误
+            var contentType = response.Content.Headers.ContentType?.MediaType;
+            if (contentType != null && contentType.Contains("json", StringComparison.OrdinalIgnoreCase))
+            {
+                var json = await response.Content.ReadAsStringAsync(ct);
+                var error = JsonSerializer.Deserialize<TResponse>(json, JsonOptions);
+                if (error is { ErrCode: not 0 })
+                    throw CreateException(error.ErrCode, error.ErrMsg ?? "未知错误");
+            }
+
+            return await response.Content.ReadAsByteArrayAsync(ct);
+        }, ct);
+    }
+
+    // ─── Token 失效自动重试 ──────────────────────────────────────────────
+
+    /// <summary>
+    /// 执行带 Token 的请求，当遇到 Token 失效错误（40001/40014/42001）时自动刷新 Token 并重试一次
+    /// </summary>
+    private async Task<T> ExecuteWithTokenRetryAsync<T>(Func<string, Task<T>> action, CancellationToken ct)
+    {
+        var token = await _tokenProvider.GetTokenAsync(ct);
+        try
+        {
+            return await action(token);
+        }
+        catch (TencentException ex) when (TencentAccessTokenProvider.IsTokenInvalidError(ex.ErrCode))
+        {
+            _tokenProvider.InvalidateCache();
+            token = await _tokenProvider.GetTokenAsync(ct);
+            return await action(token);
+        }
     }
 
     // ─── 辅助方法 ───────────────────────────────────────────────────────

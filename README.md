@@ -76,7 +76,7 @@ Install-Package GaoXinLibrary.TencentSDK
 | 自定义菜单 | `Menu` | 创建 / 查询 / 删除自定义菜单 |
 | 模板消息 | `TemplateMessage` | 发送模板消息 |
 | 用户管理 | `User` | 获取用户信息、关注者列表 |
-| 素材管理 | `Material` | 临时 / 永久素材的上传与获取 |
+| 素材管理 | `Material` | 临时 / 永久素材上传、临时素材下载（`byte[]` / `ReadOnlyMemory<byte>`） |
 | JS-SDK | `JsSdk` | JS-SDK jsapi_ticket 自动缓存与共享、签名计算 |
 | 用户标签 | `Tag` | 用户标签的增删改查 |
 | 草稿箱 | `Draft` | 草稿管理 |
@@ -216,6 +216,17 @@ await client.TemplateMessage.SendAsync(new
 
 // JS-SDK 签名
 var jsConfig = await client.JsSdk.GetConfigAsync("https://example.com/page");
+
+// 上传临时素材（ReadOnlyMemory 版本）
+ReadOnlyMemory<byte> imageBytes = await File.ReadAllBytesAsync("demo.jpg");
+var tempUpload = await client.Material.UploadTempMaterialAsync(imageBytes, "demo.jpg", "image");
+
+// 下载临时素材（byte[] / ReadOnlyMemory 两种形式）
+var tempBytes = await client.Material.DownloadTempMaterialBytesAsync(tempUpload.MediaId);
+var tempReadOnly = await client.Material.DownloadTempMaterialReadOnlyAsync(tempUpload.MediaId);
+
+// 新增永久素材（ReadOnlyMemory 版本）
+var permanent = await client.Material.AddPermanentMaterialAsync(imageBytes, "demo.jpg", "image");
 ```
 
 ### 微信开放平台（网站扫码登录）

@@ -44,6 +44,25 @@ public class OfficialMaterialService : IOfficialMaterialService
     }
 
     /// <inheritdoc/>
+    public async Task<UploadMediaResponse> UploadTempMaterialAsync(ReadOnlyMemory<byte> fileBytes, string fileName, string type, CancellationToken ct = default)
+    {
+        using var form = BuildMediaForm(fileName, fileBytes);
+        return await _http.PostRawFormAsync<UploadMediaResponse>(
+            "/cgi-bin/media/upload",
+            form,
+            new Dictionary<string, string?> { ["type"] = type },
+            ct);
+    }
+
+    /// <inheritdoc/>
+    public Task<byte[]> DownloadTempMaterialBytesAsync(string mediaId, CancellationToken ct = default)
+        => _http.GetForBytesAsync("/cgi-bin/media/get", new Dictionary<string, string?> { ["media_id"] = mediaId }, ct);
+
+    /// <inheritdoc/>
+    public async Task<ReadOnlyMemory<byte>> DownloadTempMaterialReadOnlyAsync(string mediaId, CancellationToken ct = default)
+        => await _http.GetForBytesAsync("/cgi-bin/media/get", new Dictionary<string, string?> { ["media_id"] = mediaId }, ct);
+
+    /// <inheritdoc/>
     public async Task<AddMaterialResponse> AddPermanentMaterialAsync(Stream fileStream, string fileName, string type, CancellationToken ct = default)
     {
         using var ms = new MemoryStream();
@@ -56,10 +75,21 @@ public class OfficialMaterialService : IOfficialMaterialService
             ct);
     }
 
+    /// <inheritdoc/>
+    public async Task<AddMaterialResponse> AddPermanentMaterialAsync(ReadOnlyMemory<byte> fileBytes, string fileName, string type, CancellationToken ct = default)
+    {
+        using var form = BuildMediaForm(fileName, fileBytes);
+        return await _http.PostRawFormAsync<AddMaterialResponse>(
+            "/cgi-bin/material/add_material",
+            form,
+            new Dictionary<string, string?> { ["type"] = type },
+            ct);
+    }
+
     // 手动拼接 multipart/form-data 原始字节，完全绕过 .NET 的 MultipartFormDataContent
     // 及其 RFC 5987 filename* 编码，保证发送给微信的字节与文档格式完全一致：
     // Content-Disposition: form-data; name="media"; filename="xxx"
-    private static ByteArrayContent BuildMediaForm(string fileName, byte[] fileData)
+    private static ByteArrayContent BuildMediaForm(string fileName, ReadOnlyMemory<byte> fileData)
     {
         var boundary = Guid.NewGuid().ToString("N");
         var mimeType = GetMimeType(fileName);
@@ -70,9 +100,9 @@ public class OfficialMaterialService : IOfficialMaterialService
         var partFooter = Encoding.UTF8.GetBytes($"\r\n--{boundary}--\r\n");
 
         var body = new byte[partHeader.Length + fileData.Length + partFooter.Length];
-        partHeader.CopyTo(body, 0);
-        fileData.CopyTo(body, partHeader.Length);
-        partFooter.CopyTo(body, partHeader.Length + fileData.Length);
+        partHeader.AsSpan().CopyTo(body.AsSpan());
+        fileData.Span.CopyTo(body.AsSpan(partHeader.Length));
+        partFooter.AsSpan().CopyTo(body.AsSpan(partHeader.Length + fileData.Length));
 
         var content = new ByteArrayContent(body);
         content.Headers.TryAddWithoutValidation("Content-Type", $"multipart/form-data; boundary={boundary}");

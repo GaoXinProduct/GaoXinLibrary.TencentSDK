@@ -23,7 +23,15 @@ public interface IOfficialMaterialService
     Task<BatchGetMaterialResponse> BatchGetAsync(BatchGetMaterialRequest request, CancellationToken ct = default);
     /// <summary>上传临时素材（图片/语音/视频/缩略图）</summary>
     Task<UploadMediaResponse> UploadTempMaterialAsync(Stream fileStream, string fileName, string type, CancellationToken ct = default);
+    /// <summary>上传临时素材（ReadOnlyMemory 版本）</summary>
+    Task<UploadMediaResponse> UploadTempMaterialAsync(ReadOnlyMemory<byte> fileBytes, string fileName, string type, CancellationToken ct = default);
+    /// <summary>下载临时素材字节流</summary>
+    Task<byte[]> DownloadTempMaterialBytesAsync(string mediaId, CancellationToken ct = default);
+    /// <summary>下载临时素材（ReadOnlyMemory 版本）</summary>
+    Task<ReadOnlyMemory<byte>> DownloadTempMaterialReadOnlyAsync(string mediaId, CancellationToken ct = default);
     /// <summary>新增永久素材（图片/语音/视频/缩略图）</summary>
     Task<AddMaterialResponse> AddPermanentMaterialAsync(Stream fileStream, string fileName, string type, CancellationToken ct = default);
+    /// <summary>新增永久素材（ReadOnlyMemory 版本）</summary>
+    Task<AddMaterialResponse> AddPermanentMaterialAsync(ReadOnlyMemory<byte> fileBytes, string fileName, string type, CancellationToken ct = default);
 }
 

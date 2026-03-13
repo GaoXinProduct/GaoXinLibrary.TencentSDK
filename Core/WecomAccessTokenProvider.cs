@@ -13,7 +13,7 @@ public class AccessTokenProvider : TencentAccessTokenProvider
         : base(httpClient, "企业微信")
     {
         _options = options;
-        ConfigureSharedToken(options.ShareSecret, options.TokenShareUrl);
+        ConfigureSharedToken(options.ShareSecret, options.TokenShareUrl, options.SecretShareUrl);
         OnTokenChanged = options.OnTokenChanged;
     }
 

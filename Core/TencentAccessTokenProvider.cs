@@ -15,6 +15,17 @@ namespace GaoXinLibrary.TencentSDK.Core;
 public sealed record SharedTokenResult(string Token, int ExpiresIn);
 
 /// <summary>
+/// 统一共享密钥接口响应结果
+/// <para>
+/// 主服务调用 <see cref="TencentAccessTokenProvider.GetSharedSecretAsync"/> 后，
+/// 将此结果序列化为 JSON 返回给备服务。<br/>
+/// 响应格式：<c>{"data":"BASE64加密数据"}</c>，密文解密后为 <see cref="SharedSecretPayload"/> JSON。
+/// </para>
+/// </summary>
+/// <param name="Data">ChaCha20-Poly1305 加密后的 <see cref="SharedSecretPayload"/> JSON（Base64 格式）</param>
+public sealed record SharedSecretResult(string Data);
+
+/// <summary>
 /// 腾讯平台 access_token 获取与缓存管理基类
 /// <para>
 /// 提供线程安全的 Token 缓存、自动刷新、手动设置等能力。<br/>
@@ -28,6 +39,13 @@ public sealed record SharedTokenResult(string Token, int ExpiresIn);
 ///       <item>同时配置 <c>TokenShareUrl</c> 后，刷新时将从该地址获取加密 Token 并自动解密，而非直接请求腾讯 API。</item>
 ///     </list>
 ///   </item>
+///   <item>通过 <see cref="ConfigureSharedToken(string?, string?, string?)"/> 启用统一共享密钥模式：
+///     <list type="bullet">
+///       <item>配置 <c>SecretShareUrl</c> 后，刷新时将从该地址获取加密的 <see cref="SharedSecretPayload"/> 并自动解密，
+///         Token 自动缓存，其余字段通过 <see cref="OnSecretPayloadReceived"/> 回调分发。</item>
+///       <item>主服务可用 <see cref="GetSharedSecretAsync"/> 对外暴露加密的统一密钥。</item>
+///     </list>
+///   </item>
 /// </list>
 /// </para>
 /// </summary>
@@ -39,15 +57,25 @@ public abstract class TencentAccessTokenProvider
     private DateTimeOffset _expireAt = DateTimeOffset.MinValue;
     private readonly SemaphoreSlim _lock = new(1, 1);
 
-    // ─── 共享 Token ───────────────────────────────────────────────────────────
+    // ─── 共享 Token / 统一共享密钥 ────────────────────────────────────────────
     private byte[]? _shareKey;
     private string? _tokenShareUrl;
+    private string? _secretShareUrl;
 
     /// <summary>
     /// Token 变更通知回调
     /// <para>每次成功刷新 access_token 后触发，第一个参数为新的明文 access_token。</para>
     /// </summary>
     public Func<string, CancellationToken, Task>? OnTokenChanged { get; set; }
+
+    /// <summary>
+    /// 统一共享密钥载荷回调
+    /// <para>
+    /// 当使用 <c>SecretShareUrl</c> 模式时，每次从远端获取并解密 <see cref="SharedSecretPayload"/> 后触发。<br/>
+    /// 上层客户端可通过此回调将 AppId、AppSecret、JsApiTicket 等分发给各子服务。
+    /// </para>
+    /// </summary>
+    public Func<SharedSecretPayload, CancellationToken, Task>? OnSecretPayloadReceived { get; set; }
 
     /// <summary>
     /// 初始化 Token 提供程序
@@ -76,6 +104,24 @@ public abstract class TencentAccessTokenProvider
     }
 
     /// <summary>
+    /// 配置共享 Token 模式（含统一共享密钥）
+    /// <para>
+    /// 子类在构造函数中调用此方法，将 Options 中的 <c>ShareSecret</c>、<c>TokenShareUrl</c>、<c>SecretShareUrl</c> 透传。<br/>
+    /// 当同时设置 <c>SecretShareUrl</c> 与 <c>TokenShareUrl</c> 时，<c>SecretShareUrl</c> 优先。
+    /// </para>
+    /// </summary>
+    /// <param name="shareSecret">共享密钥（任意字符串，SHA-256 派生为 32 字节 key）</param>
+    /// <param name="tokenShareUrl">远端共享 Token 地址</param>
+    /// <param name="secretShareUrl">远端统一共享密钥地址；响应格式 <c>{"data":"BASE64加密数据"}</c></param>
+    protected void ConfigureSharedToken(string? shareSecret, string? tokenShareUrl, string? secretShareUrl)
+    {
+        ConfigureSharedToken(shareSecret, tokenShareUrl);
+
+        if (!string.IsNullOrWhiteSpace(secretShareUrl))
+            _secretShareUrl = secretShareUrl;
+    }
+
+    /// <summary>
     /// 构建获取 access_token 的完整请求 URL（仅在未配置 <c>TokenShareUrl</c> 时使用）
     /// </summary>
     protected abstract string BuildTokenUrl();
@@ -97,7 +143,31 @@ public abstract class TencentAccessTokenProvider
             string newToken;
             int expiresInSeconds;
 
-            if (_tokenShareUrl is not null)
+            if (_secretShareUrl is not null)
+            {
+                // 从远端统一共享密钥地址获取加密载荷
+                if (_shareKey is null)
+                    throw new InvalidOperationException(
+                        "设置了 SecretShareUrl 但未配置 ShareSecret，无法解密统一共享密钥。");
+
+                var response = await _httpClient.GetStringAsync(_secretShareUrl, ct);
+                var envelope = JsonSerializer.Deserialize<SharedSecretEndpointResponse>(response)
+                               ?? throw new TencentException("统一共享密钥接口返回为空");
+
+                if (string.IsNullOrEmpty(envelope.Data))
+                    throw new TencentException("统一共享密钥接口返回的 data 字段为空");
+
+                var payloadJson = TencentTokenCrypto.DecryptWithKey(envelope.Data, _shareKey);
+                var payload = JsonSerializer.Deserialize<SharedSecretPayload>(payloadJson)
+                              ?? throw new TencentException("统一共享密钥解密后载荷为空");
+
+                newToken = payload.AccessToken;
+                expiresInSeconds = payload.TokenExpiresIn > 0 ? payload.TokenExpiresIn : 7200;
+
+                if (OnSecretPayloadReceived is not null)
+                    await OnSecretPayloadReceived(payload, ct);
+            }
+            else if (_tokenShareUrl is not null)
             {
                 // 从远端共享地址获取加密 Token
                 if (_shareKey is null)
@@ -196,6 +266,41 @@ public abstract class TencentAccessTokenProvider
         return new SharedTokenResult(encrypted, remainingSeconds);
     }
 
+    /// <summary>
+    /// 获取统一共享密钥的加密形式（ChaCha20-Poly1305）
+    /// <para>
+    /// 供主服务对外暴露统一共享密钥接口使用，需在 Options 中配置 <c>ShareSecret</c>。<br/>
+    /// 返回的 <see cref="SharedSecretResult.Data"/> 为加密后的 <see cref="SharedSecretPayload"/> JSON，
+    /// 备服务配置 <c>SecretShareUrl</c> 后将自动获取并解密。<br/>
+    /// 调用方需通过 <paramref name="payloadBuilder"/> 提供完整的载荷信息（含 Ticket、AppId、AppSecret 等），
+    /// Token 部分由本方法自动填充。
+    /// </para>
+    /// </summary>
+    /// <param name="payloadBuilder">载荷构建委托，调用方应填充 AppId、AppSecret、JsApiTicket 等字段（Token 和 TokenExpiresIn 由本方法自动设置）</param>
+    /// <param name="ct">取消令牌</param>
+    /// <exception cref="InvalidOperationException">未配置 ShareSecret 时抛出</exception>
+    public async Task<SharedSecretResult> GetSharedSecretAsync(
+        Action<SharedSecretPayload> payloadBuilder,
+        CancellationToken ct = default)
+    {
+        if (_shareKey is null)
+            throw new InvalidOperationException("未配置 ShareSecret，无法获取统一共享密钥。");
+
+        var token = await GetTokenAsync(ct);
+        var remainingSeconds = Math.Max(0, (int)(_expireAt - DateTimeOffset.UtcNow).TotalSeconds);
+
+        var payload = new SharedSecretPayload
+        {
+            AccessToken = token,
+            TokenExpiresIn = remainingSeconds
+        };
+        payloadBuilder(payload);
+
+        var json = JsonSerializer.Serialize(payload);
+        var encrypted = TencentTokenCrypto.EncryptWithKey(json, _shareKey);
+        return new SharedSecretResult(encrypted);
+    }
+
     // ─── 私有响应模型 ─────────────────────────────────────────────────────────
 
     private sealed class AccessTokenResponse
@@ -210,5 +315,10 @@ public abstract class TencentAccessTokenProvider
     {
         [JsonPropertyName("token")] public string? Token { get; set; }
         [JsonPropertyName("expires_in")] public int ExpiresIn { get; set; }
+    }
+
+    private sealed class SharedSecretEndpointResponse
+    {
+        [JsonPropertyName("data")] public string? Data { get; set; }
     }
 }

@@ -11,19 +11,16 @@ public class JsSdkService : IJsSdkService
 {
     private readonly WecomTicketProvider _jsApiTicketProvider;
     private readonly WecomTicketProvider _agentTicketProvider;
-    private readonly string _corpId;
-    private readonly int _agentId;
+    private readonly WecomOptions _options;
 
     public JsSdkService(
         WecomTicketProvider jsApiTicketProvider,
         WecomTicketProvider agentTicketProvider,
-        string corpId,
-        int agentId)
+        WecomOptions options)
     {
         _jsApiTicketProvider = jsApiTicketProvider;
         _agentTicketProvider = agentTicketProvider;
-        _corpId = corpId;
-        _agentId = agentId;
+        _options = options;
     }
 
     // ─── 企业级 jsapi_ticket ──────────────────────────────────────────────
@@ -79,7 +76,7 @@ public class JsSdkService : IJsSdkService
 
         return new JsSdkSignature
         {
-            CorpId = _corpId,
+            CorpId = _options.CorpId,
             Timestamp = timestamp,
             NonceStr = nonceStr,
             Signature = signature
@@ -95,8 +92,8 @@ public class JsSdkService : IJsSdkService
 
         return new AgentJsSdkSignature
         {
-            CorpId = _corpId,
-            AgentId = _agentId,
+            CorpId = _options.CorpId,
+            AgentId = _options.AgentId,
             Timestamp = timestamp,
             NonceStr = nonceStr,
             Signature = signature

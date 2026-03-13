@@ -96,13 +96,33 @@ public sealed class WechatOfficialClient : IDisposable
         _ticketProvider.ConfigureSharedTicket(options.TicketShareSecret, options.TicketShareUrl);
         _ticketProvider.OnTicketChanged = options.OnTicketChanged;
 
+        // 统一共享密钥模式：收到解密载荷后分发 Ticket、AppId、AppSecret 到各子服务
+        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
+        {
+            _tokenProvider.OnSecretPayloadReceived = (payload, _) =>
+            {
+                // 将 AppId / AppSecret 回写到 Options，供 OAuth 等服务动态读取
+                if (!string.IsNullOrEmpty(payload.AppId))
+                    options.AppId = payload.AppId;
+                if (!string.IsNullOrEmpty(payload.AppSecret))
+                    options.AppSecret = payload.AppSecret;
+
+                // 将 Ticket 分发给 TicketProvider
+                if (!string.IsNullOrEmpty(payload.JsApiTicket))
+                    _ticketProvider.SetTicket(payload.JsApiTicket,
+                        TimeSpan.FromSeconds(payload.TicketExpiresIn > 0 ? payload.TicketExpiresIn : 7200));
+
+                return Task.CompletedTask;
+            };
+        }
+
         OAuth = new OfficialOAuthService(http, options);
         Menu = new OfficialMenuService(http);
         TemplateMessage = new OfficialTemplateMessageService(http);
         User = new OfficialUserService(http);
         QrCode = new OfficialQrCodeService(http);
         Material = new OfficialMaterialService(http);
-        JsSdk = new OfficialJsSdkService(_ticketProvider, options.AppId);
+        JsSdk = new OfficialJsSdkService(_ticketProvider, options);
         Tag = new OfficialTagService(http);
         Draft = new OfficialDraftService(http);
         Publish = new OfficialPublishService(http);
@@ -167,6 +187,29 @@ public sealed class WechatOfficialClient : IDisposable
     public Task<SharedTokenResult> GetSharedAccessTokenAsync(CancellationToken ct = default)
         => _tokenProvider.GetSharedTokenAsync(ct);
 
+    /// <summary>
+    /// 获取统一共享密钥的加密形式（ChaCha20-Poly1305）
+    /// <para>
+    /// 用于主服务对外暴露单一共享接口，需在 Options 中配置 <c>ShareSecret</c>。<br/>
+    /// 返回的 <see cref="SharedSecretResult.Data"/> 包含加密后的 <see cref="SharedSecretPayload"/>（access_token、jsapi_ticket、AppId、AppSecret 等）。<br/>
+    /// 备服务配置 <c>SecretShareUrl</c> + <c>ShareSecret</c> 后将自动获取解密并分发给各子服务，无需配置 AppId / AppSecret。
+    /// </para>
+    /// </summary>
+    public async Task<SharedSecretResult> GetSharedSecretAsync(CancellationToken ct = default)
+    {
+        // 确保 ticket 已初始化
+        var ticket = await GetTicketAsync(ct);
+        var ticketRemaining = _ticketProvider.GetRemainingSeconds();
+
+        return await _tokenProvider.GetSharedSecretAsync(payload =>
+        {
+            payload.AppId = Options.AppId;
+            payload.AppSecret = Options.AppSecret;
+            payload.JsApiTicket = ticket;
+            payload.TicketExpiresIn = ticketRemaining;
+        }, ct);
+    }
+
     // ─── jsapi_ticket 管理 ─────────────────────────────────────────────────
 
     /// <summary>使 jsapi_ticket 缓存失效（下次 GetTicketAsync 时自动重新获取）</summary>
@@ -200,11 +243,18 @@ public sealed class WechatOfficialClient : IDisposable
     private static void ValidateOptions(WechatOfficialOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
-        if (string.IsNullOrWhiteSpace(options.AppId)) throw new ArgumentException("AppId 不能为空", nameof(options));
+
+        // 统一共享密钥模式：仅需 ShareSecret + SecretShareUrl，AppId/AppSecret 将由远端载荷提供
+        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl) && !string.IsNullOrWhiteSpace(options.ShareSecret))
+            return;
+
+        if (string.IsNullOrWhiteSpace(options.AppId))
+            throw new ArgumentException("AppId 不能为空（或配置 SecretShareUrl + ShareSecret 使用统一共享密钥模式）", nameof(options));
+
         if (string.IsNullOrWhiteSpace(options.AppSecret) &&
             (string.IsNullOrWhiteSpace(options.ShareSecret) || string.IsNullOrWhiteSpace(options.TokenShareUrl)))
         {
-            throw new ArgumentException("AppSecret 不能为空，或者需要同时配置 ShareSecret 和 TokenShareUrl", nameof(options));
+            throw new ArgumentException("AppSecret 不能为空，或者需要同时配置 ShareSecret 和 TokenShareUrl（或使用 SecretShareUrl 统一共享密钥模式）", nameof(options));
         }
     }
 

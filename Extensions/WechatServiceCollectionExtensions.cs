@@ -1,4 +1,4 @@
-﻿using GaoXinLibrary.TencentSDK.Core;
+using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Services;
 using Microsoft.Extensions.Configuration;
@@ -600,12 +600,17 @@ public static class WechatServiceCollectionExtensions
     private static void ValidateOptions(WechatOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
+
+        // 统一共享密钥模式：仅需 ShareSecret + SecretShareUrl
+        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl) && !string.IsNullOrWhiteSpace(options.ShareSecret))
+            return;
+
         if (string.IsNullOrWhiteSpace(options.AppId))
-            throw new ArgumentException("WechatOptions.AppId 不能为空", nameof(options));
+            throw new ArgumentException("WechatOptions.AppId 不能为空（或配置 SecretShareUrl + ShareSecret 使用统一共享密钥模式）", nameof(options));
         if (string.IsNullOrWhiteSpace(options.AppSecret) &&
             (string.IsNullOrWhiteSpace(options.ShareSecret) || string.IsNullOrWhiteSpace(options.TokenShareUrl)))
         {
-            throw new ArgumentException("WechatOptions.AppSecret 不能为空，或者需要同时配置 ShareSecret 和 TokenShareUrl", nameof(options));
+            throw new ArgumentException("WechatOptions.AppSecret 不能为空，或者需要同时配置 ShareSecret 和 TokenShareUrl（或使用 SecretShareUrl 统一共享密钥模式）", nameof(options));
         }
     }
 }

@@ -124,6 +124,9 @@ public class WecomTicketProvider
     /// <summary>使缓存失效（下次 GetTicketAsync 时自动重新获取）</summary>
     public void InvalidateCache() => _expireAt = DateTimeOffset.MinValue;
 
+    /// <summary>获取当前 jsapi_ticket 的剩余有效秒数</summary>
+    public int GetRemainingSeconds() => Math.Max(0, (int)(_expireAt - DateTimeOffset.UtcNow).TotalSeconds);
+
     /// <summary>
     /// 强制刷新 jsapi_ticket（立即请求新 Ticket 并更新缓存）
     /// </summary>

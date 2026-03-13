@@ -675,6 +675,7 @@ builder.Services.AddWechatMiniProgramService("appB", config.GetSection("MiniProg
 | `HttpTimeout` | `TimeSpan` | 30 秒 | HTTP 请求超时时间 |
 | `ShareSecret` | `string?` | — | 共享 Token 密钥（ChaCha20-Poly1305，详见[跨服务共享 Token](#-跨服务共享-token)） |
 | `TokenShareUrl` | `string?` | — | 远端共享 Token 地址；设置后从此地址拉取加密 Token，而非直接请求微信 API |
+| `SecretShareUrl` | `string?` | — | 统一共享密钥远端地址；详见[统一共享密钥](#-统一共享密钥unified-sharedsecret) |
 | `OnTokenChanged` | `Func<string, CancellationToken, Task>?` | — | Token 刷新成功后的变更通知回调，参数为新的明文 access_token |
 | `RetryOptions` | `TencentRetryOptions` | `new()` | 瞬态故障重试配置（网络抖动、超时、5xx），详见[瞬态故障自动重试](#-瞬态故障自动重试) |
 
@@ -707,6 +708,7 @@ builder.Services.AddWechatMiniProgramService("appB", config.GetSection("MiniProg
 | `MsgAuditPrivateKey` | `string?` | — | 会话内容存档 RSA 私钥（PEM 格式） |
 | `ShareSecret` | `string?` | — | 共享 Token 密钥（ChaCha20-Poly1305，详见[跨服务共享 Token](#-跨服务共享-token)） |
 | `TokenShareUrl` | `string?` | — | 远端共享 Token 地址；设置后从此地址拉取加密 Token，而非直接请求企业微信 API |
+| `SecretShareUrl` | `string?` | — | 统一共享密钥远端地址；详见[统一共享密钥](#-统一共享密钥unified-sharedsecret) |
 | `OnTokenChanged` | `Func<string, CancellationToken, Task>?` | — | Token 刷新成功后的变更通知回调，参数为新的明文 access_token |
 | `JsApiTicketShareSecret` | `string?` | — | 企业级 jsapi_ticket 共享密钥（ChaCha20-Poly1305） |
 | `JsApiTicketShareUrl` | `string?` | — | 企业级 jsapi_ticket 共享远端地址 |
@@ -786,6 +788,7 @@ GaoXinLibrary.TencentSDK/
 │   ├── TencentException.cs                #   异常基类
 │   ├── TencentAccessTokenProvider.cs      #   access_token 管理基类（缓存 / 刷新 / 手动设置 / 共享 Token）
 │   ├── TencentTokenCrypto.cs              #   共享 Token 加解密工具（ChaCha20-Poly1305）
+│   ├── SharedSecretPayload.cs             #   统一共享密钥载荷（access_token + tickets + 凭证信息）
 │   ├── TencentHttpClient.cs               #   HTTP 客户端基类（Get / Post / 反序列化 / 瞬态重试）
 │   ├── TencentRetryOptions.cs             #   瞬态故障重试配置（指数退避）
 │   ├── TencentCryptoHelper.cs             #   消息加解密基类（AES-256-CBC / SHA1 签名）
@@ -1120,6 +1123,94 @@ builder.Services.AddWecomService(opt =>
     opt.AgentTicketShareUrl    = "https://main-server/internal/wecom/agent-ticket";
 });
 ```
+
+### 统一共享密钥（Unified SharedSecret）
+
+> 🆕 **推荐方案** — 相比逐个共享 Token / Ticket 接口，统一共享密钥仅需**一个接口**即可同步所有敏感信息。
+
+多台服务器部署时，备服务器**无需配置 AppSecret / CorpSecret**，只需一个 `SecretShareUrl` 即可从主服务器拉取加密的完整密钥载荷，自动获得 access_token、jsapi_ticket、AppId / CorpId 等所有敏感信息。
+
+载荷格式：`{"data":"BASE64加密数据"}`，密文解密后为 `SharedSecretPayload` JSON，包含：
+
+| 字段 | 说明 | 微信 | 企业微信 |
+|------|------|:----:|:-------:|
+| `access_token` | 访问令牌 | ✅ | ✅ |
+| `token_expires_in` | Token 剩余有效秒数 | ✅ | ✅ |
+| `jsapi_ticket` | JS-SDK Ticket | ✅ | ✅（企业级） |
+| `ticket_expires_in` | Ticket 剩余有效秒数 | ✅ | ✅ |
+| `app_id` | 应用 ID | ✅ | — |
+| `app_secret` | 应用密钥 | ✅ | — |
+| `corp_id` | 企业 ID | — | ✅ |
+| `corp_secret` | 应用凭证密钥 | — | ✅ |
+| `agent_id` | 应用 AgentId | — | ✅ |
+| `agent_ticket` | 应用级 jsapi_ticket | — | ✅ |
+| `agent_ticket_expires_in` | 应用级 Ticket 剩余秒数 | — | ✅ |
+
+#### 微信公众号 — 统一共享密钥
+
+```csharp
+// ─── 主服务器（持有 AppSecret） ──────────────────────────────────────
+builder.Services.AddWechatOfficialService(opt =>
+{
+    opt.AppId     = "official_appid";
+    opt.AppSecret = "official_secret";
+    opt.ShareSecret = "any-strong-shared-secret"; // 与备服务器约定
+});
+
+// Controller — 对外暴露统一共享密钥接口（建议加鉴权）
+[HttpGet("/internal/official/secret")]
+public async Task<IActionResult> GetSharedSecret([FromServices] WechatOfficialClient client)
+{
+    var result = await client.GetSharedSecretAsync();
+    // result.Data — 加密后的完整载荷（含 Token、Ticket、AppId、AppSecret）
+    return Ok(new { data = result.Data });
+}
+
+// ─── 备服务器（无 AppId/AppSecret） ──────────────────────────────────
+builder.Services.AddWechatOfficialService(opt =>
+{
+    // 不需要配置 AppId、AppSecret
+    opt.ShareSecret   = "any-strong-shared-secret";                          // 与主服务器一致
+    opt.SecretShareUrl = "https://main-server/internal/official/secret";     // 主服务器统一密钥接口
+});
+// SDK 自动从主服务器获取并解密，AppId/AppSecret/Token/Ticket 全部自动分发
+```
+
+#### 企业微信 — 统一共享密钥
+
+```csharp
+// ─── 主服务器（持有 CorpSecret） ──────────────────────────────────────
+builder.Services.AddWecomService(opt =>
+{
+    opt.CorpId     = "your_corpid";
+    opt.CorpSecret = "your_corpsecret";
+    opt.AgentId    = 1000001;
+    opt.ShareSecret = "any-strong-shared-secret"; // 与备服务器约定
+});
+
+// Controller — 对外暴露统一共享密钥接口（建议加鉴权）
+[HttpGet("/internal/wecom/secret")]
+public async Task<IActionResult> GetSharedSecret([FromServices] WecomClient client)
+{
+    var result = await client.GetSharedSecretAsync();
+    // result.Data — 加密后的完整载荷（含 Token、企业级 Ticket、应用级 Ticket、CorpId、CorpSecret、AgentId）
+    return Ok(new { data = result.Data });
+}
+
+// ─── 备服务器（无 CorpId/CorpSecret） ──────────────────────────────────
+builder.Services.AddWecomService(opt =>
+{
+    // 不需要配置 CorpId、CorpSecret、AgentId
+    opt.ShareSecret   = "any-strong-shared-secret";                       // 与主服务器一致
+    opt.SecretShareUrl = "https://main-server/internal/wecom/secret";     // 主服务器统一密钥接口
+});
+// SDK 自动从主服务器获取并解密：
+// - access_token 自动缓存
+// - 企业级/应用级 jsapi_ticket 自动分发给 TicketProvider
+// - CorpId / CorpSecret / AgentId 自动回写到 Options，OAuth / JsSdk 等服务动态读取
+```
+
+> 💡 **统一共享密钥 vs 逐项共享**：统一共享密钥（`SecretShareUrl`）将所有敏感信息打包在一个请求中返回，备服务器只需调用一个接口；而逐项共享（`TokenShareUrl` + `TicketShareUrl` + `AgentTicketShareUrl`）需要分别配置和调用多个接口。当 `SecretShareUrl` 与 `TokenShareUrl` 同时设置时，`SecretShareUrl` **优先**。
 
 #### 手动管理 jsapi_ticket
 

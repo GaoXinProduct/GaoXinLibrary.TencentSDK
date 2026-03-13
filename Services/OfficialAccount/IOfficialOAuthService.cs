@@ -1,7 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
-using GaoXinLibrary.TencentSDK.Core;
-using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;

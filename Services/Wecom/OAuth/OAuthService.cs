@@ -7,30 +7,27 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 public class OAuthService : IOAuthService
 {
     private readonly WecomHttpClient _http;
-    private readonly string _corpId;
-    private readonly int _defaultAgentId;
+    private readonly WecomOptions _options;
 
     /// <summary>
     /// 初始化 <see cref="OAuthService"/>
     /// </summary>
     /// <param name="http">HTTP 封装客户端</param>
-    /// <param name="corpId">企业 CorpId</param>
-    /// <param name="defaultAgentId">默认应用 AgentId</param>
-    public OAuthService(WecomHttpClient http, string corpId, int defaultAgentId)
+    /// <param name="options">企业微信配置</param>
+    public OAuthService(WecomHttpClient http, WecomOptions options)
     {
         _http = http;
-        _corpId = corpId;
-        _defaultAgentId = defaultAgentId;
+        _options = options;
     }
 
     /// <inheritdoc/>
     public string BuildAuthUrl(string redirectUri, int agentId = 0, string scope = OAuthScope.Base, string state = "")
     {
-        var effectiveAgentId = agentId > 0 ? agentId : _defaultAgentId;
+        var effectiveAgentId = agentId > 0 ? agentId : _options.AgentId;
         var encodedUri = Uri.EscapeDataString(redirectUri);
         var encodedState = Uri.EscapeDataString(state);
         return $"https://open.weixin.qq.com/connect/oauth2/authorize" +
-               $"?appid={_corpId}" +
+               $"?appid={_options.CorpId}" +
                $"&redirect_uri={encodedUri}" +
                $"&response_type=code" +
                $"&scope={scope}" +
@@ -42,12 +39,12 @@ public class OAuthService : IOAuthService
     /// <inheritdoc/>
     public string BuildWebLoginUrl(string redirectUri, int agentId = 0, string state = "", string loginType = "CorpApp")
     {
-        var effectiveAgentId = agentId > 0 ? agentId : _defaultAgentId;
+        var effectiveAgentId = agentId > 0 ? agentId : _options.AgentId;
         var encodedUri = Uri.EscapeDataString(redirectUri);
         var encodedState = Uri.EscapeDataString(state);
         return $"https://login.work.weixin.qq.com/wwlogin/sso/login" +
                $"?login_type={loginType}" +
-               $"&appid={_corpId}" +
+               $"&appid={_options.CorpId}" +
                $"&agentid={effectiveAgentId}" +
                $"&redirect_uri={encodedUri}" +
                $"&state={encodedState}";

@@ -41,6 +41,17 @@ public class WechatOptions
     public string? TokenShareUrl { get; set; }
 
     /// <summary>
+    /// 统一共享密钥远端地址
+    /// <para>
+    /// 设置后将从此地址（HTTP GET）获取加密的 <see cref="SharedSecretPayload"/>，而非直接向微信 API 请求。<br/>
+    /// 远端响应格式：<c>{"data":"BASE64加密数据"}</c>，密文解密后为包含 access_token、jsapi_ticket、AppId、AppSecret 等全部敏感信息的 JSON。<br/>
+    /// 需与 <see cref="ShareSecret"/> 配合使用。设置此项后无需配置 <see cref="WechatOptions.AppId"/>、
+    /// <see cref="WechatOptions.AppSecret"/>、<see cref="TokenShareUrl"/>。
+    /// </para>
+    /// </summary>
+    public string? SecretShareUrl { get; set; }
+
+    /// <summary>
     /// Token 变更通知回调
     /// <para>每次成功刷新 access_token 后触发，参数为新的明文 access_token 及 CancellationToken。</para>
     /// </summary>

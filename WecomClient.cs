@@ -183,7 +183,7 @@ public sealed class WecomClient : IDisposable
         Menu = agentSvc;
         Media = new MediaService(_http, _tokenProvider, httpClient, options.BaseUrl);
         GroupChat = new GroupChatService(_http);
-        OAuth = new OAuthService(_http, options.CorpId, options.AgentId);
+        OAuth = new OAuthService(_http, options);
         Callback = new CallbackService(_http, options);
         SmartRobot = new SmartRobotService(_http, options);
         CorpGroup = new CorpGroupService(_http);
@@ -213,7 +213,34 @@ public sealed class WecomClient : IDisposable
         _agentTicketProvider.ConfigureSharedTicket(options.AgentTicketShareSecret, options.AgentTicketShareUrl);
         _agentTicketProvider.OnTicketChanged = options.OnAgentTicketChanged;
 
-        JsSdk = new JsSdkService(_jsApiTicketProvider, _agentTicketProvider, options.CorpId, options.AgentId);
+        // 统一共享密钥模式：收到解密载荷后分发 CorpId / CorpSecret / AgentId / Tickets 到各子服务
+        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
+        {
+            _tokenProvider.OnSecretPayloadReceived = (payload, _) =>
+            {
+                // 将 CorpId / CorpSecret / AgentId 回写到 Options，供 OAuth / JsSdk 等服务动态读取
+                if (!string.IsNullOrEmpty(payload.CorpId))
+                    options.CorpId = payload.CorpId;
+                if (!string.IsNullOrEmpty(payload.CorpSecret))
+                    options.CorpSecret = payload.CorpSecret;
+                if (payload.AgentId.HasValue)
+                    options.AgentId = payload.AgentId.Value;
+
+                // 将企业级 jsapi_ticket 分发给 TicketProvider
+                if (!string.IsNullOrEmpty(payload.JsApiTicket))
+                    _jsApiTicketProvider.SetTicket(payload.JsApiTicket,
+                        TimeSpan.FromSeconds(payload.TicketExpiresIn > 0 ? payload.TicketExpiresIn : 7200));
+
+                // 将应用级 agent_ticket 分发给 TicketProvider
+                if (!string.IsNullOrEmpty(payload.AgentTicket))
+                    _agentTicketProvider.SetTicket(payload.AgentTicket,
+                        TimeSpan.FromSeconds(payload.AgentTicketExpiresIn > 0 ? payload.AgentTicketExpiresIn : 7200));
+
+                return Task.CompletedTask;
+            };
+        }
+
+        JsSdk = new JsSdkService(_jsApiTicketProvider, _agentTicketProvider, options);
         Checkin = new CheckinService(_http);
         Approval = new ApprovalService(_http);
         Export = new ExportService(_http);
@@ -251,11 +278,21 @@ public sealed class WecomClient : IDisposable
     public static WecomClient Create(WecomOptions options, ILogger? logger = null)
     {
         ArgumentNullException.ThrowIfNull(options);
-        if (string.IsNullOrWhiteSpace(options.CorpId)) throw new ArgumentException("CorpId 不能为空", nameof(options));
-        if (string.IsNullOrWhiteSpace(options.CorpSecret) &&
-            (string.IsNullOrWhiteSpace(options.ShareSecret) || string.IsNullOrWhiteSpace(options.TokenShareUrl)))
+
+        // 统一共享密钥模式：仅需 ShareSecret + SecretShareUrl，CorpId/CorpSecret 将由远端载荷提供
+        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl) && !string.IsNullOrWhiteSpace(options.ShareSecret))
         {
-            throw new ArgumentException("CorpSecret 不能为空，或者需要同时配置 ShareSecret 和 TokenShareUrl", nameof(options));
+            // SecretShareUrl 模式下 CorpId 和 CorpSecret 可选
+        }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(options.CorpId))
+                throw new ArgumentException("CorpId 不能为空（或配置 SecretShareUrl + ShareSecret 使用统一共享密钥模式）", nameof(options));
+            if (string.IsNullOrWhiteSpace(options.CorpSecret) &&
+                (string.IsNullOrWhiteSpace(options.ShareSecret) || string.IsNullOrWhiteSpace(options.TokenShareUrl)))
+            {
+                throw new ArgumentException("CorpSecret 不能为空，或者需要同时配置 ShareSecret 和 TokenShareUrl（或使用 SecretShareUrl 统一共享密钥模式）", nameof(options));
+            }
         }
 
         var httpClient = new HttpClient { Timeout = options.HttpTimeout };
@@ -323,6 +360,34 @@ public sealed class WecomClient : IDisposable
     /// </remarks>
     public Task<SharedTokenResult> GetSharedAccessTokenAsync(CancellationToken ct = default)
         => _tokenProvider.GetSharedTokenAsync(ct);
+
+    /// <summary>
+    /// 获取统一共享密钥的加密形式（ChaCha20-Poly1305）
+    /// <para>
+    /// 用于主服务对外暴露单一共享接口，需在 Options 中配置 <c>ShareSecret</c>。<br/>
+    /// 返回的 <see cref="SharedSecretResult.Data"/> 包含加密后的 <see cref="SharedSecretPayload"/>（access_token、jsapi_ticket、agent_ticket、CorpId、CorpSecret、AgentId 等）。<br/>
+    /// 备服务配置 <c>SecretShareUrl</c> + <c>ShareSecret</c> 后将自动获取解密并分发给各子服务，无需配置 CorpSecret。
+    /// </para>
+    /// </summary>
+    public async Task<SharedSecretResult> GetSharedSecretAsync(CancellationToken ct = default)
+    {
+        // 确保两个 ticket 已初始化
+        var jsApiTicket = await GetJsApiTicketAsync(ct);
+        var jsApiTicketRemaining = _jsApiTicketProvider.GetRemainingSeconds();
+        var agentTicket = await GetAgentTicketAsync(ct);
+        var agentTicketRemaining = _agentTicketProvider.GetRemainingSeconds();
+
+        return await _tokenProvider.GetSharedSecretAsync(payload =>
+        {
+            payload.CorpId = Options.CorpId;
+            payload.CorpSecret = Options.CorpSecret;
+            payload.AgentId = Options.AgentId;
+            payload.JsApiTicket = jsApiTicket;
+            payload.TicketExpiresIn = jsApiTicketRemaining;
+            payload.AgentTicket = agentTicket;
+            payload.AgentTicketExpiresIn = agentTicketRemaining;
+        }, ct);
+    }
 
     // ─── 企业级 jsapi_ticket 管理 ──────────────────────────────────────────
 

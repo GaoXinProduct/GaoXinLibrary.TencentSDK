@@ -10,12 +10,12 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 public class OfficialJsSdkService : IOfficialJsSdkService
 {
     private readonly JsApiTicketProvider _ticketProvider;
-    private readonly string _appId;
+    private readonly WechatOptions _options;
 
-    public OfficialJsSdkService(JsApiTicketProvider ticketProvider, string appId)
+    public OfficialJsSdkService(JsApiTicketProvider ticketProvider, WechatOptions options)
     {
         _ticketProvider = ticketProvider;
-        _appId = appId;
+        _options = options;
     }
 
     /// <inheritdoc/>
@@ -48,7 +48,7 @@ public class OfficialJsSdkService : IOfficialJsSdkService
 
         return new JsSdkSignature
         {
-            AppId = _appId,
+            AppId = _options.AppId,
             Timestamp = timestamp,
             NonceStr = nonceStr,
             Signature = signature

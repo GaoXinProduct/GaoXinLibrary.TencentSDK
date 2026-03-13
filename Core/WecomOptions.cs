@@ -66,6 +66,18 @@ public class WecomOptions
     public string? TokenShareUrl { get; set; }
 
     /// <summary>
+    /// 统一共享密钥远端地址
+    /// <para>
+    /// 设置后将从此地址（HTTP GET）获取加密的 <see cref="SharedSecretPayload"/>，
+    /// 备服务器自动解密后获得 access_token、jsapi_ticket（企业级+应用级）、CorpId、CorpSecret、AgentId 等所有敏感信息，
+    /// 无需在配置中存储 CorpSecret。<br/>
+    /// 远端响应格式：<c>{"data":"BASE64加密数据"}</c>，需与 <see cref="ShareSecret"/> 配合使用。<br/>
+    /// 当同时设置 <c>SecretShareUrl</c> 与 <c>TokenShareUrl</c> 时，<c>SecretShareUrl</c> 优先。
+    /// </para>
+    /// </summary>
+    public string? SecretShareUrl { get; set; }
+
+    /// <summary>
     /// Token 变更通知回调
     /// <para>每次成功刷新 access_token 后触发，参数为新的明文 access_token 及 CancellationToken。</para>
     /// </summary>

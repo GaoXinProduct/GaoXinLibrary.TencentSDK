@@ -6,5 +6,5 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 public interface IDialService
 {
     /// <summary>获取公费电话拨打记录</summary>
-    Task<DialRecord[]> GetDialRecordAsync(long startTime, long endTime, int offset = 0, int limit = 100, CancellationToken ct = default);
+    Task<DialRecord[]> GetDialRecordAsync(GetDialRecordRequest request, CancellationToken ct = default);
 }

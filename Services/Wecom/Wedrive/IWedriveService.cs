@@ -6,29 +6,29 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 public interface IWedriveService
 {
     /// <summary>新建空间</summary>
-    Task<string?> CreateSpaceAsync(string spaceName, string[] adminUserIds, CancellationToken ct = default);
+    Task<string?> CreateSpaceAsync(CreateSpaceRequest request, CancellationToken ct = default);
 
     /// <summary>重命名空间</summary>
-    Task RenameSpaceAsync(string spaceId, string spaceName, CancellationToken ct = default);
+    Task RenameSpaceAsync(RenameSpaceRequest request, CancellationToken ct = default);
 
     /// <summary>解散空间</summary>
-    Task DismissSpaceAsync(string spaceId, CancellationToken ct = default);
+    Task DismissSpaceAsync(SpaceIdRequest request, CancellationToken ct = default);
 
     /// <summary>获取空间信息</summary>
-    Task<SpaceInfo?> GetSpaceInfoAsync(string spaceId, CancellationToken ct = default);
+    Task<SpaceInfo?> GetSpaceInfoAsync(SpaceIdRequest request, CancellationToken ct = default);
 
     /// <summary>获取文件列表</summary>
-    Task<GetFileListResponse> GetFileListAsync(string spaceId, string fatherId, int sortType = 1, int start = 0, int limit = 100, CancellationToken ct = default);
+    Task<GetFileListResponse> GetFileListAsync(GetFileListRequest request, CancellationToken ct = default);
 
     /// <summary>新建文件夹/文档</summary>
-    Task<CreateFileResponse> CreateFileAsync(string spaceId, string fatherId, int fileType, string fileName, CancellationToken ct = default);
+    Task<CreateFileResponse> CreateFileAsync(CreateFileRequest request, CancellationToken ct = default);
 
     /// <summary>重命名文件</summary>
-    Task RenameFileAsync(string fileId, string newName, CancellationToken ct = default);
+    Task RenameFileAsync(RenameFileRequest request, CancellationToken ct = default);
 
     /// <summary>删除文件</summary>
-    Task DeleteFileAsync(string[] fileIds, CancellationToken ct = default);
+    Task DeleteFileAsync(DeleteFileRequest request, CancellationToken ct = default);
 
     /// <summary>移动文件</summary>
-    Task MoveFileAsync(string[] fileIds, string fatherId, CancellationToken ct = default);
+    Task MoveFileAsync(MoveFileRequest request, CancellationToken ct = default);
 }

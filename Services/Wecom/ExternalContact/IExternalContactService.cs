@@ -15,17 +15,17 @@ public interface IExternalContactService
     Task<GetExternalContactResponse> GetExternalContactAsync(string externalUserId, string? cursor = null, CancellationToken ct = default);
 
     /// <summary>批量获取客户详情</summary>
-    Task<BatchGetExternalContactResponse> BatchGetExternalContactAsync(string[] userIdList, string? cursor = null, int limit = 100, CancellationToken ct = default);
+    Task<BatchGetExternalContactResponse> BatchGetExternalContactAsync(BatchGetByUserRequest request, CancellationToken ct = default);
 
     /// <summary>修改客户备注信息</summary>
-    Task UpdateRemarkAsync(string userId, string externalUserId, string? remark = null, string? description = null, CancellationToken ct = default);
+    Task UpdateRemarkAsync(UpdateRemarkRequest request, CancellationToken ct = default);
 
     /// <summary>获取客户群列表</summary>
-    Task<GetGroupChatListResponse> GetGroupChatListAsync(int statusFilter = 0, string? cursor = null, int limit = 100, CancellationToken ct = default);
+    Task<GetGroupChatListResponse> GetGroupChatListAsync(GetGroupChatListRequest request, CancellationToken ct = default);
 
     /// <summary>获取「联系客户统计」数据</summary>
-    Task<GetUserBehaviorDataResponse> GetUserBehaviorDataAsync(string[] userIdList, long startTime, long endTime, CancellationToken ct = default);
+    Task<GetUserBehaviorDataResponse> GetUserBehaviorDataAsync(GetUserBehaviorDataRequest request, CancellationToken ct = default);
 
     /// <summary>发送新客户欢迎语</summary>
-    Task SendWelcomeMsgAsync(string welcomeCode, object text, object? image = null, object? link = null, object? miniProgram = null, CancellationToken ct = default);
+    Task SendWelcomeMsgAsync(SendWelcomeMsgRequest request, CancellationToken ct = default);
 }

@@ -1,3 +1,4 @@
+using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Models.LinkedCorp;
 
@@ -15,7 +16,7 @@ public class LinkedCorpService : ILinkedCorpService
     {
         return await _http.PostAsync<GetPermListResponse>(
             "/cgi-bin/linkedcorp/agent/get_perm_list",
-            new { }, ct);
+            EmptyRequest.Instance, ct);
     }
 
     /// <inheritdoc/>

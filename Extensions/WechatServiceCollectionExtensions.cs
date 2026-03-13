@@ -1,8 +1,10 @@
 using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Extensions;
 
@@ -80,7 +82,8 @@ public static class WechatServiceCollectionExtensions
         {
             var factory = sp.GetRequiredService<IHttpClientFactory>();
             var httpClient = factory.CreateClient(TencentConstants.MiniProgramHttpClientName);
-            return WechatMiniProgramClient.Create(options, httpClient);
+            var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatMiniProgramClient>();
+            return WechatMiniProgramClient.Create(options, httpClient, logger);
         });
 
         services.TryAddSingleton<IMiniProgramAuthService>(sp => sp.GetRequiredService<WechatMiniProgramClient>().Auth);
@@ -135,7 +138,8 @@ public static class WechatServiceCollectionExtensions
         {
             var factory = sp.GetRequiredService<IHttpClientFactory>();
             var httpClient = factory.CreateClient(httpClientName);
-            return WechatMiniProgramClient.Create(options, httpClient);
+            var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatMiniProgramClient>();
+            return WechatMiniProgramClient.Create(options, httpClient, logger);
         });
 
         services.AddKeyedSingleton<IMiniProgramAuthService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatMiniProgramClient>(key).Auth);
@@ -190,7 +194,8 @@ public static class WechatServiceCollectionExtensions
         {
             var factory = sp.GetRequiredService<IHttpClientFactory>();
             var httpClient = factory.CreateClient(TencentConstants.OfficialHttpClientName);
-            return WechatOfficialClient.Create(options, httpClient);
+            var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOfficialClient>();
+            return WechatOfficialClient.Create(options, httpClient, logger);
         });
 
         services.TryAddSingleton<IOfficialOAuthService>(sp => sp.GetRequiredService<WechatOfficialClient>().OAuth);
@@ -251,7 +256,8 @@ public static class WechatServiceCollectionExtensions
         {
             var factory = sp.GetRequiredService<IHttpClientFactory>();
             var httpClient = factory.CreateClient(httpClientName);
-            return WechatOfficialClient.Create(options, httpClient);
+            var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOfficialClient>();
+            return WechatOfficialClient.Create(options, httpClient, logger);
         });
 
         services.AddKeyedSingleton<IOfficialOAuthService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).OAuth);
@@ -312,7 +318,8 @@ public static class WechatServiceCollectionExtensions
         {
             var factory = sp.GetRequiredService<IHttpClientFactory>();
             var httpClient = factory.CreateClient(TencentConstants.OpenHttpClientName);
-            return WechatOpenClient.Create(options, httpClient);
+            var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOpenClient>();
+            return WechatOpenClient.Create(options, httpClient, logger);
         });
 
         services.TryAddSingleton<IOpenPlatformService>(sp => sp.GetRequiredService<WechatOpenClient>().WebLogin);
@@ -355,7 +362,8 @@ public static class WechatServiceCollectionExtensions
         {
             var factory = sp.GetRequiredService<IHttpClientFactory>();
             var httpClient = factory.CreateClient(httpClientName);
-            return WechatOpenClient.Create(options, httpClient);
+            var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOpenClient>();
+            return WechatOpenClient.Create(options, httpClient, logger);
         });
 
         services.AddKeyedSingleton<IOpenPlatformService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOpenClient>(key).WebLogin);
@@ -447,6 +455,144 @@ public static class WechatServiceCollectionExtensions
         services.AddKeyedSingleton<IQQConnectService>(name, (sp, key) => sp.GetRequiredKeyedService<QQConnectClient>(key).Login);
 
         return services;
+    }
+
+    // ─── IConfiguration 绑定 ────────────────────────────────────────────
+
+    /// <summary>
+    /// 注册微信小程序 SDK 服务（从 <see cref="IConfiguration"/> 绑定配置）
+    /// <para>
+    /// 用法示例：
+    /// <code>
+    /// builder.Services.AddWechatMiniProgram(builder.Configuration.GetSection("WechatMiniProgram"));
+    /// </code>
+    /// </para>
+    /// </summary>
+    public static IServiceCollection AddWechatMiniProgram(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new WechatMiniProgramOptions();
+        configuration.Bind(options);
+        return services.AddWechatMiniProgram(options);
+    }
+
+    /// <summary>
+    /// 注册微信小程序 SDK 服务（带 key，从 <see cref="IConfiguration"/> 绑定配置）
+    /// </summary>
+    public static IServiceCollection AddWechatMiniProgram(
+        this IServiceCollection services,
+        string name,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new WechatMiniProgramOptions();
+        configuration.Bind(options);
+        return services.AddWechatMiniProgram(name, options);
+    }
+
+    /// <summary>
+    /// 注册微信公众号 SDK 服务（从 <see cref="IConfiguration"/> 绑定配置）
+    /// <para>
+    /// 用法示例：
+    /// <code>
+    /// builder.Services.AddWechatOfficial(builder.Configuration.GetSection("WechatOfficial"));
+    /// </code>
+    /// </para>
+    /// </summary>
+    public static IServiceCollection AddWechatOfficial(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new WechatOfficialOptions();
+        configuration.Bind(options);
+        return services.AddWechatOfficial(options);
+    }
+
+    /// <summary>
+    /// 注册微信公众号 SDK 服务（带 key，从 <see cref="IConfiguration"/> 绑定配置）
+    /// </summary>
+    public static IServiceCollection AddWechatOfficial(
+        this IServiceCollection services,
+        string name,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new WechatOfficialOptions();
+        configuration.Bind(options);
+        return services.AddWechatOfficial(name, options);
+    }
+
+    /// <summary>
+    /// 注册微信开放平台 SDK 服务（从 <see cref="IConfiguration"/> 绑定配置）
+    /// <para>
+    /// 用法示例：
+    /// <code>
+    /// builder.Services.AddWechatOpen(builder.Configuration.GetSection("WechatOpen"));
+    /// </code>
+    /// </para>
+    /// </summary>
+    public static IServiceCollection AddWechatOpen(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new WechatOpenOptions();
+        configuration.Bind(options);
+        return services.AddWechatOpen(options);
+    }
+
+    /// <summary>
+    /// 注册微信开放平台 SDK 服务（带 key，从 <see cref="IConfiguration"/> 绑定配置）
+    /// </summary>
+    public static IServiceCollection AddWechatOpen(
+        this IServiceCollection services,
+        string name,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new WechatOpenOptions();
+        configuration.Bind(options);
+        return services.AddWechatOpen(name, options);
+    }
+
+    /// <summary>
+    /// 注册 QQ 互联 SDK 服务（从 <see cref="IConfiguration"/> 绑定配置）
+    /// <para>
+    /// 用法示例：
+    /// <code>
+    /// builder.Services.AddQQConnect(builder.Configuration.GetSection("QQConnect"));
+    /// </code>
+    /// </para>
+    /// </summary>
+    public static IServiceCollection AddQQConnect(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new QQConnectOptions();
+        configuration.Bind(options);
+        return services.AddQQConnect(options);
+    }
+
+    /// <summary>
+    /// 注册 QQ 互联 SDK 服务（带 key，从 <see cref="IConfiguration"/> 绑定配置）
+    /// </summary>
+    public static IServiceCollection AddQQConnect(
+        this IServiceCollection services,
+        string name,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new QQConnectOptions();
+        configuration.Bind(options);
+        return services.AddQQConnect(name, options);
     }
 
     // ─── 内部辅助 ──────────────────────────────────────────────────────

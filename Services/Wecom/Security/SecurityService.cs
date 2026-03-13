@@ -1,3 +1,4 @@
+using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Models.Security;
 
@@ -11,9 +12,8 @@ public class SecurityService : ISecurityService
     public SecurityService(WecomHttpClient http) => _http = http;
 
     public async Task<GetFileLeakPreventionResponse> GetFileLeakPreventionAsync(CancellationToken ct = default)
-        => await _http.PostAsync<GetFileLeakPreventionResponse>("/cgi-bin/security/get_file_oper_record", new { }, ct);
+        => await _http.PostAsync<GetFileLeakPreventionResponse>("/cgi-bin/security/get_file_oper_record", EmptyRequest.Instance, ct);
 
-    public async Task<GetDeviceInfoResponse> GetDeviceInfoAsync(string userId, CancellationToken ct = default)
-        => await _http.PostAsync<GetDeviceInfoResponse>("/cgi-bin/security/trustdevice/get_by_user",
-            new { userid = userId }, ct);
+    public async Task<GetDeviceInfoResponse> GetDeviceInfoAsync(GetDeviceInfoRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetDeviceInfoResponse>("/cgi-bin/security/trustdevice/get_by_user", request, ct);
 }

@@ -1,3 +1,4 @@
+using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
@@ -18,7 +19,7 @@ public class CheckinService : ICheckinService
     {
         var resp = await _http.PostAsync<GetCorpCheckinOptionResponse>(
             "/cgi-bin/checkin/getcorpcheckinoption",
-            new { }, ct);
+            EmptyRequest.Instance, ct);
         return resp.Group ?? [];
     }
 

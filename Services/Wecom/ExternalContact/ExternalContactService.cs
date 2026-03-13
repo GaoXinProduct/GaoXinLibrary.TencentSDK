@@ -30,23 +30,18 @@ public class ExternalContactService : IExternalContactService
         return await _http.GetAsync<GetExternalContactResponse>("/cgi-bin/externalcontact/get", query, ct);
     }
 
-    public async Task<BatchGetExternalContactResponse> BatchGetExternalContactAsync(string[] userIdList, string? cursor = null, int limit = 100, CancellationToken ct = default)
-        => await _http.PostAsync<BatchGetExternalContactResponse>("/cgi-bin/externalcontact/batch/get_by_user",
-            new { userid_list = userIdList, cursor = cursor ?? "", limit }, ct);
+    public async Task<BatchGetExternalContactResponse> BatchGetExternalContactAsync(BatchGetByUserRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<BatchGetExternalContactResponse>("/cgi-bin/externalcontact/batch/get_by_user", request, ct);
 
-    public async Task UpdateRemarkAsync(string userId, string externalUserId, string? remark = null, string? description = null, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/remark",
-            new { userid = userId, external_userid = externalUserId, remark, description }, ct);
+    public async Task UpdateRemarkAsync(UpdateRemarkRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/remark", request, ct);
 
-    public async Task<GetGroupChatListResponse> GetGroupChatListAsync(int statusFilter = 0, string? cursor = null, int limit = 100, CancellationToken ct = default)
-        => await _http.PostAsync<GetGroupChatListResponse>("/cgi-bin/externalcontact/groupchat/list",
-            new { status_filter = statusFilter, cursor = cursor ?? "", limit }, ct);
+    public async Task<GetGroupChatListResponse> GetGroupChatListAsync(GetGroupChatListRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetGroupChatListResponse>("/cgi-bin/externalcontact/groupchat/list", request, ct);
 
-    public async Task<GetUserBehaviorDataResponse> GetUserBehaviorDataAsync(string[] userIdList, long startTime, long endTime, CancellationToken ct = default)
-        => await _http.PostAsync<GetUserBehaviorDataResponse>("/cgi-bin/externalcontact/get_user_behavior_data",
-            new { userid = userIdList, start_time = startTime, end_time = endTime }, ct);
+    public async Task<GetUserBehaviorDataResponse> GetUserBehaviorDataAsync(GetUserBehaviorDataRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetUserBehaviorDataResponse>("/cgi-bin/externalcontact/get_user_behavior_data", request, ct);
 
-    public async Task SendWelcomeMsgAsync(string welcomeCode, object text, object? image = null, object? link = null, object? miniProgram = null, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/send_welcome_msg",
-            new { welcome_code = welcomeCode, text, image, link, miniprogram = miniProgram }, ct);
+    public async Task SendWelcomeMsgAsync(SendWelcomeMsgRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/send_welcome_msg", request, ct);
 }

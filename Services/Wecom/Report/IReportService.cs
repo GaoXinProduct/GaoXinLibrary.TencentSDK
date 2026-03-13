@@ -6,8 +6,8 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 public interface IReportService
 {
     /// <summary>批量获取汇报记录单号</summary>
-    Task<string[]> GetReportListAsync(long startTime, long endTime, string? cursor = null, int limit = 100, CancellationToken ct = default);
+    Task<string[]> GetReportListAsync(GetReportListRequest request, CancellationToken ct = default);
 
     /// <summary>获取汇报记录详情</summary>
-    Task<ReportInfo?> GetReportDetailAsync(string spNo, CancellationToken ct = default);
+    Task<ReportInfo?> GetReportDetailAsync(GetReportDetailRequest request, CancellationToken ct = default);
 }

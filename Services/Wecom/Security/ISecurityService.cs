@@ -9,5 +9,5 @@ public interface ISecurityService
     Task<GetFileLeakPreventionResponse> GetFileLeakPreventionAsync(CancellationToken ct = default);
 
     /// <summary>获取设备信息</summary>
-    Task<GetDeviceInfoResponse> GetDeviceInfoAsync(string userId, CancellationToken ct = default);
+    Task<GetDeviceInfoResponse> GetDeviceInfoAsync(GetDeviceInfoRequest request, CancellationToken ct = default);
 }

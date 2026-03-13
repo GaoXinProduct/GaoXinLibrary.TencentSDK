@@ -1,3 +1,4 @@
+using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 
@@ -54,7 +55,7 @@ public class ApprovalService : IApprovalService
     {
         var resp = await _http.PostAsync<GetCorpVacationConfResponse>(
             "/cgi-bin/oa/vacation/getcorpconf",
-            new { }, ct);
+            EmptyRequest.Instance, ct);
         return resp.Lists ?? [];
     }
 

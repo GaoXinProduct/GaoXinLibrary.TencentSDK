@@ -6,5 +6,5 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 public interface IAccountIdService
 {
     /// <summary>tmp_external_userid的转换</summary>
-    Task<ConvertTmpExternalUserIdResponse> ConvertTmpExternalUserIdAsync(string[] tmpExternalUserIds, int businessType = 1, CancellationToken ct = default);
+    Task<ConvertTmpExternalUserIdResponse> ConvertTmpExternalUserIdAsync(ConvertTmpExternalUserIdRequest request, CancellationToken ct = default);
 }

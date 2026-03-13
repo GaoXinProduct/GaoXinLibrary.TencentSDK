@@ -6,17 +6,17 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 public interface IMeetingService
 {
     /// <summary>创建预约会议</summary>
-    Task<CreateMeetingResponse> CreateMeetingAsync(string title, long meetingStart, long meetingEnd, string adminUserId, string? description = null, CancellationToken ct = default);
+    Task<CreateMeetingResponse> CreateMeetingAsync(CreateMeetingRequest request, CancellationToken ct = default);
 
     /// <summary>修改预约会议</summary>
-    Task UpdateMeetingAsync(string meetingId, string? title = null, long? meetingStart = null, long? meetingEnd = null, string? description = null, CancellationToken ct = default);
+    Task UpdateMeetingAsync(UpdateMeetingRequest request, CancellationToken ct = default);
 
     /// <summary>取消预约会议</summary>
-    Task CancelMeetingAsync(string meetingId, CancellationToken ct = default);
+    Task CancelMeetingAsync(CancelMeetingRequest request, CancellationToken ct = default);
 
     /// <summary>获取会议详情</summary>
-    Task<MeetingInfo?> GetMeetingAsync(string meetingId, CancellationToken ct = default);
+    Task<MeetingInfo?> GetMeetingAsync(GetMeetingRequest request, CancellationToken ct = default);
 
     /// <summary>获取成员会议ID列表</summary>
-    Task<GetUserMeetingIdResponse> GetUserMeetingIdAsync(string userId, string? cursor = null, int limit = 20, CancellationToken ct = default);
+    Task<GetUserMeetingIdResponse> GetUserMeetingIdAsync(GetUserMeetingIdRequest request, CancellationToken ct = default);
 }

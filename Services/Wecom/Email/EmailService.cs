@@ -16,10 +16,9 @@ public class EmailService : IEmailService
         return resp.MailId;
     }
 
-    public async Task<int> GetUnreadCountAsync(string userId, CancellationToken ct = default)
+    public async Task<int> GetUnreadCountAsync(GetMailUnreadCountRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetMailUnreadCountResponse>("/cgi-bin/exmail/app/get_unread_count",
-            new { userid = userId }, ct);
+        var resp = await _http.PostAsync<GetMailUnreadCountResponse>("/cgi-bin/exmail/app/get_unread_count", request, ct);
         return resp.UnreadCount;
     }
 }

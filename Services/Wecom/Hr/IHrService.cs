@@ -9,8 +9,8 @@ public interface IHrService
     Task<HrFieldGroup[]> GetFieldConfigAsync(CancellationToken ct = default);
 
     /// <summary>获取员工花名册信息</summary>
-    Task<StaffInfo[]> GetStaffInfoAsync(string[] userIds, CancellationToken ct = default);
+    Task<StaffInfo[]> GetStaffInfoAsync(GetStaffInfoRequest request, CancellationToken ct = default);
 
     /// <summary>更新员工花名册信息</summary>
-    Task UpdateStaffInfoAsync(string userId, StaffFieldValue[] fieldValueList, CancellationToken ct = default);
+    Task UpdateStaffInfoAsync(UpdateStaffInfoRequest request, CancellationToken ct = default);
 }

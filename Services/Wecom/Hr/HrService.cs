@@ -1,3 +1,4 @@
+using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Models.Hr;
 
@@ -12,18 +13,16 @@ public class HrService : IHrService
 
     public async Task<HrFieldGroup[]> GetFieldConfigAsync(CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetFieldConfigResponse>("/cgi-bin/hr/get_fields", new { }, ct);
+        var resp = await _http.PostAsync<GetFieldConfigResponse>("/cgi-bin/hr/get_fields", EmptyRequest.Instance, ct);
         return resp.Group ?? [];
     }
 
-    public async Task<StaffInfo[]> GetStaffInfoAsync(string[] userIds, CancellationToken ct = default)
+    public async Task<StaffInfo[]> GetStaffInfoAsync(GetStaffInfoRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetStaffInfoResponse>("/cgi-bin/hr/get_staff_info",
-            new { userid_list = userIds }, ct);
+        var resp = await _http.PostAsync<GetStaffInfoResponse>("/cgi-bin/hr/get_staff_info", request, ct);
         return resp.Employee ?? [];
     }
 
-    public async Task UpdateStaffInfoAsync(string userId, StaffFieldValue[] fieldValueList, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/hr/update_staff_info",
-            new { userid = userId, field_value_list = fieldValueList }, ct);
+    public async Task UpdateStaffInfoAsync(UpdateStaffInfoRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/hr/update_staff_info", request, ct);
 }

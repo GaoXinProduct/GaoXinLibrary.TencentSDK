@@ -6,11 +6,11 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 public interface IAdvancedAccountService
 {
     /// <summary>分配高级功能账号</summary>
-    Task AssignAsync(string userId, int type, CancellationToken ct = default);
+    Task AssignAsync(AdvancedAccountOperationRequest request, CancellationToken ct = default);
 
     /// <summary>取消高级功能账号</summary>
-    Task CancelAsync(string userId, int type, CancellationToken ct = default);
+    Task CancelAsync(AdvancedAccountOperationRequest request, CancellationToken ct = default);
 
     /// <summary>获取高级功能账号列表</summary>
-    Task<GetAdvancedAccountListResponse> GetListAsync(int type, string? cursor = null, int limit = 1000, CancellationToken ct = default);
+    Task<GetAdvancedAccountListResponse> GetListAsync(GetAdvancedAccountListRequest request, CancellationToken ct = default);
 }

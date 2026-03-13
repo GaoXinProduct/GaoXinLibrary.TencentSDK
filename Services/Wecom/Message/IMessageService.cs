@@ -47,5 +47,5 @@ public interface IMessageService
     Task UpdateTemplateCardAsync(UpdateTemplateCardRequest request, CancellationToken ct = default);
 
     /// <summary>撤回应用消息</summary>
-    Task RecallMessageAsync(string msgId, CancellationToken ct = default);
+    Task RecallMessageAsync(RecallMessageRequest request, CancellationToken ct = default);
 }

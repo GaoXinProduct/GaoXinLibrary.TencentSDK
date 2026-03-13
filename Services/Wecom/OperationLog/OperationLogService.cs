@@ -10,11 +10,9 @@ public class OperationLogService : IOperationLogService
 
     public OperationLogService(WecomHttpClient http) => _http = http;
 
-    public async Task<GetOperationLogResponse> GetUserOperationRecordAsync(long startTime, long endTime, string? cursor = null, int limit = 100, CancellationToken ct = default)
-        => await _http.PostAsync<GetOperationLogResponse>("/cgi-bin/security/get_user_oper_record",
-            new { start_time = startTime, end_time = endTime, cursor = cursor ?? "", limit }, ct);
+    public async Task<GetOperationLogResponse> GetUserOperationRecordAsync(GetOperationLogRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetOperationLogResponse>("/cgi-bin/security/get_user_oper_record", request, ct);
 
-    public async Task<GetOperationLogResponse> GetAdminOperationRecordAsync(long startTime, long endTime, string? cursor = null, int limit = 100, CancellationToken ct = default)
-        => await _http.PostAsync<GetOperationLogResponse>("/cgi-bin/security/get_admin_oper_record",
-            new { start_time = startTime, end_time = endTime, cursor = cursor ?? "", limit }, ct);
+    public async Task<GetOperationLogResponse> GetAdminOperationRecordAsync(GetOperationLogRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetOperationLogResponse>("/cgi-bin/security/get_admin_oper_record", request, ct);
 }

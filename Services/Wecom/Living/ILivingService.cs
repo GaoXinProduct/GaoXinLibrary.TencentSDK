@@ -6,20 +6,20 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 public interface ILivingService
 {
     /// <summary>创建预约直播</summary>
-    Task<string?> CreateLivingAsync(string anchorUserId, string theme, long livingStart, long livingDuration, int type = 0, string? description = null, CancellationToken ct = default);
+    Task<string?> CreateLivingAsync(CreateLivingRequest request, CancellationToken ct = default);
 
     /// <summary>修改预约直播</summary>
-    Task UpdateLivingAsync(string livingId, string? theme = null, long? livingStart = null, long? livingDuration = null, string? description = null, CancellationToken ct = default);
+    Task UpdateLivingAsync(UpdateLivingRequest request, CancellationToken ct = default);
 
     /// <summary>取消预约直播</summary>
-    Task CancelLivingAsync(string livingId, CancellationToken ct = default);
+    Task CancelLivingAsync(CancelLivingRequest request, CancellationToken ct = default);
 
     /// <summary>删除直播回放</summary>
-    Task DeleteReplayDataAsync(string livingId, CancellationToken ct = default);
+    Task DeleteReplayDataAsync(DeleteReplayDataRequest request, CancellationToken ct = default);
 
     /// <summary>获取直播详情</summary>
     Task<LivingInfo?> GetLivingInfoAsync(string livingId, CancellationToken ct = default);
 
     /// <summary>获取成员直播ID列表</summary>
-    Task<GetUserLivingIdResponse> GetUserLivingIdAsync(string userId, long beginTime, long endTime, string? cursor = null, int limit = 100, CancellationToken ct = default);
+    Task<GetUserLivingIdResponse> GetUserLivingIdAsync(GetUserLivingIdRequest request, CancellationToken ct = default);
 }

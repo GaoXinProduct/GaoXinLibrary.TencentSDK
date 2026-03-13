@@ -10,17 +10,15 @@ public class ReportService : IReportService
 
     public ReportService(WecomHttpClient http) => _http = http;
 
-    public async Task<string[]> GetReportListAsync(long startTime, long endTime, string? cursor = null, int limit = 100, CancellationToken ct = default)
+    public async Task<string[]> GetReportListAsync(GetReportListRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetReportListResponse>("/cgi-bin/oa/journal/get_record_list",
-            new { starttime = startTime, endtime = endTime, cursor = cursor ?? "", limit }, ct);
+        var resp = await _http.PostAsync<GetReportListResponse>("/cgi-bin/oa/journal/get_record_list", request, ct);
         return resp.SpNoList ?? [];
     }
 
-    public async Task<ReportInfo?> GetReportDetailAsync(string spNo, CancellationToken ct = default)
+    public async Task<ReportInfo?> GetReportDetailAsync(GetReportDetailRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetReportDetailResponse>("/cgi-bin/oa/journal/get_record_detail",
-            new { journaluuid = spNo }, ct);
+        var resp = await _http.PostAsync<GetReportDetailResponse>("/cgi-bin/oa/journal/get_record_detail", request, ct);
         return resp.ReportInfo;
     }
 }

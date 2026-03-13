@@ -1,4 +1,5 @@
 using GaoXinLibrary.TencentSDK.Core;
+using Microsoft.Extensions.Logging;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Core;
 
@@ -7,6 +8,6 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Core;
 /// </summary>
 public class WechatHttpClient : TencentHttpClient<WechatBaseResponse>
 {
-    public WechatHttpClient(HttpClient httpClient, AccessTokenProvider tokenProvider, WechatOptions options)
-        : base(httpClient, tokenProvider, options.BaseUrl, "微信") { }
+    public WechatHttpClient(HttpClient httpClient, AccessTokenProvider tokenProvider, WechatOptions options, ILogger? logger = null)
+        : base(httpClient, tokenProvider, options.BaseUrl, "微信", logger, options.RetryOptions) { }
 }

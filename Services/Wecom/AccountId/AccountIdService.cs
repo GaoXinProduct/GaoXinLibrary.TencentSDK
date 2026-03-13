@@ -10,7 +10,6 @@ public class AccountIdService : IAccountIdService
 
     public AccountIdService(WecomHttpClient http) => _http = http;
 
-    public async Task<ConvertTmpExternalUserIdResponse> ConvertTmpExternalUserIdAsync(string[] tmpExternalUserIds, int businessType = 1, CancellationToken ct = default)
-        => await _http.PostAsync<ConvertTmpExternalUserIdResponse>("/cgi-bin/idconvert/convert_tmp_external_userid",
-            new { tmp_external_userid_list = tmpExternalUserIds, business_type = businessType }, ct);
+    public async Task<ConvertTmpExternalUserIdResponse> ConvertTmpExternalUserIdAsync(ConvertTmpExternalUserIdRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<ConvertTmpExternalUserIdResponse>("/cgi-bin/idconvert/convert_tmp_external_userid", request, ct);
 }

@@ -9,20 +9,20 @@ public interface IMeetingRoomService
     Task AddMeetingRoomAsync(MeetingRoomInfo room, CancellationToken ct = default);
 
     /// <summary>查询会议室列表</summary>
-    Task<MeetingRoomInfo[]> GetMeetingRoomListAsync(string? city = null, string? building = null, string? floor = null, int? equipment = null, CancellationToken ct = default);
+    Task<MeetingRoomInfo[]> GetMeetingRoomListAsync(ListMeetingRoomRequest request, CancellationToken ct = default);
 
     /// <summary>编辑会议室</summary>
     Task EditMeetingRoomAsync(MeetingRoomInfo room, CancellationToken ct = default);
 
     /// <summary>删除会议室</summary>
-    Task DeleteMeetingRoomAsync(int meetingRoomId, CancellationToken ct = default);
+    Task DeleteMeetingRoomAsync(DeleteMeetingRoomRequest request, CancellationToken ct = default);
 
     /// <summary>查询预定信息</summary>
-    Task<BookingInfo[]> GetBookingInfoAsync(int meetingRoomId, long startTime, long endTime, CancellationToken ct = default);
+    Task<BookingInfo[]> GetBookingInfoAsync(GetBookingInfoRequest request, CancellationToken ct = default);
 
     /// <summary>预定会议室</summary>
-    Task BookMeetingRoomAsync(int meetingRoomId, long startTime, long endTime, string booker, string? title = null, CancellationToken ct = default);
+    Task BookMeetingRoomAsync(BookMeetingRoomRequest request, CancellationToken ct = default);
 
     /// <summary>取消预定</summary>
-    Task CancelBookingAsync(int meetingRoomId, string bookingId, CancellationToken ct = default);
+    Task CancelBookingAsync(CancelBookingRequest request, CancellationToken ct = default);
 }

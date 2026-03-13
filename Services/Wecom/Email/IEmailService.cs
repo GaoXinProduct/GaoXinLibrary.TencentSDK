@@ -9,5 +9,5 @@ public interface IEmailService
     Task<string?> SendMailAsync(SendMailRequest request, CancellationToken ct = default);
 
     /// <summary>获取邮件未读数</summary>
-    Task<int> GetUnreadCountAsync(string userId, CancellationToken ct = default);
+    Task<int> GetUnreadCountAsync(GetMailUnreadCountRequest request, CancellationToken ct = default);
 }

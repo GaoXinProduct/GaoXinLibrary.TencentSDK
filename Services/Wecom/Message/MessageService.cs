@@ -56,8 +56,8 @@ public class MessageService : IMessageService
     public async Task UpdateTemplateCardAsync(UpdateTemplateCardRequest request, CancellationToken ct = default)
         => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/message/update_template_card", request, ct);
 
-    public async Task RecallMessageAsync(string msgId, CancellationToken ct = default)
-        => await _http.PostAsync<RecallMessageResponse>("/cgi-bin/message/recall", new { msgid = msgId }, ct);
+    public async Task RecallMessageAsync(RecallMessageRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<RecallMessageResponse>("/cgi-bin/message/recall", request, ct);
 
     private SendMessageRequest BuildBase(string msgType, string? toUser, string? toParty, string? toTag, int agentId) => new()
     {

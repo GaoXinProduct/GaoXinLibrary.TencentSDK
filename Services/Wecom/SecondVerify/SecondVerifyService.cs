@@ -10,9 +10,8 @@ public class SecondVerifyService : ISecondVerifyService
 
     public SecondVerifyService(WecomHttpClient http) => _http = http;
 
-    public async Task<GetTfaInfoResponse> GetTfaInfoAsync(string code, CancellationToken ct = default)
-        => await _http.PostAsync<GetTfaInfoResponse>("/cgi-bin/auth/get_tfa_info",
-            new { code }, ct);
+    public async Task<GetTfaInfoResponse> GetTfaInfoAsync(GetTfaInfoRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetTfaInfoResponse>("/cgi-bin/auth/get_tfa_info", request, ct);
 
     public async Task TfaSuccessAsync(string userId, CancellationToken ct = default)
         => await _http.GetAsync<WecomBaseResponse>("/cgi-bin/user/authsucc",

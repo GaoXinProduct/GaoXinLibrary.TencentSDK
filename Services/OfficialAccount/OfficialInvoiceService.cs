@@ -1,3 +1,4 @@
+using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 using System.Text;
@@ -20,19 +21,19 @@ public class OfficialInvoiceService : IOfficialInvoiceService
         => PostSetBizAttrAsync(InvoiceSetBizAttrAction.SetAuthField, request, ct);
 
     public Task<InvoiceSetBizAttrResponse> GetAuthFieldAsync(CancellationToken ct = default)
-        => PostSetBizAttrAsync(InvoiceSetBizAttrAction.GetAuthField, new { }, ct);
+        => PostSetBizAttrAsync(InvoiceSetBizAttrAction.GetAuthField, EmptyRequest.Instance, ct);
 
     public Task<InvoiceSetBizAttrResponse> SetPayMchAsync(InvoiceSetPayMchRequest request, CancellationToken ct = default)
         => PostSetBizAttrAsync(InvoiceSetBizAttrAction.SetPayMch, request, ct);
 
     public Task<InvoiceSetBizAttrResponse> GetPayMchAsync(CancellationToken ct = default)
-        => PostSetBizAttrAsync(InvoiceSetBizAttrAction.GetPayMch, new { }, ct);
+        => PostSetBizAttrAsync(InvoiceSetBizAttrAction.GetPayMch, EmptyRequest.Instance, ct);
 
     public Task<InvoiceSetBizAttrResponse> SetContactAsync(InvoiceSetContactRequest request, CancellationToken ct = default)
         => PostSetBizAttrAsync(InvoiceSetBizAttrAction.SetContact, request, ct);
 
     public Task<InvoiceSetBizAttrResponse> GetContactAsync(CancellationToken ct = default)
-        => PostSetBizAttrAsync(InvoiceSetBizAttrAction.GetContact, new { }, ct);
+        => PostSetBizAttrAsync(InvoiceSetBizAttrAction.GetContact, EmptyRequest.Instance, ct);
 
     public Task<InvoiceAuthDataResponse> GetAuthDataAsync(InvoiceAuthDataRequest request, CancellationToken ct = default)
         => _http.PostAsync<InvoiceAuthDataResponse>("/card/invoice/getauthdata", request, ct);
@@ -48,7 +49,7 @@ public class OfficialInvoiceService : IOfficialInvoiceService
         => _http.PostAsync<WechatBaseResponse>("/card/invoice/rejectinsert", request, ct);
 
     public Task<InvoicePlatformSetUrlResponse> GetPlatformInvoiceUrlAsync(CancellationToken ct = default)
-        => _http.PostAsync<InvoicePlatformSetUrlResponse>("/card/invoice/seturl", new { }, ct);
+        => _http.PostAsync<InvoicePlatformSetUrlResponse>("/card/invoice/seturl", EmptyRequest.Instance, ct);
 
     public Task<InvoicePlatformGetPdfResponse> GetPlatformPdfAsync(InvoicePlatformGetPdfRequest request, CancellationToken ct = default)
         => _http.PostAsync<InvoicePlatformGetPdfResponse>("/card/invoice/platform/getpdf", request, ct);

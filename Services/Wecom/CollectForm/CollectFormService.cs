@@ -10,22 +10,18 @@ public class CollectFormService : ICollectFormService
 
     public CollectFormService(WecomHttpClient http) => _http = http;
 
-    public async Task<CreateCollectFormResponse> CreateCollectFormAsync(CollectFormInfo form, CancellationToken ct = default)
-        => await _http.PostAsync<CreateCollectFormResponse>("/cgi-bin/wedoc/create_collect",
-            new { form_info = form }, ct);
+    public async Task<CreateCollectFormResponse> CreateCollectFormAsync(CollectFormOperationRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<CreateCollectFormResponse>("/cgi-bin/wedoc/create_collect", request, ct);
 
-    public async Task ModifyCollectFormAsync(CollectFormInfo form, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/wedoc/modify_collect",
-            new { form_info = form }, ct);
+    public async Task ModifyCollectFormAsync(CollectFormOperationRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/wedoc/modify_collect", request, ct);
 
-    public async Task<CollectFormInfo?> GetCollectFormAsync(string formId, CancellationToken ct = default)
+    public async Task<CollectFormInfo?> GetCollectFormAsync(GetCollectFormRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetCollectFormResponse>("/cgi-bin/wedoc/get_collect",
-            new { formid = formId }, ct);
+        var resp = await _http.PostAsync<GetCollectFormResponse>("/cgi-bin/wedoc/get_collect", request, ct);
         return resp.FormInfo;
     }
 
-    public async Task<GetCollectAnswerResponse> GetCollectAnswerAsync(string formId, string? cursor = null, int limit = 100, CancellationToken ct = default)
-        => await _http.PostAsync<GetCollectAnswerResponse>("/cgi-bin/wedoc/get_form_answer",
-            new { formid = formId, cursor = cursor ?? "", limit }, ct);
+    public async Task<GetCollectAnswerResponse> GetCollectAnswerAsync(GetCollectAnswerRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetCollectAnswerResponse>("/cgi-bin/wedoc/get_form_answer", request, ct);
 }

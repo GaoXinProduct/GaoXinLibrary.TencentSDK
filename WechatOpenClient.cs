@@ -1,5 +1,6 @@
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Services;
+using Microsoft.Extensions.Logging;
 
 namespace GaoXinLibrary.TencentSDK.Wechat;
 
@@ -27,13 +28,14 @@ public sealed class WechatOpenClient : IDisposable
     /// <summary>当前配置</summary>
     public WechatOpenOptions Options { get; }
 
-    private WechatOpenClient(WechatOpenOptions options, HttpClient httpClient)
+    private WechatOpenClient(WechatOpenOptions options, HttpClient httpClient, ILogger? logger = null)
     {
         Options = options;
         _httpClient = httpClient;
         // 开放平台网站登录不需要 access_token 自动获取，使用 SNS 接口
+        // AccessTokenProvider 仅作为 WechatHttpClient 构造参数传入，不会主动触发自动刷新
         var tokenProvider = new AccessTokenProvider(options, httpClient);
-        var http = new WechatHttpClient(httpClient, tokenProvider, options);
+        var http = new WechatHttpClient(httpClient, tokenProvider, options, logger);
 
         WebLogin = new OpenPlatformService(http, options);
     }
@@ -41,21 +43,21 @@ public sealed class WechatOpenClient : IDisposable
     /// <summary>
     /// 使用指定配置创建客户端实例
     /// </summary>
-    public static WechatOpenClient Create(WechatOpenOptions options)
+    public static WechatOpenClient Create(WechatOpenOptions options, ILogger? logger = null)
     {
         ValidateOptions(options);
         var httpClient = new HttpClient { Timeout = options.HttpTimeout };
-        return new WechatOpenClient(options, httpClient);
+        return new WechatOpenClient(options, httpClient, logger);
     }
 
     /// <summary>
     /// 使用已有 HttpClient 创建客户端实例
     /// </summary>
-    public static WechatOpenClient Create(WechatOpenOptions options, HttpClient httpClient)
+    public static WechatOpenClient Create(WechatOpenOptions options, HttpClient httpClient, ILogger? logger = null)
     {
         ValidateOptions(options);
         ArgumentNullException.ThrowIfNull(httpClient);
-        return new WechatOpenClient(options, httpClient);
+        return new WechatOpenClient(options, httpClient, logger);
     }
 
     private static void ValidateOptions(WechatOpenOptions options)

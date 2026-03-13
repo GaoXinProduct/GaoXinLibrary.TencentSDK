@@ -1,6 +1,7 @@
 using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Services;
+using Microsoft.Extensions.Logging;
 
 namespace GaoXinLibrary.TencentSDK.Wecom;
 
@@ -165,12 +166,12 @@ public sealed class WecomClient : IDisposable
 
     // ─── 构造 ─────────────────────────────────────────────────────────────────
 
-    private WecomClient(WecomOptions options, HttpClient httpClient)
+    private WecomClient(WecomOptions options, HttpClient httpClient, ILogger? logger = null)
     {
         Options = options;
         _httpClient = httpClient;
         _tokenProvider = new AccessTokenProvider(options, httpClient);
-        _http = new WecomHttpClient(httpClient, _tokenProvider, options);
+        _http = new WecomHttpClient(httpClient, _tokenProvider, options, logger);
 
         User = new UserService(_http);
         Department = new DepartmentService(_http);
@@ -247,14 +248,14 @@ public sealed class WecomClient : IDisposable
     /// <returns>已初始化的 <see cref="WecomClient"/> 实例。</returns>
     /// <exception cref="ArgumentNullException"><paramref name="options"/> 为 <c>null</c>。</exception>
     /// <exception cref="ArgumentException"><see cref="WecomOptions.CorpId"/> 或 <see cref="WecomOptions.CorpSecret"/> 为空。</exception>
-    public static WecomClient Create(WecomOptions options)
+    public static WecomClient Create(WecomOptions options, ILogger? logger = null)
     {
         ArgumentNullException.ThrowIfNull(options);
         if (string.IsNullOrWhiteSpace(options.CorpId)) throw new ArgumentException("CorpId 不能为空", nameof(options));
         if (string.IsNullOrWhiteSpace(options.CorpSecret)) throw new ArgumentException("CorpSecret 不能为空", nameof(options));
 
         var httpClient = new HttpClient { Timeout = options.HttpTimeout };
-        return new WecomClient(options, httpClient);
+        return new WecomClient(options, httpClient, logger);
     }
 
     /// <summary>
@@ -264,11 +265,11 @@ public sealed class WecomClient : IDisposable
     /// <param name="httpClient">外部托管的 <see cref="HttpClient"/>，可注入自定义 <see cref="System.Net.Http.DelegatingHandler"/>（如日志、重试）。</param>
     /// <returns>已初始化的 <see cref="WecomClient"/> 实例。</returns>
     /// <exception cref="ArgumentNullException"><paramref name="options"/> 或 <paramref name="httpClient"/> 为 <c>null</c>。</exception>
-    public static WecomClient Create(WecomOptions options, HttpClient httpClient)
+    public static WecomClient Create(WecomOptions options, HttpClient httpClient, ILogger? logger = null)
     {
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(httpClient);
-        return new WecomClient(options, httpClient);
+        return new WecomClient(options, httpClient, logger);
     }
 
     /// <summary>

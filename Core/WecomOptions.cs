@@ -1,3 +1,5 @@
+using GaoXinLibrary.TencentSDK.Core;
+
 namespace GaoXinLibrary.TencentSDK.Wecom.Core;
 
 /// <summary>
@@ -120,4 +122,15 @@ public class WecomOptions
     /// <para>每次成功刷新应用 jsapi_ticket 后触发，参数为新的明文 jsapi_ticket 及 CancellationToken。</para>
     /// </summary>
     public Func<string, CancellationToken, Task>? OnAgentTicketChanged { get; set; }
+
+    // ─── 瞬态故障重试配置 ─────────────────────────────────────────────────────
+
+    /// <summary>
+    /// 瞬态故障重试配置（网络抖动、连接超时、5xx 等临时性故障）
+    /// <para>
+    /// 默认最多重试 2 次、指数退避 500ms 起步。设为 <c>null</c> 或 <c>MaxRetries = 0</c> 禁用重试。<br/>
+    /// Token 失效重试由 SDK 内部独立处理，不受此配置影响。
+    /// </para>
+    /// </summary>
+    public TencentRetryOptions? RetryOptions { get; set; } = new();
 }

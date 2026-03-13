@@ -10,15 +10,12 @@ public class AdvancedAccountService : IAdvancedAccountService
 
     public AdvancedAccountService(WecomHttpClient http) => _http = http;
 
-    public async Task AssignAsync(string userId, int type, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/advanced_account/assign",
-            new { userid = userId, type }, ct);
+    public async Task AssignAsync(AdvancedAccountOperationRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/advanced_account/assign", request, ct);
 
-    public async Task CancelAsync(string userId, int type, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/advanced_account/cancel",
-            new { userid = userId, type }, ct);
+    public async Task CancelAsync(AdvancedAccountOperationRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/advanced_account/cancel", request, ct);
 
-    public async Task<GetAdvancedAccountListResponse> GetListAsync(int type, string? cursor = null, int limit = 1000, CancellationToken ct = default)
-        => await _http.PostAsync<GetAdvancedAccountListResponse>("/cgi-bin/advanced_account/get_list",
-            new { type, cursor = cursor ?? "", limit }, ct);
+    public async Task<GetAdvancedAccountListResponse> GetListAsync(GetAdvancedAccountListRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetAdvancedAccountListResponse>("/cgi-bin/advanced_account/get_list", request, ct);
 }

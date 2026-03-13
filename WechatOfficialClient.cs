@@ -1,6 +1,7 @@
 using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Services;
+using Microsoft.Extensions.Logging;
 
 namespace GaoXinLibrary.TencentSDK.Wechat;
 
@@ -84,12 +85,12 @@ public sealed class WechatOfficialClient : IDisposable
     /// <summary>当前配置</summary>
     public WechatOfficialOptions Options { get; }
 
-    private WechatOfficialClient(WechatOfficialOptions options, HttpClient httpClient)
+    private WechatOfficialClient(WechatOfficialOptions options, HttpClient httpClient, ILogger? logger = null)
     {
         Options = options;
         _httpClient = httpClient;
         _tokenProvider = new AccessTokenProvider(options, httpClient);
-        var http = new WechatHttpClient(httpClient, _tokenProvider, options);
+        var http = new WechatHttpClient(httpClient, _tokenProvider, options, logger);
 
         _ticketProvider = new JsApiTicketProvider(http, httpClient);
         _ticketProvider.ConfigureSharedTicket(options.TicketShareSecret, options.TicketShareUrl);
@@ -119,21 +120,21 @@ public sealed class WechatOfficialClient : IDisposable
     /// <summary>
     /// 使用指定配置创建客户端实例
     /// </summary>
-    public static WechatOfficialClient Create(WechatOfficialOptions options)
+    public static WechatOfficialClient Create(WechatOfficialOptions options, ILogger? logger = null)
     {
         ValidateOptions(options);
         var httpClient = new HttpClient { Timeout = options.HttpTimeout };
-        return new WechatOfficialClient(options, httpClient);
+        return new WechatOfficialClient(options, httpClient, logger);
     }
 
     /// <summary>
     /// 使用已有 HttpClient 创建客户端实例
     /// </summary>
-    public static WechatOfficialClient Create(WechatOfficialOptions options, HttpClient httpClient)
+    public static WechatOfficialClient Create(WechatOfficialOptions options, HttpClient httpClient, ILogger? logger = null)
     {
         ValidateOptions(options);
         ArgumentNullException.ThrowIfNull(httpClient);
-        return new WechatOfficialClient(options, httpClient);
+        return new WechatOfficialClient(options, httpClient, logger);
     }
 
     /// <summary>使 access_token 缓存失效（下次 GetAccessTokenAsync 时自动重新获取）</summary>

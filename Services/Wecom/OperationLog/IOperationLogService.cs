@@ -6,8 +6,8 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 public interface IOperationLogService
 {
     /// <summary>获取成员操作记录</summary>
-    Task<GetOperationLogResponse> GetUserOperationRecordAsync(long startTime, long endTime, string? cursor = null, int limit = 100, CancellationToken ct = default);
+    Task<GetOperationLogResponse> GetUserOperationRecordAsync(GetOperationLogRequest request, CancellationToken ct = default);
 
     /// <summary>获取管理端操作日志</summary>
-    Task<GetOperationLogResponse> GetAdminOperationRecordAsync(long startTime, long endTime, string? cursor = null, int limit = 100, CancellationToken ct = default);
+    Task<GetOperationLogResponse> GetAdminOperationRecordAsync(GetOperationLogRequest request, CancellationToken ct = default);
 }

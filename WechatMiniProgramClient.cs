@@ -1,6 +1,7 @@
 using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Services;
+using Microsoft.Extensions.Logging;
 
 namespace GaoXinLibrary.TencentSDK.Wechat;
 
@@ -65,12 +66,12 @@ public sealed class WechatMiniProgramClient : IDisposable
     /// <summary>当前配置</summary>
     public WechatMiniProgramOptions Options { get; }
 
-    private WechatMiniProgramClient(WechatMiniProgramOptions options, HttpClient httpClient)
+    private WechatMiniProgramClient(WechatMiniProgramOptions options, HttpClient httpClient, ILogger? logger = null)
     {
         Options = options;
         _httpClient = httpClient;
         _tokenProvider = new AccessTokenProvider(options, httpClient);
-        var http = new WechatHttpClient(httpClient, _tokenProvider, options);
+        var http = new WechatHttpClient(httpClient, _tokenProvider, options, logger);
 
         Auth = new MiniProgramAuthService(http, options);
         QrCode = new MiniProgramQrCodeService(http);
@@ -90,21 +91,21 @@ public sealed class WechatMiniProgramClient : IDisposable
     /// <summary>
     /// 使用指定配置创建客户端实例
     /// </summary>
-    public static WechatMiniProgramClient Create(WechatMiniProgramOptions options)
+    public static WechatMiniProgramClient Create(WechatMiniProgramOptions options, ILogger? logger = null)
     {
         ValidateOptions(options);
         var httpClient = new HttpClient { Timeout = options.HttpTimeout };
-        return new WechatMiniProgramClient(options, httpClient);
+        return new WechatMiniProgramClient(options, httpClient, logger);
     }
 
     /// <summary>
     /// 使用已有 HttpClient 创建客户端实例
     /// </summary>
-    public static WechatMiniProgramClient Create(WechatMiniProgramOptions options, HttpClient httpClient)
+    public static WechatMiniProgramClient Create(WechatMiniProgramOptions options, HttpClient httpClient, ILogger? logger = null)
     {
         ValidateOptions(options);
         ArgumentNullException.ThrowIfNull(httpClient);
-        return new WechatMiniProgramClient(options, httpClient);
+        return new WechatMiniProgramClient(options, httpClient, logger);
     }
 
     /// <summary>使 access_token 缓存失效（下次 GetAccessTokenAsync 时自动重新获取）</summary>

@@ -10,24 +10,20 @@ public class LivingService : ILivingService
 
     public LivingService(WecomHttpClient http) => _http = http;
 
-    public async Task<string?> CreateLivingAsync(string anchorUserId, string theme, long livingStart, long livingDuration, int type = 0, string? description = null, CancellationToken ct = default)
+    public async Task<string?> CreateLivingAsync(CreateLivingRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<CreateLivingResponse>("/cgi-bin/living/create",
-            new { anchor_userid = anchorUserId, theme, living_start = livingStart, living_duration = livingDuration, type, description }, ct);
+        var resp = await _http.PostAsync<CreateLivingResponse>("/cgi-bin/living/create", request, ct);
         return resp.LivingId;
     }
 
-    public async Task UpdateLivingAsync(string livingId, string? theme = null, long? livingStart = null, long? livingDuration = null, string? description = null, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/living/modify",
-            new { livingid = livingId, theme, living_start = livingStart, living_duration = livingDuration, description }, ct);
+    public async Task UpdateLivingAsync(UpdateLivingRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/living/modify", request, ct);
 
-    public async Task CancelLivingAsync(string livingId, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/living/cancel",
-            new { livingid = livingId }, ct);
+    public async Task CancelLivingAsync(CancelLivingRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/living/cancel", request, ct);
 
-    public async Task DeleteReplayDataAsync(string livingId, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/living/delete_replay_data",
-            new { livingid = livingId }, ct);
+    public async Task DeleteReplayDataAsync(DeleteReplayDataRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/living/delete_replay_data", request, ct);
 
     public async Task<LivingInfo?> GetLivingInfoAsync(string livingId, CancellationToken ct = default)
     {
@@ -36,7 +32,6 @@ public class LivingService : ILivingService
         return resp.LivingInfo;
     }
 
-    public async Task<GetUserLivingIdResponse> GetUserLivingIdAsync(string userId, long beginTime, long endTime, string? cursor = null, int limit = 100, CancellationToken ct = default)
-        => await _http.PostAsync<GetUserLivingIdResponse>("/cgi-bin/living/get_user_all_livingid",
-            new { userid = userId, begin_time = beginTime, end_time = endTime, cursor = cursor ?? "", limit }, ct);
+    public async Task<GetUserLivingIdResponse> GetUserLivingIdAsync(GetUserLivingIdRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetUserLivingIdResponse>("/cgi-bin/living/get_user_all_livingid", request, ct);
 }

@@ -10,10 +10,9 @@ public class DialService : IDialService
 
     public DialService(WecomHttpClient http) => _http = http;
 
-    public async Task<DialRecord[]> GetDialRecordAsync(long startTime, long endTime, int offset = 0, int limit = 100, CancellationToken ct = default)
+    public async Task<DialRecord[]> GetDialRecordAsync(GetDialRecordRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetDialRecordResponse>("/cgi-bin/dial/get_dial_record",
-            new { start_time = startTime, end_time = endTime, offset, limit }, ct);
+        var resp = await _http.PostAsync<GetDialRecordResponse>("/cgi-bin/dial/get_dial_record", request, ct);
         return resp.Record ?? [];
     }
 }

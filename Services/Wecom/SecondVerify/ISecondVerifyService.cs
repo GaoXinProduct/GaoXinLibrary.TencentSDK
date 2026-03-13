@@ -6,7 +6,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 public interface ISecondVerifyService
 {
     /// <summary>获取用户二次验证信息</summary>
-    Task<GetTfaInfoResponse> GetTfaInfoAsync(string code, CancellationToken ct = default);
+    Task<GetTfaInfoResponse> GetTfaInfoAsync(GetTfaInfoRequest request, CancellationToken ct = default);
 
     /// <summary>登录二次验证</summary>
     Task TfaSuccessAsync(string userId, CancellationToken ct = default);

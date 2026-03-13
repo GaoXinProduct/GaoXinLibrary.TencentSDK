@@ -26,9 +26,8 @@ public class UserService : IUserService
         => await _http.GetAsync<WecomBaseResponse>("/cgi-bin/user/delete",
             new() { ["userid"] = userId }, ct);
 
-    public async Task BatchDeleteUsersAsync(string[] userIds, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/user/batchdelete",
-            new BatchDeleteUserRequest { UserIdList = userIds }, ct);
+    public async Task BatchDeleteUsersAsync(BatchDeleteUserRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/user/batchdelete", request, ct);
 
     public async Task<SimpleUserInfo[]> GetDepartmentSimpleUsersAsync(int departmentId, bool fetchChild = false, CancellationToken ct = default)
     {
@@ -44,17 +43,15 @@ public class UserService : IUserService
         return resp.UserList ?? [];
     }
 
-    public async Task<string> ConvertUserIdToOpenIdAsync(string userId, CancellationToken ct = default)
+    public async Task<string> ConvertUserIdToOpenIdAsync(ConvertToOpenIdRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<ConvertOpenIdResponse>("/cgi-bin/user/convert_to_openid",
-            new { userid = userId }, ct);
+        var resp = await _http.PostAsync<ConvertOpenIdResponse>("/cgi-bin/user/convert_to_openid", request, ct);
         return resp.OpenId ?? string.Empty;
     }
 
-    public async Task<string> ConvertOpenIdToUserIdAsync(string openId, CancellationToken ct = default)
+    public async Task<string> ConvertOpenIdToUserIdAsync(ConvertToUserIdRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<ConvertOpenIdResponse>("/cgi-bin/user/convert_to_userid",
-            new { openid = openId }, ct);
+        var resp = await _http.PostAsync<ConvertOpenIdResponse>("/cgi-bin/user/convert_to_userid", request, ct);
         return resp.UserId ?? string.Empty;
     }
 
@@ -65,17 +62,15 @@ public class UserService : IUserService
         return resp.JoinQrCode ?? string.Empty;
     }
 
-    public async Task<string> GetUserIdByMobileAsync(string mobile, CancellationToken ct = default)
+    public async Task<string> GetUserIdByMobileAsync(GetUserIdByMobileRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetUserIdByMobileResponse>("/cgi-bin/user/getuserid",
-            new { mobile }, ct);
+        var resp = await _http.PostAsync<GetUserIdByMobileResponse>("/cgi-bin/user/getuserid", request, ct);
         return resp.UserId ?? string.Empty;
     }
 
-    public async Task<string> GetUserIdByEmailAsync(string email, int emailType = 1, CancellationToken ct = default)
+    public async Task<string> GetUserIdByEmailAsync(GetUserIdByEmailRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetUserIdByMobileResponse>("/cgi-bin/user/get_userid_by_email",
-            new { email, email_type = emailType }, ct);
+        var resp = await _http.PostAsync<GetUserIdByMobileResponse>("/cgi-bin/user/get_userid_by_email", request, ct);
         return resp.UserId ?? string.Empty;
     }
 

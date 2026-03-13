@@ -20,7 +20,7 @@ public interface IUserService
     Task DeleteUserAsync(string userId, CancellationToken ct = default);
 
     /// <summary>批量删除成员</summary>
-    Task BatchDeleteUsersAsync(string[] userIds, CancellationToken ct = default);
+    Task BatchDeleteUsersAsync(BatchDeleteUserRequest request, CancellationToken ct = default);
 
     /// <summary>获取部门成员（简单信息）</summary>
     Task<SimpleUserInfo[]> GetDepartmentSimpleUsersAsync(int departmentId, bool fetchChild = false, CancellationToken ct = default);
@@ -29,19 +29,19 @@ public interface IUserService
     Task<UserInfo[]> GetDepartmentUsersAsync(int departmentId, bool fetchChild = false, CancellationToken ct = default);
 
     /// <summary>userid 转换为 openid</summary>
-    Task<string> ConvertUserIdToOpenIdAsync(string userId, CancellationToken ct = default);
+    Task<string> ConvertUserIdToOpenIdAsync(ConvertToOpenIdRequest request, CancellationToken ct = default);
 
     /// <summary>openid 转换为 userid</summary>
-    Task<string> ConvertOpenIdToUserIdAsync(string openId, CancellationToken ct = default);
+    Task<string> ConvertOpenIdToUserIdAsync(ConvertToUserIdRequest request, CancellationToken ct = default);
 
     /// <summary>获取加入企业二维码</summary>
     Task<string> GetJoinQrCodeAsync(int sizeType = 3, CancellationToken ct = default);
 
     /// <summary>手机号获取 userid</summary>
-    Task<string> GetUserIdByMobileAsync(string mobile, CancellationToken ct = default);
+    Task<string> GetUserIdByMobileAsync(GetUserIdByMobileRequest request, CancellationToken ct = default);
 
     /// <summary>邮箱获取 userid</summary>
-    Task<string> GetUserIdByEmailAsync(string email, int emailType = 1, CancellationToken ct = default);
+    Task<string> GetUserIdByEmailAsync(GetUserIdByEmailRequest request, CancellationToken ct = default);
 
     /// <summary>邀请成员（企业微信、邮件或短信）</summary>
     Task<InviteMemberResponse> InviteMemberAsync(InviteMemberRequest request, CancellationToken ct = default);

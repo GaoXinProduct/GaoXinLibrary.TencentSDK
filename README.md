@@ -16,6 +16,7 @@
 - 🔄 **access_token 自动管理** — 内置缓存与自动刷新，无需手动维护 Token 生命周期
 - 🛡️ **消息回调加解密** — 企业微信与公众号回调消息的签名校验、AES 加解密一站式支持
 - 📦 **会话内容存档** — 企业微信会话存档原生 SDK 封装（含 RSA 解密）
+- 🔄 **瞬态故障自动重试** — 网络抖动、连接超时、服务端 5xx 等临时性故障自动按指数退避重试，可通过 `RetryOptions` 配置
 - 🎯 **多目标框架** — 同时支持 **.NET 8 / .NET 9 / .NET 10**，各版本自动匹配对应的 `Microsoft.Extensions.*` 包
 - 📖 **XML 文档注释** — 所有公开 API 均附带完整 XML 文档，IDE 智能提示开箱即用
 
@@ -110,10 +111,10 @@ Install-Package GaoXinLibrary.TencentSDK
 
 | 模块 | 属性 | 服务接口 | 核心功能 |
 |------|------|---------|---------|
-| 成员管理 | `User` | `IUserService` | 创建 / 读取 / 更新 / 删除 / 邀请 / 分页列表 |
+| 成员管理 | `User` | `IUserService` | 创建 / 读取 / 更新 / 删除 / 批量删除 / userId⇄openId 转换 / 手机号/邮箱查 userId / 邀请成员 / 分页列表 |
 | 部门管理 | `Department` | `IDepartmentService` | 创建 / 更新 / 列表 / 详情 / 删除 |
 | 标签管理 | `Tag` | `ITagService` | 创建 / 删除 / 添加删除成员 / 列表 |
-| 应用消息 | `Message` | `IMessageService` | 文本 / Markdown / 图文 / 文本卡片 / 小程序通知 / 模版卡片 / 撤回 |
+| 应用消息 | `Message` | `IMessageService` | 文本 / Markdown / 图文 / 文本卡片 / 小程序通知 / 模版卡片 / 更新模版卡片 / 撤回 |
 | 群机器人 | `Webhook` | `IWebhookService` | 文本 / Markdown / 图文 / 图片 / 文件 Webhook 推送 |
 | 应用管理 | `Agent` | `IAgentService` | 获取应用信息 / 应用列表 / 设置应用 / 设置工作台模板 / 自定义菜单管理 |
 | 自定义菜单 | `Menu` | `IMenuService` | 创建 / 获取 / 删除应用菜单（AgentId 自动取自 `WecomOptions`，无需手动传入） |
@@ -137,20 +138,20 @@ Install-Package GaoXinLibrary.TencentSDK
 | 操作日志 | `OperationLog` | `IOperationLogService` | 成员操作记录 / 管理端操作日志 |
 | 账号 ID 管理 | `AccountId` | `IAccountIdService` | tmp_external_userid 转换 |
 | IP 段查询 | `IpRange` | `IIpRangeService` | 获取接口 IP 段 / 获取回调 IP 段 |
-| 客户联系 | `ExternalContact` | `IExternalContactService` | 客户列表 / 详情 / 批量获取 / 备注 / 客户群 / 行为数据 / 欢迎语 |
-| 企业支付 | `CorpPay` | `ICorpPayService` | 对外收款记录查询 / 收款项目账单 |
+| 客户联系 | `ExternalContact` | `IExternalContactService` | 成员配置列表 / 客户列表 / 详情 / 批量获取 / 修改备注 / 客户群列表 / 联系统计 / 新客户欢迎语 |
+| 企业支付 | `CorpPay` | `ICorpPayService` | 对外收款账单列表 / 收款项目账单列表 |
 | 邮件 | `Email` | `IEmailService` | 发送邮件 / 获取未读数 |
-| 文档 | `Document` | `IDocumentService` | 新建 / 获取 / 重命名 / 删除 / 分享文档 |
+| 文档 | `Document` | `IDocumentService` | 新建 / 获取基础信息 / 重命名 / 删除 / 分享文档 |
 | 日程 | `Calendar` | `ICalendarService` | 日历增删改查 / 日程增删改查 / 按日历获取日程 |
 | 会议 | `Meeting` | `IMeetingService` | 创建 / 修改 / 取消 / 详情 / 成员会议列表 |
-| 微盘 | `Wedrive` | `IWedriveService` | 空间管理 / 文件列表 / 创建 / 重命名 / 删除 / 移动 |
+| 微盘 | `Wedrive` | `IWedriveService` | 空间创建 / 重命名 / 解散 / 详情 / 文件列表 / 创建文件 / 重命名 / 删除 / 移动 |
 | 直播 | `Living` | `ILivingService` | 创建 / 修改 / 取消直播 / 删除回放 / 详情 / 成员直播列表 |
 | 公费电话 | `Dial` | `IDialService` | 获取公费电话拨打记录 |
 | 汇报 | `Report` | `IReportService` | 批量获取汇报记录单号 / 汇报详情 |
 | 人事助手 | `Hr` | `IHrService` | 员工字段配置 / 花名册信息查询与更新 |
-| 会议室 | `MeetingRoom` | `IMeetingRoomService` | 添加 / 列表 / 编辑 / 删除会议室 / 预定 / 取消预定 |
+| 会议室 | `MeetingRoom` | `IMeetingRoomService` | 添加 / 列表 / 编辑 / 删除会议室 / 查询预定信息 / 预定 / 取消预定 |
 | 电子发票 | `Invoice` | `IInvoiceService` | 查询 / 批量查询 / 更新 / 批量更新发票状态 |
-| 智能表格 | `SmartSheet` | `ISmartSheetService` | 子表增删改查 / 字段增删改查 / 记录增删改查 / 视图查询 |
+| 智能表格 | `SmartSheet` | `ISmartSheetService` | 子表增删改查 / 字段增删改查 / 记录增删改查 / 视图列表 |
 | 收集表 | `CollectForm` | `ICollectFormService` | 创建 / 修改 / 获取收集表 / 获取答案 |
 
 ---
@@ -350,6 +351,12 @@ var loginUrl = client.Login.BuildAuthUrl("https://example.com/callback", state: 
 ```csharp
 using GaoXinLibrary.TencentSDK.Wecom;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
+using GaoXinLibrary.TencentSDK.Wecom.Models.User;
+using GaoXinLibrary.TencentSDK.Wecom.Models.Message;
+using GaoXinLibrary.TencentSDK.Wecom.Models.Meeting;
+using GaoXinLibrary.TencentSDK.Wecom.Models.Document;
+using GaoXinLibrary.TencentSDK.Wecom.Models.Calendar;
+using GaoXinLibrary.TencentSDK.Wecom.Models.Invoice;
 
 var client = WecomClient.Create(new WecomOptions
 {
@@ -358,16 +365,37 @@ var client = WecomClient.Create(new WecomOptions
     AgentId    = 1000001
 });
 
-// 发送文本消息（@all 发送给所有人）
+// 发送文本消息（@all 发送给所有人）— 便捷方法
 var resp = await client.Message.SendTextAsync("Hello, 企业微信!", toUser: "@all");
 Console.WriteLine($"MsgId: {resp.MsgId}");
 
 // 发送 Markdown 消息
 await client.Message.SendMarkdownAsync("## 通知\n> 这是一条 **Markdown** 消息", toUser: "@all");
 
+// 撤回消息 — 使用 Request Model
+await client.Message.RecallMessageAsync(new RecallMessageRequest { MsgId = resp.MsgId });
+
 // 获取成员信息
 var user = await client.User.GetUserAsync("zhangsan");
 Console.WriteLine($"姓名: {user.Name}, 手机: {user.Mobile}");
+
+// userid 转 openid — 使用 Request Model
+var openId = await client.User.ConvertUserIdToOpenIdAsync(new ConvertToOpenIdRequest
+{
+    UserId = "zhangsan"
+});
+
+// 手机号获取 userid
+var uid = await client.User.GetUserIdByMobileAsync(new GetUserIdByMobileRequest
+{
+    Mobile = "13800000000"
+});
+
+// 批量删除成员
+await client.User.BatchDeleteUsersAsync(new BatchDeleteUserRequest
+{
+    UserIdList = ["user1", "user2"]
+});
 
 // 获取部门列表
 var depts = await client.Department.GetDepartmentListAsync();
@@ -388,7 +416,42 @@ await client.Menu.DeleteMenuAsync();
 var oauthUrl = client.OAuth.BuildAuthUrl(
     redirectUri: "https://your-domain.com/callback",
     agentId: 1000001);
+
+// 创建预约会议
+var meeting = await client.Meeting.CreateMeetingAsync(new CreateMeetingRequest
+{
+    Title        = "项目周会",
+    AdminUserId  = "zhangsan",
+    MeetingStart = DateTimeOffset.UtcNow.AddHours(1).ToUnixTimeSeconds(),
+    MeetingEnd   = DateTimeOffset.UtcNow.AddHours(2).ToUnixTimeSeconds()
+});
+
+// 新建文档
+var doc = await client.Document.CreateDocAsync(new CreateDocRequest
+{
+    DocName = "会议纪要",
+    DocType = 1 // 1-文档, 3-表格
+});
+
+// 创建日历
+var calId = await client.Calendar.CreateCalendarAsync(new CreateCalendarRequest
+{
+    Calendar = new CalendarInfo
+    {
+        Summary     = "团队日程",
+        Description = "技术团队共享日历"
+    }
+});
+
+// 查询电子发票
+var invoice = await client.Invoice.GetInvoiceInfoAsync(new GetInvoiceInfoRequest
+{
+    CardId       = "CARD_ID",
+    EncryptCode  = "ENCRYPT_CODE"
+});
 ```
+
+> 💡 **API 设计说明**：所有 POST 接口的方法均接受**强类型 Request Model** 作为参数，每个 Model 均包含完整的 `[JsonPropertyName]` 和 XML 文档注释。部分高频接口（如消息发送）额外提供便捷方法（`SendTextAsync` / `SendMarkdownAsync` 等）。
 
 ---
 
@@ -470,6 +533,13 @@ public class NotificationService(IMessageService messageService, IUserService us
             await messageService.SendTextAsync(content, toUser: userId);
         }
     }
+
+    public async Task<string> GetOpenIdAsync(string userId)
+    {
+        // POST 接口使用强类型 Request Model
+        return await userService.ConvertUserIdToOpenIdAsync(
+            new ConvertToOpenIdRequest { UserId = userId });
+    }
 }
 ```
 
@@ -514,6 +584,83 @@ public class MultiAgentService(
 }
 ```
 
+### 从配置文件绑定（IConfiguration）
+
+所有 DI 扩展方法均支持直接传入 `IConfiguration`（如 `IConfigurationSection`），自动绑定到对应的 Options 类，无需手动编写委托：
+
+```json
+// appsettings.json
+{
+  "WechatMiniProgram": {
+    "AppId": "mini_appid",
+    "AppSecret": "mini_secret"
+  },
+  "WechatOfficial": {
+    "AppId": "official_appid",
+    "AppSecret": "official_secret",
+    "CallbackToken": "callback_token",
+    "CallbackEncodingAesKey": "encoding_aes_key"
+  },
+  "WechatOpen": {
+    "AppId": "open_appid",
+    "AppSecret": "open_secret"
+  },
+  "QQConnect": {
+    "AppId": "qq_appid",
+    "AppSecret": "qq_appkey"
+  },
+  "Wecom": {
+    "CorpId": "your_corpid",
+    "CorpSecret": "your_corpsecret",
+    "AgentId": 1000001
+  }
+}
+```
+
+```csharp
+using GaoXinLibrary.TencentSDK.Wechat.Extensions;
+using GaoXinLibrary.TencentSDK.Wecom.Extensions;
+
+var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
+
+// 从配置节绑定（单实例）
+builder.Services.AddWechatMiniProgram(config.GetSection("WechatMiniProgram"));
+builder.Services.AddWechatOfficial(config.GetSection("WechatOfficial"));
+builder.Services.AddWechatOpen(config.GetSection("WechatOpen"));
+builder.Services.AddQQConnect(config.GetSection("QQConnect"));
+builder.Services.AddWecom(config.GetSection("Wecom"));
+```
+
+多实例同样支持 `IConfiguration` 绑定：
+
+```json
+// appsettings.json
+{
+  "WecomAgent1": {
+    "CorpId": "corp1",
+    "CorpSecret": "secret1",
+    "AgentId": 1000001
+  },
+  "WecomAgent2": {
+    "CorpId": "corp1",
+    "CorpSecret": "secret2",
+    "AgentId": 1000002
+  }
+}
+```
+
+```csharp
+// 带 key 的多实例 + IConfiguration
+builder.Services.AddWecom("agent1", config.GetSection("WecomAgent1"));
+builder.Services.AddWecom("agent2", config.GetSection("WecomAgent2"));
+
+builder.Services.AddWechatMiniProgram("appA", config.GetSection("MiniProgramA"));
+builder.Services.AddWechatMiniProgram("appB", config.GetSection("MiniProgramB"));
+```
+
+> 💡 所有 Options 类的属性均支持 `IConfiguration` 绑定，包括 `RetryOptions`、`HttpTimeout` 等嵌套/复杂类型。
+
 ---
 
 ## ⚙️ 配置参数
@@ -529,8 +676,7 @@ public class MultiAgentService(
 | `ShareSecret` | `string?` | — | 共享 Token 密钥（ChaCha20-Poly1305，详见[跨服务共享 Token](#-跨服务共享-token)） |
 | `TokenShareUrl` | `string?` | — | 远端共享 Token 地址；设置后从此地址拉取加密 Token，而非直接请求微信 API |
 | `OnTokenChanged` | `Func<string, CancellationToken, Task>?` | — | Token 刷新成功后的变更通知回调，参数为新的明文 access_token |
-
-#### `WechatOfficialOptions`（继承 `WechatOptions`）
+| `RetryOptions` | `TencentRetryOptions` | `new()` | 瞬态故障重试配置（网络抖动、超时、5xx），详见[瞬态故障自动重试](#-瞬态故障自动重试) |
 
 | 属性 | 类型 | 说明 |
 |------|------|------|
@@ -568,6 +714,7 @@ public class MultiAgentService(
 | `AgentTicketShareSecret` | `string?` | — | 应用级 jsapi_ticket 共享密钥（ChaCha20-Poly1305） |
 | `AgentTicketShareUrl` | `string?` | — | 应用级 jsapi_ticket 共享远端地址 |
 | `OnAgentTicketChanged` | `Func<string, CancellationToken, Task>?` | — | 应用级 jsapi_ticket 刷新成功后的变更通知回调 |
+| `RetryOptions` | `TencentRetryOptions` | `new()` | 瞬态故障重试配置（网络抖动、超时、5xx），详见[瞬态故障自动重试](#-瞬态故障自动重试) |
 
 ---
 
@@ -639,7 +786,8 @@ GaoXinLibrary.TencentSDK/
 │   ├── TencentException.cs                #   异常基类
 │   ├── TencentAccessTokenProvider.cs      #   access_token 管理基类（缓存 / 刷新 / 手动设置 / 共享 Token）
 │   ├── TencentTokenCrypto.cs              #   共享 Token 加解密工具（ChaCha20-Poly1305）
-│   ├── TencentHttpClient.cs               #   HTTP 客户端基类（Get / Post / 反序列化）
+│   ├── TencentHttpClient.cs               #   HTTP 客户端基类（Get / Post / 反序列化 / 瞬态重试）
+│   ├── TencentRetryOptions.cs             #   瞬态故障重试配置（指数退避）
 │   ├── TencentCryptoHelper.cs             #   消息加解密基类（AES-256-CBC / SHA1 签名）
 │   ├── WechatOptions.cs                   #   微信配置基类
 │   ├── WechatMiniProgramOptions.cs        #   小程序配置
@@ -963,6 +1111,61 @@ await wecomClient.RefreshAgentTicketAsync();               // 强制刷新
 wecomClient.InvalidateAgentTicketCache();                  // 使缓存失效
 wecomClient.SetAgentTicket("external_ticket");             // 手动设置
 ```
+
+---
+
+### 🔄 瞬态故障自动重试
+
+SDK 内置了瞬态故障自动重试机制，当遇到网络抖动、连接超时、服务端 5xx 等临时性故障时，会按指数退避策略自动重试。此机制与 Token 失效重试独立，两者可叠加工作。
+
+**可重试的故障类型：**
+- 网络层错误（连接失败、DNS 解析失败等 `HttpRequestException`）
+- HTTP 请求超时（`TaskCanceledException`，非用户主动取消）
+- 服务端错误（HTTP 5xx 状态码）
+
+**配置参数 — `TencentRetryOptions`：**
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `MaxRetries` | `int` | `2` | 最大重试次数（不含首次请求），设为 0 则不重试 |
+| `InitialDelay` | `TimeSpan` | 500ms | 首次重试前的等待时间，后续按指数退避递增 |
+| `MaxDelay` | `TimeSpan` | 5s | 单次重试等待时间上限 |
+
+```csharp
+// 使用默认重试配置（2 次重试，500ms 起始延迟，指数退避）
+var client = WecomClient.Create(new WecomOptions
+{
+    CorpId     = "your_corpid",
+    CorpSecret = "your_corpsecret",
+    AgentId    = 1000001
+    // RetryOptions 默认已启用，无需额外配置
+});
+
+// 自定义重试策略
+var client2 = WecomClient.Create(new WecomOptions
+{
+    CorpId     = "your_corpid",
+    CorpSecret = "your_corpsecret",
+    AgentId    = 1000001,
+    RetryOptions = new TencentRetryOptions
+    {
+        MaxRetries   = 3,                              // 最多重试 3 次
+        InitialDelay = TimeSpan.FromMilliseconds(200),  // 首次重试等待 200ms
+        MaxDelay     = TimeSpan.FromSeconds(10)          // 单次最多等待 10s
+    }
+});
+
+// 禁用重试
+var client3 = WecomClient.Create(new WecomOptions
+{
+    CorpId     = "your_corpid",
+    CorpSecret = "your_corpsecret",
+    AgentId    = 1000001,
+    RetryOptions = new TencentRetryOptions { MaxRetries = 0 }
+});
+```
+
+> 💡 **设计说明**：瞬态重试工作在 Token 重试的**内层**，即每次使用某个 Token 发起请求时，先尝试瞬态重试；若所有重试均失败且错误为 Token 失效，再触发 Token 刷新。这避免了网络问题被误判为 Token 失效。
 
 ---
 

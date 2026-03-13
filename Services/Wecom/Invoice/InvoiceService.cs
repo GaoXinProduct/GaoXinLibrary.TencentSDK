@@ -10,35 +10,21 @@ public class InvoiceService : IInvoiceService
 
     public InvoiceService(WecomHttpClient http) => _http = http;
 
-    public async Task<InvoiceInfo?> GetInvoiceInfoAsync(string cardId, string encryptCode, CancellationToken ct = default)
+    public async Task<InvoiceInfo?> GetInvoiceInfoAsync(GetInvoiceInfoRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetInvoiceInfoResponse>("/cgi-bin/card/invoice/reimburse/getinvoiceinfo",
-            new { card_id = cardId, encrypt_code = encryptCode }, ct);
+        var resp = await _http.PostAsync<GetInvoiceInfoResponse>("/cgi-bin/card/invoice/reimburse/getinvoiceinfo", request, ct);
         return resp.InvoiceInfo;
     }
 
-    public async Task<InvoiceInfo[]> BatchGetInvoiceInfoAsync(string[] cardIdAndEncryptCodes, CancellationToken ct = default)
+    public async Task<InvoiceInfo[]> BatchGetInvoiceInfoAsync(BatchGetInvoiceInfoRequest request, CancellationToken ct = default)
     {
-        var items = new List<object>();
-        for (int i = 0; i + 1 < cardIdAndEncryptCodes.Length; i += 2)
-            items.Add(new { card_id = cardIdAndEncryptCodes[i], encrypt_code = cardIdAndEncryptCodes[i + 1] });
-
-        var resp = await _http.PostAsync<BatchGetInvoiceInfoResponse>("/cgi-bin/card/invoice/reimburse/getinvoiceinfobatch",
-            new { item_list = items }, ct);
+        var resp = await _http.PostAsync<BatchGetInvoiceInfoResponse>("/cgi-bin/card/invoice/reimburse/getinvoiceinfobatch", request, ct);
         return resp.ItemList ?? [];
     }
 
-    public async Task UpdateInvoiceStatusAsync(string cardId, string encryptCode, int reimburseStatus, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/card/invoice/reimburse/updateinvoicestatus",
-            new { card_id = cardId, encrypt_code = encryptCode, reimburse_status = reimburseStatus }, ct);
+    public async Task UpdateInvoiceStatusAsync(UpdateInvoiceStatusRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/card/invoice/reimburse/updateinvoicestatus", request, ct);
 
-    public async Task BatchUpdateInvoiceStatusAsync(string openid, int reimburseStatus, string[] cardIdAndEncryptCodes, CancellationToken ct = default)
-    {
-        var items = new List<object>();
-        for (int i = 0; i + 1 < cardIdAndEncryptCodes.Length; i += 2)
-            items.Add(new { card_id = cardIdAndEncryptCodes[i], encrypt_code = cardIdAndEncryptCodes[i + 1] });
-
-        await _http.PostAsync<WecomBaseResponse>("/cgi-bin/card/invoice/reimburse/updatestatusbatch",
-            new { openid, reimburse_status = reimburseStatus, invoice_list = items }, ct);
-    }
+    public async Task BatchUpdateInvoiceStatusAsync(BatchUpdateInvoiceStatusRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/card/invoice/reimburse/updatestatusbatch", request, ct);
 }

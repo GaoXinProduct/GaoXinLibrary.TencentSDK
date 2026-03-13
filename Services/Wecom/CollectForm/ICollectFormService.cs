@@ -6,14 +6,14 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 public interface ICollectFormService
 {
     /// <summary>创建收集表</summary>
-    Task<CreateCollectFormResponse> CreateCollectFormAsync(CollectFormInfo form, CancellationToken ct = default);
+    Task<CreateCollectFormResponse> CreateCollectFormAsync(CollectFormOperationRequest request, CancellationToken ct = default);
 
     /// <summary>修改收集表</summary>
-    Task ModifyCollectFormAsync(CollectFormInfo form, CancellationToken ct = default);
+    Task ModifyCollectFormAsync(CollectFormOperationRequest request, CancellationToken ct = default);
 
     /// <summary>获取收集表详情</summary>
-    Task<CollectFormInfo?> GetCollectFormAsync(string formId, CancellationToken ct = default);
+    Task<CollectFormInfo?> GetCollectFormAsync(GetCollectFormRequest request, CancellationToken ct = default);
 
     /// <summary>获取收集表答案</summary>
-    Task<GetCollectAnswerResponse> GetCollectAnswerAsync(string formId, string? cursor = null, int limit = 100, CancellationToken ct = default);
+    Task<GetCollectAnswerResponse> GetCollectAnswerAsync(GetCollectAnswerRequest request, CancellationToken ct = default);
 }

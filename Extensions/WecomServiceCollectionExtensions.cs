@@ -1,8 +1,10 @@
 using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Services;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Extensions;
 
@@ -81,7 +83,8 @@ public static class WecomServiceCollectionExtensions
         {
             var factory = sp.GetRequiredService<IHttpClientFactory>();
             var httpClient = factory.CreateClient(httpClientName);
-            return WecomClient.Create(options, httpClient);
+            var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WecomClient>();
+            return WecomClient.Create(options, httpClient, logger);
         });
 
         // 注册各子服务接口
@@ -178,7 +181,8 @@ public static class WecomServiceCollectionExtensions
         {
             var factory = sp.GetRequiredService<IHttpClientFactory>();
             var httpClient = factory.CreateClient(httpClientName);
-            return WecomClient.Create(options, httpClient);
+            var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WecomClient>();
+            return WecomClient.Create(options, httpClient, logger);
         });
 
         // 注册各子服务接口（Keyed），代理到同 key 的 WecomClient
@@ -226,6 +230,52 @@ public static class WecomServiceCollectionExtensions
         services.AddKeyedSingleton<ICollectFormService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).CollectForm);
 
         return services;
+    }
+
+    // ─── IConfiguration 绑定 ────────────────────────────────────────────
+
+    /// <summary>
+    /// 注册企业微信 SDK 服务（从 <see cref="IConfiguration"/> 绑定配置）
+    /// <para>
+    /// 用法示例：
+    /// <code>
+    /// builder.Services.AddWecom(builder.Configuration.GetSection("Wecom"));
+    /// </code>
+    /// appsettings.json 示例：
+    /// <code>
+    /// {
+    ///   "Wecom": {
+    ///     "CorpId": "your_corpid",
+    ///     "CorpSecret": "your_corpsecret",
+    ///     "AgentId": 1000001
+    ///   }
+    /// }
+    /// </code>
+    /// </para>
+    /// </summary>
+    public static IServiceCollection AddWecom(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new WecomOptions();
+        configuration.Bind(options);
+        return services.AddWecom(options);
+    }
+
+    /// <summary>
+    /// 注册企业微信 SDK 服务（带 key，从 <see cref="IConfiguration"/> 绑定配置）
+    /// </summary>
+    public static IServiceCollection AddWecom(
+        this IServiceCollection services,
+        string name,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new WecomOptions();
+        configuration.Bind(options);
+        return services.AddWecom(name, options);
     }
 
     // ─── 内部辅助 ──────────────────────────────────────────────────────

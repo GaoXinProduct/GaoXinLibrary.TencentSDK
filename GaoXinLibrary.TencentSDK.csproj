@@ -47,21 +47,30 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.*" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.*" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.*" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="8.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.*" />
   </ItemGroup>
 
   <!-- net9.0 → 最新 9.x -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.*" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.*" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.*" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="9.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.*" />
   </ItemGroup>
 
   <!-- net10.0 → 最新 10.x -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.*" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.*" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.*" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="10.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.*" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.*" />
   </ItemGroup>
 
   <ItemGroup>

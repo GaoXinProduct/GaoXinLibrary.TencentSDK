@@ -266,6 +266,17 @@ public sealed class WecomClient : IDisposable
         Invoice = new InvoiceService(_http);
         SmartSheet = new SmartSheetService(_http);
         CollectForm = new CollectFormService(_http);
+
+        // SecretShareUrl 模式：自动预热，尽早从远端加载 CorpId / CorpSecret / AgentId / Tickets
+        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
+            _ = AutoInitAsync();
+    }
+
+    /// <summary>自动预热：在后台拉取共享密钥载荷以填充 CorpId/CorpSecret 等</summary>
+    private async Task AutoInitAsync()
+    {
+        try { await _tokenProvider.GetTokenAsync(); }
+        catch { /* 首次失败不影响后续正常重试 */ }
     }
 
     /// <summary>

@@ -135,6 +135,17 @@ public sealed class WechatOfficialClient : IDisposable
         Invoice = new OfficialInvoiceService(http);
         OpenApi = new OfficialOpenApiService(http, options);
         Callback = new OfficialCallbackService(http, options);
+
+        // SecretShareUrl 模式：自动预热，尽早从远端加载 AppId / AppSecret / Ticket
+        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
+            _ = AutoInitAsync();
+    }
+
+    /// <summary>自动预热：在后台拉取共享密钥载荷以填充 AppId/AppSecret 等</summary>
+    private async Task AutoInitAsync()
+    {
+        try { await _tokenProvider.GetTokenAsync(); }
+        catch { /* 首次失败不影响后续正常重试 */ }
     }
 
     /// <summary>

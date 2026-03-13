@@ -13,7 +13,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Extensions;
 /// <para>
 /// <b>单实例用法</b>（无 key，向后兼容）：
 /// <code>
-/// builder.Services.AddWecom(options =>
+/// builder.Services.AddWecomService(options =>
 /// {
 ///     options.CorpId     = "your_corpid";
 ///     options.CorpSecret = "your_corpsecret";
@@ -25,11 +25,11 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Extensions;
 ///
 /// <b>多实例用法</b>（Keyed Services，.NET 8+）：
 /// <code>
-/// builder.Services.AddWecom("agent1", opt =>
+/// builder.Services.AddWecomService("agent1", opt =>
 /// {
 ///     opt.CorpId = "corp1"; opt.CorpSecret = "secret1"; opt.AgentId = 1000001;
 /// });
-/// builder.Services.AddWecom("agent2", opt =>
+/// builder.Services.AddWecomService("agent2", opt =>
 /// {
 ///     opt.CorpId = "corp1"; opt.CorpSecret = "secret2"; opt.AgentId = 1000002;
 /// });
@@ -47,7 +47,7 @@ public static class WecomServiceCollectionExtensions
     /// <summary>
     /// 注册企业微信 SDK 服务（使用委托配置选项，无 key 单实例）
     /// </summary>
-    public static IServiceCollection AddWecom(
+    public static IServiceCollection AddWecomService(
         this IServiceCollection services,
         Action<WecomOptions> configure)
     {
@@ -55,13 +55,13 @@ public static class WecomServiceCollectionExtensions
 
         var options = new WecomOptions();
         configure(options);
-        return services.AddWecom(options);
+        return services.AddWecomService(options);
     }
 
     /// <summary>
     /// 注册企业微信 SDK 服务（使用已有配置对象，无 key 单实例）
     /// </summary>
-    public static IServiceCollection AddWecom(
+    public static IServiceCollection AddWecomService(
         this IServiceCollection services,
         WecomOptions options)
     {
@@ -140,7 +140,7 @@ public static class WecomServiceCollectionExtensions
     /// 注册企业微信 SDK 服务（带 key，使用委托配置选项）
     /// <para>支持多次调用以注册不同 Agent / CorpSecret 实例，通过 <c>[FromKeyedServices("name")]</c> 注入。</para>
     /// </summary>
-    public static IServiceCollection AddWecom(
+    public static IServiceCollection AddWecomService(
         this IServiceCollection services,
         string name,
         Action<WecomOptions> configure)
@@ -150,14 +150,14 @@ public static class WecomServiceCollectionExtensions
 
         var options = new WecomOptions();
         configure(options);
-        return services.AddWecom(name, options);
+        return services.AddWecomService(name, options);
     }
 
     /// <summary>
     /// 注册企业微信 SDK 服务（带 key，使用已有配置对象）
     /// <para>支持多次调用以注册不同 Agent / CorpSecret 实例，通过 <c>[FromKeyedServices("name")]</c> 注入。</para>
     /// </summary>
-    public static IServiceCollection AddWecom(
+    public static IServiceCollection AddWecomService(
         this IServiceCollection services,
         string name,
         WecomOptions options)
@@ -239,7 +239,7 @@ public static class WecomServiceCollectionExtensions
     /// <para>
     /// 用法示例：
     /// <code>
-    /// builder.Services.AddWecom(builder.Configuration.GetSection("Wecom"));
+    /// builder.Services.AddWecomService(builder.Configuration.GetSection("Wecom"));
     /// </code>
     /// appsettings.json 示例：
     /// <code>
@@ -253,20 +253,20 @@ public static class WecomServiceCollectionExtensions
     /// </code>
     /// </para>
     /// </summary>
-    public static IServiceCollection AddWecom(
+    public static IServiceCollection AddWecomService(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         var options = new WecomOptions();
         configuration.Bind(options);
-        return services.AddWecom(options);
+        return services.AddWecomService(options);
     }
 
     /// <summary>
     /// 注册企业微信 SDK 服务（带 key，从 <see cref="IConfiguration"/> 绑定配置）
     /// </summary>
-    public static IServiceCollection AddWecom(
+    public static IServiceCollection AddWecomService(
         this IServiceCollection services,
         string name,
         IConfiguration configuration)
@@ -275,7 +275,7 @@ public static class WecomServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configuration);
         var options = new WecomOptions();
         configuration.Bind(options);
-        return services.AddWecom(name, options);
+        return services.AddWecomService(name, options);
     }
 
     // ─── 内部辅助 ──────────────────────────────────────────────────────
@@ -285,7 +285,10 @@ public static class WecomServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(options);
         if (string.IsNullOrWhiteSpace(options.CorpId))
             throw new ArgumentException("WecomOptions.CorpId 不能为空", nameof(options));
-        if (string.IsNullOrWhiteSpace(options.CorpSecret))
-            throw new ArgumentException("WecomOptions.CorpSecret 不能为空", nameof(options));
+        if (string.IsNullOrWhiteSpace(options.CorpSecret) &&
+            (string.IsNullOrWhiteSpace(options.ShareSecret) || string.IsNullOrWhiteSpace(options.TokenShareUrl)))
+        {
+            throw new ArgumentException("WecomOptions.CorpSecret 不能为空，或者需要同时配置 ShareSecret 和 TokenShareUrl", nameof(options));
+        }
     }
 }

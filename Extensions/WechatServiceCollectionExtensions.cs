@@ -1,4 +1,4 @@
-using GaoXinLibrary.TencentSDK.Core;
+﻿using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Services;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +13,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Extensions;
 /// <para>
 /// <b>小程序</b>：
 /// <code>
-/// builder.Services.AddWechatMiniProgram(options =>
+/// builder.Services.AddWechatMiniProgramService(options =>
 /// {
 ///     options.AppId     = "your_appid";
 ///     options.AppSecret = "your_appsecret";
@@ -24,7 +24,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Extensions;
 ///
 /// <b>公众号</b>：
 /// <code>
-/// builder.Services.AddWechatOfficial(options =>
+/// builder.Services.AddWechatOfficialService(options =>
 /// {
 ///     options.AppId     = "your_appid";
 ///     options.AppSecret = "your_appsecret";
@@ -35,7 +35,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Extensions;
 ///
 /// <b>开放平台</b>：
 /// <code>
-/// builder.Services.AddWechatOpen(options =>
+/// builder.Services.AddWechatOpenService(options =>
 /// {
 ///     options.AppId     = "your_appid";
 ///     options.AppSecret = "your_appsecret";
@@ -52,20 +52,20 @@ public static class WechatServiceCollectionExtensions
     /// <summary>
     /// 注册微信小程序 SDK 服务（使用委托配置选项）
     /// </summary>
-    public static IServiceCollection AddWechatMiniProgram(
+    public static IServiceCollection AddWechatMiniProgramService(
         this IServiceCollection services,
         Action<WechatMiniProgramOptions> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
         var options = new WechatMiniProgramOptions();
         configure(options);
-        return services.AddWechatMiniProgram(options);
+        return services.AddWechatMiniProgramService(options);
     }
 
     /// <summary>
     /// 注册微信小程序 SDK 服务（使用已有配置对象）
     /// </summary>
-    public static IServiceCollection AddWechatMiniProgram(
+    public static IServiceCollection AddWechatMiniProgramService(
         this IServiceCollection services,
         WechatMiniProgramOptions options)
     {
@@ -106,7 +106,7 @@ public static class WechatServiceCollectionExtensions
     /// <summary>
     /// 注册微信小程序 SDK 服务（带 key，多实例）
     /// </summary>
-    public static IServiceCollection AddWechatMiniProgram(
+    public static IServiceCollection AddWechatMiniProgramService(
         this IServiceCollection services,
         string name,
         Action<WechatMiniProgramOptions> configure)
@@ -115,13 +115,13 @@ public static class WechatServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configure);
         var options = new WechatMiniProgramOptions();
         configure(options);
-        return services.AddWechatMiniProgram(name, options);
+        return services.AddWechatMiniProgramService(name, options);
     }
 
     /// <summary>
     /// 注册微信小程序 SDK 服务（带 key，多实例）
     /// </summary>
-    public static IServiceCollection AddWechatMiniProgram(
+    public static IServiceCollection AddWechatMiniProgramService(
         this IServiceCollection services,
         string name,
         WechatMiniProgramOptions options)
@@ -164,20 +164,20 @@ public static class WechatServiceCollectionExtensions
     /// <summary>
     /// 注册微信公众号 SDK 服务（使用委托配置选项）
     /// </summary>
-    public static IServiceCollection AddWechatOfficial(
+    public static IServiceCollection AddWechatOfficialService(
         this IServiceCollection services,
         Action<WechatOfficialOptions> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
         var options = new WechatOfficialOptions();
         configure(options);
-        return services.AddWechatOfficial(options);
+        return services.AddWechatOfficialService(options);
     }
 
     /// <summary>
     /// 注册微信公众号 SDK 服务（使用已有配置对象）
     /// </summary>
-    public static IServiceCollection AddWechatOfficial(
+    public static IServiceCollection AddWechatOfficialService(
         this IServiceCollection services,
         WechatOfficialOptions options)
     {
@@ -224,7 +224,7 @@ public static class WechatServiceCollectionExtensions
     /// <summary>
     /// 注册微信公众号 SDK 服务（带 key，多实例）
     /// </summary>
-    public static IServiceCollection AddWechatOfficial(
+    public static IServiceCollection AddWechatOfficialService(
         this IServiceCollection services,
         string name,
         Action<WechatOfficialOptions> configure)
@@ -233,13 +233,13 @@ public static class WechatServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configure);
         var options = new WechatOfficialOptions();
         configure(options);
-        return services.AddWechatOfficial(name, options);
+        return services.AddWechatOfficialService(name, options);
     }
 
     /// <summary>
     /// 注册微信公众号 SDK 服务（带 key，多实例）
     /// </summary>
-    public static IServiceCollection AddWechatOfficial(
+    public static IServiceCollection AddWechatOfficialService(
         this IServiceCollection services,
         string name,
         WechatOfficialOptions options)
@@ -288,20 +288,20 @@ public static class WechatServiceCollectionExtensions
     /// <summary>
     /// 注册微信开放平台 SDK 服务（使用委托配置选项）
     /// </summary>
-    public static IServiceCollection AddWechatOpen(
+    public static IServiceCollection AddWechatOpenService(
         this IServiceCollection services,
         Action<WechatOpenOptions> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
         var options = new WechatOpenOptions();
         configure(options);
-        return services.AddWechatOpen(options);
+        return services.AddWechatOpenService(options);
     }
 
     /// <summary>
     /// 注册微信开放平台 SDK 服务（使用已有配置对象）
     /// </summary>
-    public static IServiceCollection AddWechatOpen(
+    public static IServiceCollection AddWechatOpenService(
         this IServiceCollection services,
         WechatOpenOptions options)
     {
@@ -330,7 +330,7 @@ public static class WechatServiceCollectionExtensions
     /// <summary>
     /// 注册微信开放平台 SDK 服务（带 key，多实例）
     /// </summary>
-    public static IServiceCollection AddWechatOpen(
+    public static IServiceCollection AddWechatOpenService(
         this IServiceCollection services,
         string name,
         Action<WechatOpenOptions> configure)
@@ -339,13 +339,13 @@ public static class WechatServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configure);
         var options = new WechatOpenOptions();
         configure(options);
-        return services.AddWechatOpen(name, options);
+        return services.AddWechatOpenService(name, options);
     }
 
     /// <summary>
     /// 注册微信开放平台 SDK 服务（带 key，多实例）
     /// </summary>
-    public static IServiceCollection AddWechatOpen(
+    public static IServiceCollection AddWechatOpenService(
         this IServiceCollection services,
         string name,
         WechatOpenOptions options)
@@ -376,20 +376,20 @@ public static class WechatServiceCollectionExtensions
     /// <summary>
     /// 注册 QQ 互联 SDK 服务（使用委托配置选项）
     /// </summary>
-    public static IServiceCollection AddQQConnect(
+    public static IServiceCollection AddQQConnectService(
         this IServiceCollection services,
         Action<QQConnectOptions> configure)
     {
         ArgumentNullException.ThrowIfNull(configure);
         var options = new QQConnectOptions();
         configure(options);
-        return services.AddQQConnect(options);
+        return services.AddQQConnectService(options);
     }
 
     /// <summary>
     /// 注册 QQ 互联 SDK 服务（使用已有配置对象）
     /// </summary>
-    public static IServiceCollection AddQQConnect(
+    public static IServiceCollection AddQQConnectService(
         this IServiceCollection services,
         QQConnectOptions options)
     {
@@ -417,7 +417,7 @@ public static class WechatServiceCollectionExtensions
     /// <summary>
     /// 注册 QQ 互联 SDK 服务（带 key，多实例）
     /// </summary>
-    public static IServiceCollection AddQQConnect(
+    public static IServiceCollection AddQQConnectService(
         this IServiceCollection services,
         string name,
         Action<QQConnectOptions> configure)
@@ -426,13 +426,13 @@ public static class WechatServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configure);
         var options = new QQConnectOptions();
         configure(options);
-        return services.AddQQConnect(name, options);
+        return services.AddQQConnectService(name, options);
     }
 
     /// <summary>
     /// 注册 QQ 互联 SDK 服务（带 key，多实例）
     /// </summary>
-    public static IServiceCollection AddQQConnect(
+    public static IServiceCollection AddQQConnectService(
         this IServiceCollection services,
         string name,
         QQConnectOptions options)
@@ -464,24 +464,24 @@ public static class WechatServiceCollectionExtensions
     /// <para>
     /// 用法示例：
     /// <code>
-    /// builder.Services.AddWechatMiniProgram(builder.Configuration.GetSection("WechatMiniProgram"));
+    /// builder.Services.AddWechatMiniProgramService(builder.Configuration.GetSection("WechatMiniProgram"));
     /// </code>
     /// </para>
     /// </summary>
-    public static IServiceCollection AddWechatMiniProgram(
+    public static IServiceCollection AddWechatMiniProgramService(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         var options = new WechatMiniProgramOptions();
         configuration.Bind(options);
-        return services.AddWechatMiniProgram(options);
+        return services.AddWechatMiniProgramService(options);
     }
 
     /// <summary>
     /// 注册微信小程序 SDK 服务（带 key，从 <see cref="IConfiguration"/> 绑定配置）
     /// </summary>
-    public static IServiceCollection AddWechatMiniProgram(
+    public static IServiceCollection AddWechatMiniProgramService(
         this IServiceCollection services,
         string name,
         IConfiguration configuration)
@@ -490,7 +490,7 @@ public static class WechatServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configuration);
         var options = new WechatMiniProgramOptions();
         configuration.Bind(options);
-        return services.AddWechatMiniProgram(name, options);
+        return services.AddWechatMiniProgramService(name, options);
     }
 
     /// <summary>
@@ -498,24 +498,24 @@ public static class WechatServiceCollectionExtensions
     /// <para>
     /// 用法示例：
     /// <code>
-    /// builder.Services.AddWechatOfficial(builder.Configuration.GetSection("WechatOfficial"));
+    /// builder.Services.AddWechatOfficialService(builder.Configuration.GetSection("WechatOfficial"));
     /// </code>
     /// </para>
     /// </summary>
-    public static IServiceCollection AddWechatOfficial(
+    public static IServiceCollection AddWechatOfficialService(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         var options = new WechatOfficialOptions();
         configuration.Bind(options);
-        return services.AddWechatOfficial(options);
+        return services.AddWechatOfficialService(options);
     }
 
     /// <summary>
     /// 注册微信公众号 SDK 服务（带 key，从 <see cref="IConfiguration"/> 绑定配置）
     /// </summary>
-    public static IServiceCollection AddWechatOfficial(
+    public static IServiceCollection AddWechatOfficialService(
         this IServiceCollection services,
         string name,
         IConfiguration configuration)
@@ -524,7 +524,7 @@ public static class WechatServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configuration);
         var options = new WechatOfficialOptions();
         configuration.Bind(options);
-        return services.AddWechatOfficial(name, options);
+        return services.AddWechatOfficialService(name, options);
     }
 
     /// <summary>
@@ -532,24 +532,24 @@ public static class WechatServiceCollectionExtensions
     /// <para>
     /// 用法示例：
     /// <code>
-    /// builder.Services.AddWechatOpen(builder.Configuration.GetSection("WechatOpen"));
+    /// builder.Services.AddWechatOpenService(builder.Configuration.GetSection("WechatOpen"));
     /// </code>
     /// </para>
     /// </summary>
-    public static IServiceCollection AddWechatOpen(
+    public static IServiceCollection AddWechatOpenService(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         var options = new WechatOpenOptions();
         configuration.Bind(options);
-        return services.AddWechatOpen(options);
+        return services.AddWechatOpenService(options);
     }
 
     /// <summary>
     /// 注册微信开放平台 SDK 服务（带 key，从 <see cref="IConfiguration"/> 绑定配置）
     /// </summary>
-    public static IServiceCollection AddWechatOpen(
+    public static IServiceCollection AddWechatOpenService(
         this IServiceCollection services,
         string name,
         IConfiguration configuration)
@@ -558,7 +558,7 @@ public static class WechatServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configuration);
         var options = new WechatOpenOptions();
         configuration.Bind(options);
-        return services.AddWechatOpen(name, options);
+        return services.AddWechatOpenService(name, options);
     }
 
     /// <summary>
@@ -566,24 +566,24 @@ public static class WechatServiceCollectionExtensions
     /// <para>
     /// 用法示例：
     /// <code>
-    /// builder.Services.AddQQConnect(builder.Configuration.GetSection("QQConnect"));
+    /// builder.Services.AddQQConnectService(builder.Configuration.GetSection("QQConnect"));
     /// </code>
     /// </para>
     /// </summary>
-    public static IServiceCollection AddQQConnect(
+    public static IServiceCollection AddQQConnectService(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
         var options = new QQConnectOptions();
         configuration.Bind(options);
-        return services.AddQQConnect(options);
+        return services.AddQQConnectService(options);
     }
 
     /// <summary>
     /// 注册 QQ 互联 SDK 服务（带 key，从 <see cref="IConfiguration"/> 绑定配置）
     /// </summary>
-    public static IServiceCollection AddQQConnect(
+    public static IServiceCollection AddQQConnectService(
         this IServiceCollection services,
         string name,
         IConfiguration configuration)
@@ -592,7 +592,7 @@ public static class WechatServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configuration);
         var options = new QQConnectOptions();
         configuration.Bind(options);
-        return services.AddQQConnect(name, options);
+        return services.AddQQConnectService(name, options);
     }
 
     // ─── 内部辅助 ──────────────────────────────────────────────────────
@@ -602,7 +602,10 @@ public static class WechatServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(options);
         if (string.IsNullOrWhiteSpace(options.AppId))
             throw new ArgumentException("WechatOptions.AppId 不能为空", nameof(options));
-        if (string.IsNullOrWhiteSpace(options.AppSecret))
-            throw new ArgumentException("WechatOptions.AppSecret 不能为空", nameof(options));
+        if (string.IsNullOrWhiteSpace(options.AppSecret) &&
+            (string.IsNullOrWhiteSpace(options.ShareSecret) || string.IsNullOrWhiteSpace(options.TokenShareUrl)))
+        {
+            throw new ArgumentException("WechatOptions.AppSecret 不能为空，或者需要同时配置 ShareSecret 和 TokenShareUrl", nameof(options));
+        }
     }
 }

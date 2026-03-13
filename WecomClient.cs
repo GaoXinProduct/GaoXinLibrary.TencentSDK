@@ -252,7 +252,11 @@ public sealed class WecomClient : IDisposable
     {
         ArgumentNullException.ThrowIfNull(options);
         if (string.IsNullOrWhiteSpace(options.CorpId)) throw new ArgumentException("CorpId 不能为空", nameof(options));
-        if (string.IsNullOrWhiteSpace(options.CorpSecret)) throw new ArgumentException("CorpSecret 不能为空", nameof(options));
+        if (string.IsNullOrWhiteSpace(options.CorpSecret) &&
+            (string.IsNullOrWhiteSpace(options.ShareSecret) || string.IsNullOrWhiteSpace(options.TokenShareUrl)))
+        {
+            throw new ArgumentException("CorpSecret 不能为空，或者需要同时配置 ShareSecret 和 TokenShareUrl", nameof(options));
+        }
 
         var httpClient = new HttpClient { Timeout = options.HttpTimeout };
         return new WecomClient(options, httpClient, logger);

@@ -266,17 +266,6 @@ public sealed class WecomClient : IDisposable
         Invoice = new InvoiceService(_http);
         SmartSheet = new SmartSheetService(_http);
         CollectForm = new CollectFormService(_http);
-
-        // SecretShareUrl 模式：自动预热，尽早从远端加载 CorpId / CorpSecret / AgentId / Tickets
-        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
-            _ = AutoInitAsync();
-    }
-
-    /// <summary>自动预热：在后台拉取共享密钥载荷以填充 CorpId/CorpSecret 等</summary>
-    private async Task AutoInitAsync()
-    {
-        try { await _tokenProvider.GetTokenAsync(); }
-        catch { /* 首次失败不影响后续正常重试 */ }
     }
 
     /// <summary>
@@ -307,7 +296,11 @@ public sealed class WecomClient : IDisposable
         }
 
         var httpClient = new HttpClient { Timeout = options.HttpTimeout };
-        return new WecomClient(options, httpClient, logger);
+        var client = new WecomClient(options, httpClient, logger);
+        // SecretShareUrl 模式：阻塞式预热，确保 CorpId / CorpSecret / AgentId / Tickets 在客户端返回前已就绪
+        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
+            client._tokenProvider.GetTokenAsync().GetAwaiter().GetResult();
+        return client;
     }
 
     /// <summary>
@@ -321,7 +314,11 @@ public sealed class WecomClient : IDisposable
     {
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(httpClient);
-        return new WecomClient(options, httpClient, logger);
+        var client = new WecomClient(options, httpClient, logger);
+        // SecretShareUrl 模式：阻塞式预热，确保 CorpId / CorpSecret / AgentId / Tickets 在客户端返回前已就绪
+        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
+            client._tokenProvider.GetTokenAsync().GetAwaiter().GetResult();
+        return client;
     }
 
     /// <summary>

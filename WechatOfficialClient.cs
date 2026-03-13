@@ -135,17 +135,6 @@ public sealed class WechatOfficialClient : IDisposable
         Invoice = new OfficialInvoiceService(http);
         OpenApi = new OfficialOpenApiService(http, options);
         Callback = new OfficialCallbackService(http, options);
-
-        // SecretShareUrl 模式：自动预热，尽早从远端加载 AppId / AppSecret / Ticket
-        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
-            _ = AutoInitAsync();
-    }
-
-    /// <summary>自动预热：在后台拉取共享密钥载荷以填充 AppId/AppSecret 等</summary>
-    private async Task AutoInitAsync()
-    {
-        try { await _tokenProvider.GetTokenAsync(); }
-        catch { /* 首次失败不影响后续正常重试 */ }
     }
 
     /// <summary>
@@ -155,7 +144,11 @@ public sealed class WechatOfficialClient : IDisposable
     {
         ValidateOptions(options);
         var httpClient = new HttpClient { Timeout = options.HttpTimeout };
-        return new WechatOfficialClient(options, httpClient, logger);
+        var client = new WechatOfficialClient(options, httpClient, logger);
+        // SecretShareUrl 模式：阻塞式预热，确保 AppId / AppSecret / Ticket 在客户端返回前已就绪
+        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
+            client._tokenProvider.GetTokenAsync().GetAwaiter().GetResult();
+        return client;
     }
 
     /// <summary>
@@ -165,7 +158,11 @@ public sealed class WechatOfficialClient : IDisposable
     {
         ValidateOptions(options);
         ArgumentNullException.ThrowIfNull(httpClient);
-        return new WechatOfficialClient(options, httpClient, logger);
+        var client = new WechatOfficialClient(options, httpClient, logger);
+        // SecretShareUrl 模式：阻塞式预热，确保 AppId / AppSecret / Ticket 在客户端返回前已就绪
+        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
+            client._tokenProvider.GetTokenAsync().GetAwaiter().GetResult();
+        return client;
     }
 
     /// <summary>使 access_token 缓存失效（下次 GetAccessTokenAsync 时自动重新获取）</summary>

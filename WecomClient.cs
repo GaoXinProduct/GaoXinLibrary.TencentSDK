@@ -71,6 +71,9 @@ public sealed class WecomClient : IDisposable
     /// <summary>智能机器人</summary>
     public ISmartRobotService SmartRobot { get; }
 
+    /// <summary>智能机器人长连接 WebSocket 客户端</summary>
+    public ISmartRobotWsClient? SmartRobotWs { get; }
+
     /// <summary>企业互联</summary>
     public ICorpGroupService CorpGroup { get; }
 
@@ -186,6 +189,8 @@ public sealed class WecomClient : IDisposable
         OAuth = new OAuthService(_http, options);
         Callback = new CallbackService(_http, options);
         SmartRobot = new SmartRobotService(_http, options);
+        if (!string.IsNullOrWhiteSpace(options.BotId) && !string.IsNullOrWhiteSpace(options.BotSecret))
+            SmartRobotWs = new SmartRobotWsClient(options);
         CorpGroup = new CorpGroupService(_http);
         LinkedCorp = new LinkedCorpService(_http);
         Kf = new KfService(_http);

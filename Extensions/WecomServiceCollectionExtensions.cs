@@ -100,6 +100,7 @@ public static class WecomServiceCollectionExtensions
         services.TryAddSingleton<IOAuthService>(sp => sp.GetRequiredService<WecomClient>().OAuth);
         services.TryAddSingleton<ICallbackService>(sp => sp.GetRequiredService<WecomClient>().Callback);
         services.TryAddSingleton<ISmartRobotService>(sp => sp.GetRequiredService<WecomClient>().SmartRobot);
+        services.TryAddSingleton(sp => sp.GetRequiredService<WecomClient>().SmartRobotWs!);
         services.TryAddSingleton<ICorpGroupService>(sp => sp.GetRequiredService<WecomClient>().CorpGroup);
         services.TryAddSingleton<ILinkedCorpService>(sp => sp.GetRequiredService<WecomClient>().LinkedCorp);
         services.TryAddSingleton<IKfService>(sp => sp.GetRequiredService<WecomClient>().Kf);
@@ -198,6 +199,7 @@ public static class WecomServiceCollectionExtensions
         services.AddKeyedSingleton<IOAuthService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).OAuth);
         services.AddKeyedSingleton<ICallbackService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Callback);
         services.AddKeyedSingleton<ISmartRobotService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).SmartRobot);
+        services.AddKeyedSingleton<ISmartRobotWsClient>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).SmartRobotWs!);
         services.AddKeyedSingleton<ICorpGroupService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).CorpGroup);
         services.AddKeyedSingleton<ILinkedCorpService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).LinkedCorp);
         services.AddKeyedSingleton<IKfService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Kf);

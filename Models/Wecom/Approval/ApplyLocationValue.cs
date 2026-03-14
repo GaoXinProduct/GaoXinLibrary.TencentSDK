@@ -18,7 +18,7 @@ public class ApplyLocationValue
     /// <summary>位置地址</summary>
     [JsonPropertyName("address")] public string? Address { get; set; }
 
-    /// <summary>精确到多少米</summary>
-    [JsonPropertyName("time")] public int? Time { get; set; }
+    /// <summary>选择地点的时间（Unix 时间戳）</summary>
+    [JsonPropertyName("time")] public long? Time { get; set; }
 }
 

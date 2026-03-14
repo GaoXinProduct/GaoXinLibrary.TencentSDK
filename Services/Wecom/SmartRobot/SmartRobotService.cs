@@ -1,6 +1,9 @@
 using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
+using GaoXinLibrary.TencentSDK.Wecom.Models.GroupChat;
+using GaoXinLibrary.TencentSDK.Wecom.Models.Message;
+using GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
@@ -55,9 +58,30 @@ public class SmartRobotService : ISmartRobotService
     }
 
     /// <inheritdoc/>
-    public async Task SendMessageAsync(object request, CancellationToken ct = default)
+    public async Task<SendMessageResponse> SendMessageAsync(SendMessageRequest request, CancellationToken ct = default)
     {
-        await _http.PostAsync<WecomBaseResponse>("/cgi-bin/message/send", request, ct);
+        return await _http.PostAsync<SendMessageResponse>("/cgi-bin/message/send", request, ct);
+    }
+
+    // ─── 智能表格自动化创建的群聊 ──────────────────────────────────────────
+
+    /// <inheritdoc/>
+    public async Task<GetSmartSheetChatListResponse> GetSmartSheetChatListAsync(GetSmartSheetChatListRequest request, CancellationToken ct = default)
+    {
+        return await _http.PostAsync<GetSmartSheetChatListResponse>("/cgi-bin/chatdata/list", request, ct);
+    }
+
+    /// <inheritdoc/>
+    public async Task<GetSmartSheetChatResponse> GetSmartSheetChatAsync(string chatId, CancellationToken ct = default)
+    {
+        return await _http.GetAsync<GetSmartSheetChatResponse>("/cgi-bin/chatdata/get",
+            new Dictionary<string, string?> { ["chatid"] = chatId }, ct);
+    }
+
+    /// <inheritdoc/>
+    public async Task UpdateSmartSheetChatAsync(UpdateSmartSheetChatRequest request, CancellationToken ct = default)
+    {
+        await _http.PostAsync<WecomBaseResponse>("/cgi-bin/chatdata/update", request, ct);
     }
 
     private void EnsureCryptoConfigured()

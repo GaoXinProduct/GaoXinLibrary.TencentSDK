@@ -33,10 +33,49 @@ public class ApprovalService : IApprovalService
     }
 
     /// <inheritdoc/>
+    public async Task<string> ApplyEventAsync(Action<ApplyEventBuilder> configure, CancellationToken ct = default)
+    {
+        var builder = new ApplyEventBuilder();
+        configure(builder);
+        return await ApplyEventAsync(builder.Build(), ct);
+    }
+
+    /// <inheritdoc/>
     public async Task<GetApprovalInfoResponse> GetApprovalInfoAsync(GetApprovalInfoRequest request, CancellationToken ct = default)
     {
         return await _http.PostAsync<GetApprovalInfoResponse>(
             "/cgi-bin/oa/getapprovalinfo", request, ct);
+    }
+
+    /// <inheritdoc/>
+    public async Task<List<string>> GetAllApprovalNoAsync(long startTime, long endTime, ApprovalFilter[]? filters = null, CancellationToken ct = default)
+    {
+        var allSpNos = new List<string>();
+        var cursor = 0;
+
+        while (true)
+        {
+            ct.ThrowIfCancellationRequested();
+
+            var resp = await GetApprovalInfoAsync(new GetApprovalInfoRequest
+            {
+                StartTime = startTime,
+                EndTime = endTime,
+                Cursor = cursor,
+                Size = 100,
+                Filters = filters
+            }, ct);
+
+            if (resp.SpNoList is { Length: > 0 })
+                allSpNos.AddRange(resp.SpNoList);
+
+            if (resp.NewNextCursor is null or 0 || resp.SpNoList is null or { Length: 0 })
+                break;
+
+            cursor = resp.NewNextCursor.Value;
+        }
+
+        return allSpNos;
     }
 
     /// <inheritdoc/>

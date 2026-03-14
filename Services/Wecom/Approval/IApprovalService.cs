@@ -7,8 +7,30 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 /// <summary>
 /// 审批服务接口
 /// <para>
-/// 提供审批模板查询、审批申请提交、审批单号批量获取、审批详情查询及假期管理等功能。
+/// 提供审批模板查询、审批申请提交、审批单号批量获取、审批详情查询及假期管理等功能。<br/>
 /// 参考文档：<see href="https://developer.work.weixin.qq.com/document/path/91854"/>
+/// </para>
+/// <para>
+/// <b>快速提交审批：</b>
+/// <code>
+/// var spNo = await approval.ApplyEventAsync(b => b
+///     .SetCreator("zhangsan")
+///     .SetTemplate("3TkZjxugodbqpEMk5bRCFTHEHidgwegDnhVj4")
+///     .UseTemplateApprover()
+///     .AddText("Text-1", "出差事由：拜访客户")
+///     .AddDateRange("DateRange-1", "day", start, end)
+///     .AddSummary("出差申请", "张三", "2天"));
+/// </code>
+/// </para>
+/// <para>
+/// <b>回调处理：</b>
+/// <code>
+/// var msg = callback.DecryptAndParse(signature, timestamp, nonce, body);
+/// if (msg is CallbackApprovalEvent approval)
+/// {
+///     Console.WriteLine($"审批单号={approval.SpNo}, 状态={approval.SpStatus}");
+/// }
+/// </code>
 /// </para>
 /// </summary>
 public interface IApprovalService
@@ -27,11 +49,39 @@ public interface IApprovalService
     /// <returns>审批单号</returns>
     Task<string> ApplyEventAsync(ApplyEventRequest request, CancellationToken ct = default);
 
+    /// <summary>
+    /// 通过构建器提交审批申请（简化版）
+    /// <para>
+    /// <code>
+    /// var spNo = await approval.ApplyEventAsync(b => b
+    ///     .SetCreator("zhangsan")
+    ///     .SetTemplate("templateId")
+    ///     .UseTemplateApprover()
+    ///     .AddText("Text-1", "出差事由")
+    ///     .AddSummary("出差申请"));
+    /// </code>
+    /// </para>
+    /// </summary>
+    /// <param name="configure">构建器配置委托</param>
+    /// <param name="ct">取消令牌</param>
+    /// <returns>审批单号</returns>
+    Task<string> ApplyEventAsync(Action<ApplyEventBuilder> configure, CancellationToken ct = default);
+
     /// <summary>批量获取审批单号</summary>
     /// <param name="request">查询请求</param>
     /// <param name="ct">取消令牌</param>
     /// <returns>审批单号列表及下一游标</returns>
     Task<GetApprovalInfoResponse> GetApprovalInfoAsync(GetApprovalInfoRequest request, CancellationToken ct = default);
+
+    /// <summary>
+    /// 批量获取审批单号（自动分页，获取所有结果）
+    /// </summary>
+    /// <param name="startTime">开始时间（Unix 时间戳）</param>
+    /// <param name="endTime">结束时间（Unix 时间戳）</param>
+    /// <param name="filters">筛选条件（可选）</param>
+    /// <param name="ct">取消令牌</param>
+    /// <returns>所有审批单号列表</returns>
+    Task<List<string>> GetAllApprovalNoAsync(long startTime, long endTime, ApprovalFilter[]? filters = null, CancellationToken ct = default);
 
     /// <summary>获取审批申请详情</summary>
     /// <param name="spNo">审批单号</param>

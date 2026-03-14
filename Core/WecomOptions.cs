@@ -30,6 +30,23 @@ public class WecomOptions
     /// <summary>接收消息回调的 EncodingAESKey（用于消息加解密，43 位字符）</summary>
     public string? CallbackEncodingAesKey { get; set; }
 
+    // ─── 智能机器人长连接配置 ─────────────────────────────────────────────
+
+    /// <summary>
+    /// 智能机器人 BotID（长连接模式专用）
+    /// <para>在企业微信管理后台智能机器人配置页获取。</para>
+    /// </summary>
+    public string? BotId { get; set; }
+
+    /// <summary>
+    /// 智能机器人长连接专用密钥 Secret
+    /// <para>与回调模式的 Token/EncodingAESKey 不同，请妥善保管。</para>
+    /// </summary>
+    public string? BotSecret { get; set; }
+
+    /// <summary>智能机器人长连接 WebSocket 地址，默认 wss://openws.work.weixin.qq.com</summary>
+    public string BotWsUrl { get; set; } = "wss://openws.work.weixin.qq.com";
+
     // ─── 会话内容存档配置 ───────────────────────────────────────────────
 
     /// <summary>

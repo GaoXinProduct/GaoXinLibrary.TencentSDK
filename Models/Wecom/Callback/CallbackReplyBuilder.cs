@@ -137,5 +137,54 @@ public static class CallbackReplyBuilder
             </xml>
             """;
     }
+
+    /// <summary>
+    /// 构建 Markdown 回复消息 XML（智能机器人专用）
+    /// <para>参考文档：<see href="https://developer.work.weixin.qq.com/document/path/101031"/></para>
+    /// </summary>
+    /// <param name="toUserName">接收方</param>
+    /// <param name="fromUserName">发送方</param>
+    /// <param name="content">Markdown 格式内容</param>
+    /// <returns>XML 明文字符串</returns>
+    public static string BuildMarkdown(string toUserName, string fromUserName, string content)
+    {
+        var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        return $"""
+            <xml>
+            <ToUserName><![CDATA[{toUserName}]]></ToUserName>
+            <FromUserName><![CDATA[{fromUserName}]]></FromUserName>
+            <CreateTime>{timestamp}</CreateTime>
+            <MsgType><![CDATA[markdown]]></MsgType>
+            <Markdown>
+            <Content><![CDATA[{content}]]></Content>
+            </Markdown>
+            </xml>
+            """;
+    }
+
+    /// <summary>
+    /// 构建模版卡片回复消息 XML（智能机器人专用）
+    /// <para>
+    /// 支持 text_notice / news_notice / button_interaction / vote_interaction / multiple_interaction 等卡片类型。
+    /// 参考文档：<see href="https://developer.work.weixin.qq.com/document/path/101032"/>
+    /// </para>
+    /// </summary>
+    /// <param name="toUserName">接收方</param>
+    /// <param name="fromUserName">发送方</param>
+    /// <param name="templateCardXmlBody">模版卡片 XML 内容片段（TemplateCard 节点的完整内容）</param>
+    /// <returns>XML 明文字符串</returns>
+    public static string BuildTemplateCard(string toUserName, string fromUserName, string templateCardXmlBody)
+    {
+        var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        return $"""
+            <xml>
+            <ToUserName><![CDATA[{toUserName}]]></ToUserName>
+            <FromUserName><![CDATA[{fromUserName}]]></FromUserName>
+            <CreateTime>{timestamp}</CreateTime>
+            <MsgType><![CDATA[template_card]]></MsgType>
+            {templateCardXmlBody}
+            </xml>
+            """;
+    }
 }
 

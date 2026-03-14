@@ -9,7 +9,10 @@ public class ApplySelectorValue
     /// <summary>选择器类型：single / multi</summary>
     [JsonPropertyName("type")] public string? Type { get; set; }
 
-    /// <summary>选中的选项 key 列表</summary>
+    /// <summary>选中的选项列表</summary>
     [JsonPropertyName("options")] public ApplySelectorOption[]? Options { get; set; }
+
+    /// <summary>选项展示类型（假勤组件使用）</summary>
+    [JsonPropertyName("exp_type")] public int? ExpType { get; set; }
 }
 

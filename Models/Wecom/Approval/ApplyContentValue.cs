@@ -9,8 +9,11 @@ public class ApplyContentValue
     /// <summary>Text / Textarea 控件值</summary>
     [JsonPropertyName("text")] public string? Text { get; set; }
 
-    /// <summary>Number / Money 控件值</summary>
+    /// <summary>Number 控件值</summary>
     [JsonPropertyName("new_number")] public string? NewNumber { get; set; }
+
+    /// <summary>Money 控件值</summary>
+    [JsonPropertyName("new_money")] public string? NewMoney { get; set; }
 
     /// <summary>Date 控件值</summary>
     [JsonPropertyName("date")] public ApplyDateValue? Date { get; set; }
@@ -38,5 +41,14 @@ public class ApplyContentValue
 
     /// <summary>DateRange 控件值</summary>
     [JsonPropertyName("date_range")] public ApplyDateRangeValue? DateRange { get; set; }
+
+    /// <summary>Attendance 假勤控件值</summary>
+    [JsonPropertyName("attendance")] public ApplyAttendanceValue? Attendance { get; set; }
+
+    /// <summary>RelatedApproval 关联审批单控件值</summary>
+    [JsonPropertyName("related_approval")] public ApplyRelatedApprovalItem[]? RelatedApproval { get; set; }
+
+    /// <summary>Formula 公式控件值（后台自动计算）</summary>
+    [JsonPropertyName("formula")] public ApplyFormulaValue? Formula { get; set; }
 }
 

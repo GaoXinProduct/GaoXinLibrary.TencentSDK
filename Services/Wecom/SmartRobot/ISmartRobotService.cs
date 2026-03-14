@@ -1,5 +1,8 @@
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
+using GaoXinLibrary.TencentSDK.Wecom.Models.GroupChat;
+using GaoXinLibrary.TencentSDK.Wecom.Models.Message;
+using GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
@@ -8,7 +11,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 /// 智能机器人服务接口
 /// <para>
 /// 智能机器人开启 API 模式后，用户与机器人交互时企业微信会向回调 URL 推送消息和事件。
-/// 本服务提供回调验证、消息解密、被动回复加密及主动回复能力。
+/// 本服务提供回调验证、消息解密、被动回复加密、主动回复以及智能表格自动化群聊管理能力。
 /// 参考文档：<see href="https://developer.work.weixin.qq.com/document/path/101039"/>
 /// </para>
 /// </summary>
@@ -28,6 +31,8 @@ public interface ISmartRobotService
     /// <summary>
     /// 解密并解析智能机器人回调的消息/事件
     /// <para>
+    /// 支持解析的消息类型：text / image / voice / video / location / link / attachment。
+    /// 支持解析的事件类型：enter_chat / subscribe / unsubscribe / click 等。
     /// 接收消息参考：<see href="https://developer.work.weixin.qq.com/document/path/100719"/>
     /// 接收事件参考：<see href="https://developer.work.weixin.qq.com/document/path/101027"/>
     /// </para>
@@ -43,6 +48,8 @@ public interface ISmartRobotService
     /// 加密被动回复消息
     /// <para>
     /// 将回复消息的 XML 明文加密并生成完整的回复 XML 信封，用于被动回复智能机器人消息。
+    /// 支持的回复类型：text / image / voice / video / news / markdown / template_card。
+    /// 通过 <see cref="CallbackReplyBuilder"/> 构建回复 XML。
     /// 参考文档：<see href="https://developer.work.weixin.qq.com/document/path/101031"/>
     /// </para>
     /// </summary>
@@ -59,7 +66,34 @@ public interface ISmartRobotService
     /// 参考文档：<see href="https://developer.work.weixin.qq.com/document/path/101138"/>
     /// </para>
     /// </summary>
-    /// <param name="request">发送消息请求（与应用消息发送接口一致）</param>
+    /// <param name="request">发送消息请求</param>
     /// <param name="ct">取消令牌</param>
-    Task SendMessageAsync(object request, CancellationToken ct = default);
+    /// <returns>发送消息响应（包含 msgid 等信息）</returns>
+    Task<SendMessageResponse> SendMessageAsync(SendMessageRequest request, CancellationToken ct = default);
+
+    // ─── 智能表格自动化创建的群聊 ─────────────────────────────────────────
+
+    /// <summary>
+    /// 获取智能表格自动化创建的群聊列表
+    /// <para>参考文档：<see href="https://developer.work.weixin.qq.com/document/path/100989"/></para>
+    /// </summary>
+    /// <param name="request">请求参数</param>
+    /// <param name="ct">取消令牌</param>
+    Task<GetSmartSheetChatListResponse> GetSmartSheetChatListAsync(GetSmartSheetChatListRequest request, CancellationToken ct = default);
+
+    /// <summary>
+    /// 获取智能表格自动化创建的群聊会话详情
+    /// <para>参考文档：<see href="https://developer.work.weixin.qq.com/document/path/101028"/></para>
+    /// </summary>
+    /// <param name="chatId">群聊 ID</param>
+    /// <param name="ct">取消令牌</param>
+    Task<GetSmartSheetChatResponse> GetSmartSheetChatAsync(string chatId, CancellationToken ct = default);
+
+    /// <summary>
+    /// 修改智能表格自动化创建的群聊会话
+    /// <para>参考文档：<see href="https://developer.work.weixin.qq.com/document/path/101029"/></para>
+    /// </summary>
+    /// <param name="request">修改请求参数</param>
+    /// <param name="ct">取消令牌</param>
+    Task UpdateSmartSheetChatAsync(UpdateSmartSheetChatRequest request, CancellationToken ct = default);
 }

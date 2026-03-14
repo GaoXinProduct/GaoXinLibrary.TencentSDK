@@ -8,5 +8,8 @@ public class ApplySelectorOption
 {
     /// <summary>选项 key</summary>
     [JsonPropertyName("key")] public string? Key { get; set; }
+
+    /// <summary>选项值（多语言文本，假期类型选项等场景使用）</summary>
+    [JsonPropertyName("value")] public ApprovalText[]? Value { get; set; }
 }
 

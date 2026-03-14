@@ -122,11 +122,12 @@ Install-Package GaoXinLibrary.TencentSDK
 | 群聊会话 | `GroupChat` | `IGroupChatService` | 创建群聊 / 修改 / 获取 / 发送群聊消息 |
 | OAuth | `OAuth` | `IOAuthService` | 构造授权 URL / code 换取用户身份 / user_ticket 换取敏感信息 |
 | JS-SDK | `JsSdk` | `IJsSdkService` | 企业级/应用级 jsapi_ticket 自动缓存与共享、H5 JS-SDK 签名 |
-| 消息回调 | `Callback` | `ICallbackService` | URL 验证 / 消息解析与解密 / 被动回复加密 / 回调 IP 段 |
-| 智能机器人 | `SmartRobot` | `ISmartRobotService` | 智能机器人管理 |
+| 消息回调 | `Callback` | `ICallbackService` | URL 验证 / 消息解析与解密 / 被动回复加密 / 回调 IP 段 / 通讯录变更回调（成员/部门/标签）/ 审批状态回调 / 异步任务完成回调 |
+| 智能机器人 | `SmartRobot` | `ISmartRobotService` | 回调 URL 验证 / 消息解密与解析（text / image / voice / video / location / link / attachment） / 事件解析（enter_chat / subscribe / click 等） / 被动回复加密（text / image / voice / video / news / markdown / template_card） / 主动发送消息 / 智能表格群聊列表 / 群聊详情 / 修改群聊 |
+| 智能机器人长连接 | `SmartRobotWs` | `ISmartRobotWsClient` | WebSocket 长连接（无需公网 IP / 消息加解密）/ 订阅消息与事件 / 回复欢迎语 / 回复消息（支持流式）/ 更新模板卡片 / 主动推送消息 / 分片上传素材 / 心跳保活 / 文档工具调用回传（API 模式） |
 | 微信客服 | `Kf` | `IKfService` | 微信客服管理 |
 | 打卡 | `Checkin` | `ICheckinService` | 打卡规则 / 打卡数据查询 |
-| 审批 | `Approval` | `IApprovalService` | 审批流程管理 |
+| 审批 | `Approval` | `IApprovalService` | 审批模板详情 / 提交审批申请（支持 `ApplyEventBuilder` 链式构建）/ 批量获取审批单号（支持自动分页 `GetAllApprovalNoAsync`）/ 审批详情 / 假期管理 / 审批状态变更回调 |
 | 会话存档 | `MsgAudit` | `IMsgAuditService` | 会话内容存档（含 RSA 解密） |
 | 企业互联 | `CorpGroup` | `ICorpGroupService` | 上下游企业管理 |
 | 互联企业 | `LinkedCorp` | `ILinkedCorpService` | 互联企业通讯录 |
@@ -704,6 +705,9 @@ builder.Services.AddWechatMiniProgramService("appB", config.GetSection("MiniProg
 | `HttpTimeout` | `TimeSpan` | 30 秒 | HTTP 请求超时时间 |
 | `CallbackToken` | `string?` | — | 接收消息回调的 Token |
 | `CallbackEncodingAesKey` | `string?` | — | 接收消息回调的 EncodingAESKey（43 位） |
+| `BotId` | `string?` | — | 智能机器人 WebSocket 长连接的 BotId（从企业微信管理端获取） |
+| `BotSecret` | `string?` | — | 智能机器人 WebSocket 长连接的 BotSecret（从企业微信管理端获取） |
+| `BotWsUrl` | `string` | `wss://openws.work.weixin.qq.com` | 智能机器人 WebSocket 长连接地址 |
 | `MsgAuditSecret` | `string?` | — | 会话内容存档密钥 |
 | `MsgAuditPrivateKey` | `string?` | — | 会话内容存档 RSA 私钥（PEM 格式） |
 | `ShareSecret` | `string?` | — | 共享 Token 密钥（ChaCha20-Poly1305，详见[跨服务共享 Token](#-跨服务共享-token)） |
@@ -769,11 +773,494 @@ app.MapPost("/wecom/callback", async (
         case CallbackTemplateCardEvent cardEvent:
             // 处理模版卡片事件
             break;
+
+        // ─── 通讯录变更回调 ─────────────────────────────────
+        case CallbackUpdateUserEvent updateUser: // ⚠️ 必须在 CreateUserEvent 之前
+            Console.WriteLine($"更新成员: {updateUser.UserID}, 新ID: {updateUser.NewUserID}");
+            break;
+
+        case CallbackCreateUserEvent createUser:
+            Console.WriteLine($"新建成员: {createUser.UserID}, 姓名: {createUser.Name}, 部门: {createUser.Department}");
+            break;
+
+        case CallbackDeleteUserEvent deleteUser:
+            Console.WriteLine($"删除成员: {deleteUser.UserID}");
+            break;
+
+        case CallbackUpdatePartyEvent updateParty: // ⚠️ 必须在 CreatePartyEvent 之前
+            Console.WriteLine($"更新部门: Id={updateParty.Id}, Name={updateParty.Name}");
+            break;
+
+        case CallbackCreatePartyEvent createParty:
+            Console.WriteLine($"新建部门: Id={createParty.Id}, Name={createParty.Name}, ParentId={createParty.ParentId}");
+            break;
+
+        case CallbackDeletePartyEvent deleteParty:
+            Console.WriteLine($"删除部门: Id={deleteParty.Id}");
+            break;
+
+        case CallbackUpdateTagEvent updateTag:
+            Console.WriteLine($"标签变更: TagId={updateTag.TagId}, 新增成员: {updateTag.AddUserItems}, 删除成员: {updateTag.DelUserItems}");
+            break;
+
+        // ─── 异步任务完成回调 ───────────────────────────────
+        case CallbackBatchJobEvent batchJob:
+            Console.WriteLine($"异步任务完成: JobId={batchJob.JobId}, Type={batchJob.JobType}, ErrCode={batchJob.ErrCode}");
+            break;
+
+        // ─── 审批状态变更回调 ───────────────────────────────
+        case CallbackApprovalEvent approval:
+            Console.WriteLine($"审批变更: SpNo={approval.SpNo}, Status={approval.SpStatus}, 申请人={approval.ApplyerUserId}");
+            break;
     }
     return Results.Content("");
 });
 
 app.Run();
+```
+
+> ⚠️ **注意**：`CallbackUpdateUserEvent` 继承自 `CallbackCreateUserEvent`，`CallbackUpdatePartyEvent` 继承自 `CallbackCreatePartyEvent`，在 `switch` 中应将子类放在父类**之前**，以确保正确匹配。
+
+### 通讯录变更回调
+
+通讯录变更回调（`Event = change_contact`）支持以下变更类型，SDK 会自动根据 `ChangeType` 解析为对应的强类型模型：
+
+> 参考文档：[通讯录回调通知](https://developer.work.weixin.qq.com/document/path/90967)
+
+| ChangeType | 模型类 | 说明 | 关键字段 |
+|------------|--------|------|----------|
+| `create_user` | `CallbackCreateUserEvent` | 新建成员 | `UserID` / `Name` / `Department` / `Mobile` / `Email` / `Status` / `ExtAttr` 等 15+ 字段 |
+| `update_user` | `CallbackUpdateUserEvent` | 更新成员 | 继承 `CallbackCreateUserEvent` 全部字段 + `NewUserID`（仅 UserID 变更时有值） |
+| `delete_user` | `CallbackDeleteUserEvent` | 删除成员 | `UserID` |
+| `create_party` | `CallbackCreatePartyEvent` | 新建部门 | `Id` / `Name` / `ParentId` / `Order` |
+| `update_party` | `CallbackUpdatePartyEvent` | 更新部门 | `Id` / `Name` / `ParentId` / `Order` |
+| `delete_party` | `CallbackDeletePartyEvent` | 删除部门 | `Id` |
+| `update_tag` | `CallbackUpdateTagEvent` | 标签成员变更 | `TagId` / `AddUserItems` / `DelUserItems` / `AddPartyItems` / `DelPartyItems` |
+
+所有通讯录变更事件均继承自 `CallbackChangeContactEvent`，可通过 `ChangeType` 属性获取变更类型字符串。
+
+#### 扩展属性（ExtAttr）
+
+新建/更新成员事件中的 `ExtAttr` 字段为 `CallbackExtAttrItem[]`，每个元素包含：
+
+| 属性 | 说明 |
+|------|------|
+| `Name` | 属性名称 |
+| `Type` | 属性类型（0=文本, 1=网页） |
+| `Value` | 文本属性值（Type=0 时） |
+| `WebUrl` | 网页链接（Type=1 时） |
+| `WebTitle` | 网页标题（Type=1 时） |
+
+#### 异步任务完成回调
+
+异步任务完成事件（`Event = batch_job_result`）使用 `CallbackBatchJobEvent` 模型：
+
+> 参考文档：[异步任务完成事件推送](https://developer.work.weixin.qq.com/document/path/90973)
+
+| 属性 | 说明 |
+|------|------|
+| `JobId` | 异步任务 ID（最大长度 64 字符） |
+| `JobType` | 操作类型：`sync_user` / `replace_user` / `invite_user` / `replace_party` |
+| `ErrCode` | 返回码（0 表示成功） |
+| `ErrMsg` | 错误信息 |
+
+### 智能机器人（SmartRobot）
+
+智能机器人开启 API 模式后，用户与机器人交互时企业微信会向回调 URL 推送消息和事件。SDK 提供完整的回调验证、消息解密、被动回复加密、主动回复以及智能表格自动化群聊管理能力。
+
+> 参考文档：[智能机器人概述](https://developer.work.weixin.qq.com/document/path/101039) / [接收消息](https://developer.work.weixin.qq.com/document/path/100719) / [接收事件](https://developer.work.weixin.qq.com/document/path/101027) / [被动回复](https://developer.work.weixin.qq.com/document/path/101031)
+
+#### 支持的消息类型
+
+| 消息类型 | 模型类 | 说明 |
+|----------|--------|------|
+| `text` | `CallbackTextMessage` | 文本消息 |
+| `image` | `CallbackImageMessage` | 图片消息 |
+| `voice` | `CallbackVoiceMessage` | 语音消息 |
+| `video` | `CallbackVideoMessage` | 视频消息 |
+| `location` | `CallbackLocationMessage` | 位置消息 |
+| `link` | `CallbackLinkMessage` | 链接消息 |
+| `attachment` | `CallbackAttachmentMessage` | 附件/混合消息（含操作项 `CallbackAttachmentAction`） |
+
+#### 支持的事件类型
+
+| 事件类型 | 模型类 | 说明 |
+|----------|--------|------|
+| `enter_chat` | `CallbackEnterChatEvent` | 用户进入机器人会话 |
+| `subscribe` | `CallbackSubscribeEvent` | 关注事件 |
+| `unsubscribe` | `CallbackUnsubscribeEvent` | 取消关注事件 |
+| `click` | `CallbackClickEvent` | 菜单点击事件 |
+| `template_card_event` | `CallbackTemplateCardEvent` | 模版卡片事件 |
+
+#### 被动回复构建器（CallbackReplyBuilder）
+
+| 方法 | 说明 |
+|------|------|
+| `BuildText` | 文本回复 |
+| `BuildImage` | 图片回复 |
+| `BuildVoice` | 语音回复 |
+| `BuildVideo` | 视频回复 |
+| `BuildNews` | 图文回复（最多 8 条） |
+| `BuildMarkdown` | Markdown 回复（智能机器人专用） |
+| `BuildTemplateCard` | 模版卡片回复（智能机器人专用） |
+
+#### 智能表格自动化群聊
+
+| 方法 | 说明 |
+|------|------|
+| `GetSmartSheetChatListAsync` | 获取智能表格自动化创建的群聊列表 |
+| `GetSmartSheetChatAsync` | 获取群聊会话详情 |
+| `UpdateSmartSheetChatAsync` | 修改群聊会话 |
+
+```csharp
+using GaoXinLibrary.TencentSDK.Wecom;
+using GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
+using GaoXinLibrary.TencentSDK.Wecom.Models.Message;
+using GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
+
+// ── 回调验证（GET 请求） ──────────────────────────────────────────
+var plain = client.SmartRobot.VerifyUrl(msg_signature, timestamp, nonce, echostr);
+// 将 plain 写入 HTTP 响应
+
+// ── 接收消息/事件（POST 请求） ────────────────────────────────────
+var msg = client.SmartRobot.DecryptAndParse(msg_signature, timestamp, nonce, postBody);
+switch (msg)
+{
+    case CallbackTextMessage text:
+        // 构建文本回复
+        var replyXml = CallbackReplyBuilder.BuildText(text.FromUserName, text.ToUserName, "收到你的消息了！");
+        var encrypted = client.SmartRobot.EncryptReply(replyXml);
+        // 将 encrypted 写入 HTTP 响应
+        break;
+
+    case CallbackAttachmentMessage attachment:
+        // 处理附件/混合消息
+        Console.WriteLine($"附件操作: {attachment.Actions?.Length} 个操作项");
+        break;
+
+    case CallbackEnterChatEvent enterChat:
+        // 用户进入机器人会话，构建 Markdown 欢迎消息
+        var welcomeXml = CallbackReplyBuilder.BuildMarkdown(
+            enterChat.FromUserName, enterChat.ToUserName, "## 欢迎使用智能机器人！");
+        var welcomeEncrypted = client.SmartRobot.EncryptReply(welcomeXml);
+        break;
+}
+
+// ── 主动发送消息 ──────────────────────────────────────────────────
+var response = await client.SmartRobot.SendMessageAsync(new SendMessageRequest
+{
+    ToUser = "zhangsan",
+    MsgType = "text",
+    AgentId = client.Options.AgentId,
+    Text = new TextContent { Content = "主动推送消息" }
+});
+Console.WriteLine($"MsgId: {response.MsgId}");
+
+// ── 智能表格自动化群聊管理 ────────────────────────────────────────
+var chatList = await client.SmartRobot.GetSmartSheetChatListAsync(new GetSmartSheetChatListRequest
+{
+    DocId = "DOC_ID",
+    SheetId = "SHEET_ID"
+});
+
+var chatDetail = await client.SmartRobot.GetSmartSheetChatAsync("CHAT_ID");
+
+await client.SmartRobot.UpdateSmartSheetChatAsync(new UpdateSmartSheetChatRequest
+{
+    ChatId = "CHAT_ID",
+    Name = "新群聊名称"
+});
+```
+
+#### WebSocket 长连接模式（SmartRobotWs）
+
+通过 WebSocket 长连接与企业微信保持实时通信，**无需公网 IP，无需消息加解密**。适用于无法暴露公网地址的部署场景。
+
+> 参考文档：[WebSocket 长连接接口](https://developer.work.weixin.qq.com/document/path/101463)
+
+##### 接口方法一览
+
+| 方法 | 说明 |
+|------|------|
+| `ConnectAsync` | 建立 WebSocket 连接并完成订阅（`aibot_subscribe`） |
+| `RespondWelcomeMsgAsync` | 回复欢迎语（收到 `enter_chat` 事件后 5 秒内调用） |
+| `RespondMsgAsync` | 回复消息（支持流式，收到 `aibot_msg_callback` 后 24 小时内调用） |
+| `RespondUpdateMsgAsync` | 更新模板卡片（收到 `template_card_event` 后 5 秒内调用） |
+| `SendMsgAsync` | 主动推送消息（无需回调触发，限 30 条/分钟、1000 条/小时） |
+| `UploadMediaAsync` | 分片上传临时素材（file / image / voice / video） |
+| `PingAsync` | 发送心跳 ping（内置 30 秒自动心跳） |
+| `RespondToolResultAsync` | 回传文档工具调用结果（API 模式） |
+
+##### 事件回调
+
+| 事件 | 说明 |
+|------|------|
+| `OnMsgCallback` | 收到用户消息时触发，参数：`(reqId, WsMsgCallbackBody)` |
+| `OnEventCallback` | 收到事件时触发，参数：`(reqId, WsEventCallbackBody)` |
+| `OnToolCallCallback` | 收到文档工具调用时触发，参数：`(reqId, DocToolCallInfo[])` |
+| `OnDisconnected` | 连接断开时触发 |
+
+```csharp
+using GaoXinLibrary.TencentSDK.Wecom;
+using GaoXinLibrary.TencentSDK.Wecom.Core;
+using GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
+
+// ── 创建客户端（配置 BotId / BotSecret） ──────────────────────────
+var client = WecomClient.Create(new WecomOptions
+{
+    CorpId     = "your_corpid",
+    CorpSecret = "your_corpsecret",
+    AgentId    = 1000001,
+    BotId      = "your_bot_id",
+    BotSecret  = "your_bot_secret"
+});
+
+// ── 建立 WebSocket 长连接 ─────────────────────────────────────────
+await client.SmartRobotWs!.ConnectAsync();
+
+// ── 注册消息回调 ──────────────────────────────────────────────────
+client.SmartRobotWs.OnMsgCallback += async (reqId, msg) =>
+{
+    Console.WriteLine($"收到消息: {msg.Content}");
+
+    // 回复文本消息
+    await client.SmartRobotWs.RespondMsgAsync(reqId, new WsRespondMsgBody
+    {
+        MsgType = "text",
+        Text = new WsTextContent { Content = "已收到你的消息！" }
+    });
+};
+
+// ── 注册事件回调 ──────────────────────────────────────────────────
+client.SmartRobotWs.OnEventCallback += async (reqId, evt) =>
+{
+    if (evt.EventType == "enter_chat")
+    {
+        // 用户进入聊天，5 秒内回复欢迎语
+        await client.SmartRobotWs.RespondWelcomeMsgAsync(reqId, new WsRespondWelcomeMsgBody
+        {
+            MsgType = "text",
+            Text = new WsTextContent { Content = "欢迎使用智能机器人！" }
+        });
+    }
+};
+
+// ── 主动推送消息 ──────────────────────────────────────────────────
+await client.SmartRobotWs.SendMsgAsync(new WsSendMsgBody
+{
+    ChatId = "CHAT_ID",
+    MsgType = "text",
+    Text = new WsTextContent { Content = "主动推送的消息" }
+});
+
+// ── 分片上传素材 ──────────────────────────────────────────────────
+ReadOnlyMemory<byte> fileData = await File.ReadAllBytesAsync("report.pdf");
+var mediaId = await client.SmartRobotWs.UploadMediaAsync("file", "report.pdf", fileData);
+Console.WriteLine($"素材 MediaId: {mediaId}");
+
+// ── 断开连接时自动重连 ────────────────────────────────────────────
+client.SmartRobotWs.OnDisconnected += async ex =>
+{
+    Console.WriteLine($"连接断开: {ex?.Message}");
+    await Task.Delay(3000);
+    await client.SmartRobotWs.ConnectAsync();
+};
+```
+
+#### 文档工具调用（API 模式）
+
+API 模式下，智能机器人可以通过文档工具与企业微信文档/智能表格进行交互。SDK 提供 `DocToolNames` 常量类和 `OnToolCallCallback` 事件简化工具调用处理。
+
+> 参考文档：[API 模式机器人文档使用说明](https://developer.work.weixin.qq.com/document/path/101468)
+
+##### 支持的文档工具
+
+| 工具名称 | 常量 | 说明 |
+|----------|------|------|
+| `create_doc` | `DocToolNames.CreateDoc` | 创建文档/收集表/智能表格 |
+| `edit_doc_content` | `DocToolNames.EditDocContent` | 编辑文档内容 |
+| `get_doc_base_info` | `DocToolNames.GetDocBaseInfo` | 获取文档基本信息 |
+| `smartsheet_add_records` | `DocToolNames.SmartSheetAddRecords` | 添加智能表格记录 |
+| `smartsheet_get_records` | `DocToolNames.SmartSheetGetRecords` | 获取智能表格记录 |
+| `smartsheet_update_records` | `DocToolNames.SmartSheetUpdateRecords` | 更新智能表格记录 |
+| `smartsheet_delete_records` | `DocToolNames.SmartSheetDeleteRecords` | 删除智能表格记录 |
+| `smartsheet_add_fields` | `DocToolNames.SmartSheetAddFields` | 添加智能表格字段 |
+| `smartsheet_get_fields` | `DocToolNames.SmartSheetGetFields` | 获取智能表格字段 |
+| `smartsheet_update_fields` | `DocToolNames.SmartSheetUpdateFields` | 更新智能表格字段 |
+| `smartsheet_delete_fields` | `DocToolNames.SmartSheetDeleteFields` | 删除智能表格字段 |
+
+```csharp
+using GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
+using System.Text.Json;
+
+// ── 注册文档工具调用回调 ──────────────────────────────────────────
+client.SmartRobotWs!.OnToolCallCallback += async (reqId, toolCalls) =>
+{
+    var results = new List<DocToolResultInfo>();
+
+    foreach (var call in toolCalls)
+    {
+        Console.WriteLine($"工具调用: {call.ToolName}, ID: {call.ToolCallId}");
+
+        // 根据工具名称执行对应操作
+        var content = call.ToolName switch
+        {
+            DocToolNames.GetDocBaseInfo => await GetDocBaseInfoAsync(call.Arguments),
+            DocToolNames.SmartSheetGetRecords => await GetRecordsAsync(call.Arguments),
+            DocToolNames.SmartSheetAddRecords => await AddRecordsAsync(call.Arguments),
+            _ => JsonSerializer.Serialize(new { error = $"未知工具: {call.ToolName}" })
+        };
+
+        results.Add(new DocToolResultInfo
+        {
+            ToolCallId = call.ToolCallId,
+            Content = content
+        });
+    }
+
+    // 回传工具调用结果
+    await client.SmartRobotWs.RespondToolResultAsync(reqId, new WsRespondToolResultBody
+    {
+        ToolResults = results.ToArray()
+    });
+};
+```
+
+#### 依赖注入方式使用 WebSocket 客户端
+
+```csharp
+// Program.cs — 注册时配置 BotId / BotSecret
+builder.Services.AddWecomService(opt =>
+{
+    opt.CorpId     = "your_corpid";
+    opt.CorpSecret = "your_corpsecret";
+    opt.AgentId    = 1000001;
+    opt.BotId      = "your_bot_id";
+    opt.BotSecret  = "your_bot_secret";
+});
+
+// 注入 ISmartRobotWsClient 使用
+public class BotHostedService(ISmartRobotWsClient wsClient) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken ct)
+    {
+        wsClient.OnMsgCallback += async (reqId, msg) =>
+        {
+            await wsClient.RespondMsgAsync(reqId, new WsRespondMsgBody
+            {
+                MsgType = "text",
+                Text = new WsTextContent { Content = $"Echo: {msg.Content}" }
+            });
+        };
+
+        await wsClient.ConnectAsync(ct);
+
+        // 保持运行直到取消
+        await Task.Delay(Timeout.Infinite, ct);
+    }
+}
+```
+
+#### 实现文件清单
+
+| 文件 | 类型 | 说明 |
+|------|------|------|
+| `CallbackEnterChatEvent.cs` | 新增模型 | 进入机器人聊天事件模型（`enter_chat`） |
+| `CallbackAttachmentMessage.cs` | 新增模型 | 附件/混合消息模型（`attachment`） |
+| `CallbackAttachmentAction.cs` | 新增模型 | 附件消息中的操作项模型 |
+| `GetSmartSheetChatListRequest.cs` | 新增模型 | 获取智能表格群聊列表请求 |
+| `GetSmartSheetChatListResponse.cs` | 新增模型 | 获取智能表格群聊列表响应 |
+| `GetSmartSheetChatResponse.cs` | 新增模型 | 获取智能表格群聊详情响应 |
+| `UpdateSmartSheetChatRequest.cs` | 新增模型 | 修改智能表格群聊请求 |
+| `WsHeaders.cs` | 新增模型 | WebSocket 请求头（req_id） |
+| `WsRequest.cs` | 新增模型 | WebSocket 请求帧（cmd / headers / body） |
+| `WsResponse.cs` | 新增模型 | WebSocket 响应帧（errcode / errmsg） |
+| `WsSubscribeBody.cs` | 新增模型 | 订阅请求体（bot_id / secret） |
+| `WsMsgCallbackBody.cs` | 新增/修改模型 | 消息回调体（含 `ToolCalls` 文档工具调用） |
+| `WsEventCallbackBody.cs` | 新增模型 | 事件回调体 |
+| `WsTextContent.cs` | 新增模型 | 文本消息内容 |
+| `WsRespondWelcomeMsgBody.cs` | 新增模型 | 回复欢迎语消息体 |
+| `WsRespondMsgBody.cs` | 新增模型 | 回复消息体 |
+| `WsRespondUpdateMsgBody.cs` | 新增模型 | 更新模板卡片消息体 |
+| `WsSendMsgBody.cs` | 新增模型 | 主动推送消息体 |
+| `WsUploadMediaInitBody.cs` | 新增模型 | 分片上传初始化请求 |
+| `WsUploadMediaInitResponseBody.cs` | 新增模型 | 分片上传初始化响应 |
+| `WsUploadMediaChunkBody.cs` | 新增模型 | 分片上传块请求 |
+| `WsUploadMediaFinishBody.cs` | 新增模型 | 分片上传完成请求 |
+| `WsUploadMediaFinishResponseBody.cs` | 新增模型 | 分片上传完成响应 |
+| `WsCommands.cs` | 新增/修改模型 | WebSocket 指令常量（含 `RespondToolResult`） |
+| `DocToolNames.cs` | 新增模型 | 文档工具名称常量（12 种工具） |
+| `DocToolCallInfo.cs` | 新增模型 | 文档工具调用信息（tool_call_id / tool_name / arguments） |
+| `DocToolResultInfo.cs` | 新增模型 | 文档工具调用结果（tool_call_id / content） |
+| `WsRespondToolResultBody.cs` | 新增模型 | 回传工具调用结果消息体 |
+| `ISmartRobotWsClient.cs` | 新增接口 | WebSocket 客户端接口 |
+| `SmartRobotWsClient.cs` | 新增实现 | WebSocket 客户端完整实现 |
+| `CallbackMessageBase.cs` | 修改 | 新增 `attachment` 消息类型解析和 `enter_chat` 事件解析 |
+| `CallbackReplyBuilder.cs` | 修改 | 新增 `BuildMarkdown` 和 `BuildTemplateCard` 被动回复构建方法 |
+| `ISmartRobotService.cs` | 修改 | 接口升级：强类型 `SendMessageRequest`/`SendMessageResponse`；新增智能表格群聊 API |
+| `SmartRobotService.cs` | 修改 | 实现所有新接口方法 |
+| `WecomOptions.cs` | 修改 | 新增 `BotId` / `BotSecret` / `BotWsUrl` 配置属性 |
+| `WecomClient.cs` | 修改 | 新增 `SmartRobotWs` 属性（条件实例化） |
+| `WecomServiceCollectionExtensions.cs` | 修改 | 注册 `ISmartRobotWsClient` DI 服务 |
+
+---
+
+### 审批申请（ApplyEventBuilder）
+
+通过链式构建器快速提交审批申请，无需手动拼装嵌套数据结构。支持官方文档全部 **16 种控件类型**：
+
+| 控件 | 构建器方法 | 说明 |
+|------|-----------|------|
+| Text | `AddText` | 单行文本 |
+| Textarea | `AddTextarea` | 多行文本 |
+| Number | `AddNumber` | 数字 |
+| Money | `AddMoney` | 金额 |
+| Date | `AddDate` | 日期 |
+| DateRange | `AddDateRange` | 日期范围（可选时长） |
+| Selector | `AddSelector` | 选择器（单选/多选） |
+| Contact - 成员 | `AddMembers` | 联系人-成员 |
+| Contact - 部门 | `AddDepartments` | 联系人-部门 |
+| File | `AddFiles` | 附件 |
+| Table | `AddTable` | 明细表格 |
+| Location | `AddLocation` | 位置（可选打卡时间） |
+| Vacation | `AddVacation` | 请假 |
+| Attendance | `AddAttendance` | 假勤（出差/外出/加班） |
+| RelatedApproval | `AddRelatedApproval` | 关联审批单 |
+| Formula | — | 公式（后台自动计算，无需提交） |
+
+```csharp
+// 使用构建器提交审批申请
+var spNo = await client.Approval.ApplyEventAsync(b => b
+    .SetCreator("zhangsan")
+    .SetTemplate("3TkZjxugodbqpEMk5bRCFTHEHidgwegDnhVj4")
+    .UseTemplateApprover()
+    .AddText("Text-1", "出差事由：拜访客户")
+    .AddNumber("Number-1", "2")
+    .AddMoney("Money-1", "5000")
+    .AddDate("Date-1", "day", DateTimeOffset.Now)
+    .AddDateRange("DateRange-1", "day",
+        DateTimeOffset.Now,
+        DateTimeOffset.Now.AddDays(2),
+        duration: 172800)
+    .AddSelector("Selector-1", "single", "option-1")
+    .AddMembers("Contact-1", "zhangsan", "lisi")
+    .AddDepartments("Contact-2", "1", "2")
+    .AddLocation("Location-1", "40.0", "116.0", "北京市", "朝阳区")
+    .AddVacation("Vacation-1", "single", "1",
+        "day", DateTimeOffset.Now, DateTimeOffset.Now.AddDays(3))
+    .AddAttendance("Attendance-1", 3,
+        "day", DateTimeOffset.Now, DateTimeOffset.Now.AddDays(2))
+    .AddRelatedApproval("RelatedApproval-1", "202503140001")
+    .AddSummary("出差申请", "张三", "2天"));
+
+Console.WriteLine($"审批单号: {spNo}");
+
+// 自动分页获取所有审批单号
+var allSpNos = await client.Approval.GetAllApprovalNoAsync(
+    startTime: DateTimeOffset.Now.AddDays(-30).ToUnixTimeSeconds(),
+    endTime: DateTimeOffset.Now.ToUnixTimeSeconds());
+
+Console.WriteLine($"共 {allSpNos.Count} 个审批单");
 ```
 
 ---
@@ -830,6 +1317,7 @@ GaoXinLibrary.TencentSDK/
 │       ├── OAuth/                         #     OAuth
 │       ├── JsSdk/                         #     JS-SDK
 │       ├── Callback/                      #     回调消息
+│       ├── SmartRobot/                    #     智能机器人
 │       ├── Kf/                            #     客服
 │       ├── Checkin/                       #     打卡
 │       ├── Approval/                      #     审批

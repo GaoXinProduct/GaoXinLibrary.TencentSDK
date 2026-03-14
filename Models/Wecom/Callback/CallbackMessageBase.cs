@@ -42,6 +42,7 @@ public class CallbackMessageBase
             "video" or "shortvideo" => ParseVideoMessage(root, msgType),
             "location" => ParseLocationMessage(root),
             "link" => ParseLinkMessage(root),
+            "attachment" => ParseAttachmentMessage(root),
             "event" => ParseEvent(root),
             _ => ParseBase(root, msgType)
         };
@@ -108,6 +109,29 @@ public class CallbackMessageBase
         return msg;
     }
 
+    private static CallbackAttachmentMessage ParseAttachmentMessage(XElement root)
+    {
+        var msg = FillBase<CallbackAttachmentMessage>(root);
+        msg.MsgId = GetLong(root, "MsgId");
+        var attachment = root.Element("Attachment");
+        if (attachment != null)
+        {
+            msg.CallbackId = attachment.Element("CallbackId")?.Value ?? string.Empty;
+            var actions = attachment.Element("Actions");
+            if (actions != null)
+            {
+                msg.Actions = actions.Elements("item").Select(item => new CallbackAttachmentAction
+                {
+                    Name = item.Element("Name")?.Value ?? string.Empty,
+                    Value = item.Element("Value")?.Value ?? string.Empty,
+                    Type = item.Element("Type")?.Value ?? string.Empty,
+                    Key = item.Element("Key")?.Value ?? string.Empty
+                }).ToArray();
+            }
+        }
+        return msg;
+    }
+
     // ─── 解析事件 ──────────────────────────────────────────────────────
 
     private static CallbackMessageBase ParseEvent(XElement root)
@@ -118,6 +142,7 @@ public class CallbackMessageBase
             "subscribe" => FillEvent<CallbackSubscribeEvent>(root),
             "unsubscribe" => FillEvent<CallbackSubscribeEvent>(root),
             "enter_agent" => FillEvent<CallbackEnterAgentEvent>(root),
+            "enter_chat" => FillEvent<CallbackEnterChatEvent>(root),
             "location" => ParseLocationEvent(root),
             "click" => ParseClickEvent(root),
             "view" => ParseViewEvent(root),
@@ -125,7 +150,7 @@ public class CallbackMessageBase
             "pic_sysphoto" or "pic_photo_or_album" or "pic_weixin" => ParsePicEvent(root),
             "location_select" => ParseLocationSelectEvent(root),
             "template_card_event" => ParseTemplateCardEvent(root),
-            "open_approval_change" => FillEvent<CallbackEventBase>(root),
+            "open_approval_change" => ParseApprovalChangeEvent(root),
             "batch_job_result" => ParseBatchJobEvent(root),
             "change_contact" => ParseChangeContactEvent(root),
             _ => FillEvent<CallbackEventBase>(root)
@@ -366,6 +391,64 @@ public class CallbackMessageBase
     {
         var evt = FillEvent<T>(root);
         evt.ChangeType = root.Element("ChangeType")?.Value ?? string.Empty;
+        return evt;
+    }
+
+    // ─── 解析审批回调 ──────────────────────────────────────────────────
+
+    private static CallbackApprovalEvent ParseApprovalChangeEvent(XElement root)
+    {
+        var evt = FillEvent<CallbackApprovalEvent>(root);
+        var approvalInfo = root.Element("ApprovalInfo");
+        if (approvalInfo == null) return evt;
+
+        evt.SpNo = approvalInfo.Element("SpNo")?.Value ?? string.Empty;
+        evt.SpName = approvalInfo.Element("SpName")?.Value ?? string.Empty;
+        evt.SpStatus = GetInt(approvalInfo, "SpStatus");
+        evt.TemplateId = approvalInfo.Element("TemplateId")?.Value ?? string.Empty;
+        evt.ApplyTime = GetLong(approvalInfo, "ApplyTime");
+        evt.StatuChangeEvent = GetInt(approvalInfo, "StatuChangeEvent");
+
+        var applyer = approvalInfo.Element("Applyer");
+        if (applyer != null)
+        {
+            evt.ApplyerUserId = applyer.Element("UserId")?.Value ?? string.Empty;
+            evt.ApplyerPartyId = applyer.Element("Party")?.Value ?? string.Empty;
+        }
+
+        var spRecordNodes = approvalInfo.Elements("SpRecord");
+        evt.SpRecords = spRecordNodes.Select(record =>
+        {
+            var r = new CallbackApprovalSpRecord
+            {
+                SpStatus = GetInt(record, "SpStatus"),
+                ApproverAttr = GetInt(record, "ApproverAttr")
+            };
+            r.Details = record.Elements("Details").Select(detail => new CallbackApprovalSpDetail
+            {
+                UserId = detail.Element("Approver")?.Element("UserId")?.Value ?? string.Empty,
+                Speech = detail.Element("Speech")?.Value ?? string.Empty,
+                SpStatus = GetInt(detail, "SpStatus"),
+                SpTime = GetLong(detail, "SpTime")
+            }).ToArray();
+            return r;
+        }).ToArray();
+
+        var notifyerNodes = approvalInfo.Elements("Notifyer");
+        evt.NotifyerUserIds = notifyerNodes
+            .Select(n => n.Element("UserId")?.Value ?? string.Empty)
+            .Where(u => !string.IsNullOrEmpty(u))
+            .ToArray();
+
+        var commentNodes = approvalInfo.Elements("Comments");
+        evt.Comments = commentNodes.Select(c => new CallbackApprovalComment
+        {
+            UserId = c.Element("CommentUserInfo")?.Element("UserId")?.Value ?? string.Empty,
+            CommentTime = GetLong(c, "CommentTime"),
+            Content = c.Element("CommentContent")?.Value ?? string.Empty,
+            CommentId = c.Element("CommentId")?.Value ?? string.Empty
+        }).ToArray();
+
         return evt;
     }
 

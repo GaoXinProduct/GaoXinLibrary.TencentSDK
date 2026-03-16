@@ -22,6 +22,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat;
 public sealed class WechatMiniProgramClient : IDisposable
 {
     private readonly HttpClient _httpClient;
+    private readonly bool _ownsHttpClient;
     private readonly AccessTokenProvider _tokenProvider;
 
     /// <summary>登录与手机号</summary>
@@ -66,10 +67,11 @@ public sealed class WechatMiniProgramClient : IDisposable
     /// <summary>当前配置</summary>
     public WechatMiniProgramOptions Options { get; }
 
-    private WechatMiniProgramClient(WechatMiniProgramOptions options, HttpClient httpClient, ILogger? logger = null)
+    private WechatMiniProgramClient(WechatMiniProgramOptions options, HttpClient httpClient, bool ownsHttpClient, ILogger? logger = null)
     {
         Options = options;
         _httpClient = httpClient;
+        _ownsHttpClient = ownsHttpClient;
         _tokenProvider = new AccessTokenProvider(options, httpClient);
         var http = new WechatHttpClient(httpClient, _tokenProvider, options, logger);
 
@@ -95,7 +97,7 @@ public sealed class WechatMiniProgramClient : IDisposable
     {
         ValidateOptions(options);
         var httpClient = new HttpClient { Timeout = options.HttpTimeout };
-        return new WechatMiniProgramClient(options, httpClient, logger);
+        return new WechatMiniProgramClient(options, httpClient, ownsHttpClient: true, logger);
     }
 
     /// <summary>
@@ -105,7 +107,7 @@ public sealed class WechatMiniProgramClient : IDisposable
     {
         ValidateOptions(options);
         ArgumentNullException.ThrowIfNull(httpClient);
-        return new WechatMiniProgramClient(options, httpClient, logger);
+        return new WechatMiniProgramClient(options, httpClient, ownsHttpClient: false, logger);
     }
 
     /// <summary>使 access_token 缓存失效（下次 GetAccessTokenAsync 时自动重新获取）</summary>
@@ -151,6 +153,7 @@ public sealed class WechatMiniProgramClient : IDisposable
 
     public void Dispose()
     {
-        _httpClient.Dispose();
+        if (_ownsHttpClient)
+            _httpClient.Dispose();
     }
 }

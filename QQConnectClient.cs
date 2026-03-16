@@ -20,6 +20,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat;
 public sealed class QQConnectClient : IDisposable
 {
     private readonly HttpClient _httpClient;
+    private readonly bool _ownsHttpClient;
 
     /// <summary>QQ 登录服务</summary>
     public IQQConnectService Login { get; }
@@ -27,10 +28,11 @@ public sealed class QQConnectClient : IDisposable
     /// <summary>当前配置</summary>
     public QQConnectOptions Options { get; }
 
-    private QQConnectClient(QQConnectOptions options, HttpClient httpClient)
+    private QQConnectClient(QQConnectOptions options, HttpClient httpClient, bool ownsHttpClient)
     {
         Options = options;
         _httpClient = httpClient;
+        _ownsHttpClient = ownsHttpClient;
         Login = new QQConnectService(httpClient, options);
     }
 
@@ -41,7 +43,7 @@ public sealed class QQConnectClient : IDisposable
     {
         ValidateOptions(options);
         var httpClient = new HttpClient { Timeout = options.HttpTimeout };
-        return new QQConnectClient(options, httpClient);
+        return new QQConnectClient(options, httpClient, ownsHttpClient: true);
     }
 
     /// <summary>
@@ -51,7 +53,7 @@ public sealed class QQConnectClient : IDisposable
     {
         ValidateOptions(options);
         ArgumentNullException.ThrowIfNull(httpClient);
-        return new QQConnectClient(options, httpClient);
+        return new QQConnectClient(options, httpClient, ownsHttpClient: false);
     }
 
     private static void ValidateOptions(QQConnectOptions options)
@@ -63,6 +65,7 @@ public sealed class QQConnectClient : IDisposable
 
     public void Dispose()
     {
-        _httpClient.Dispose();
+        if (_ownsHttpClient)
+            _httpClient.Dispose();
     }
 }

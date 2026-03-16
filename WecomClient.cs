@@ -27,6 +27,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom;
 public sealed class WecomClient : IDisposable
 {
     private readonly HttpClient _httpClient;
+    private readonly bool _ownsHttpClient;
     private readonly AccessTokenProvider _tokenProvider;
     private readonly WecomHttpClient _http;
     private readonly WecomTicketProvider _jsApiTicketProvider;
@@ -169,10 +170,11 @@ public sealed class WecomClient : IDisposable
 
     // ─── 构造 ─────────────────────────────────────────────────────────────────
 
-    private WecomClient(WecomOptions options, HttpClient httpClient, ILogger? logger = null)
+    private WecomClient(WecomOptions options, HttpClient httpClient, bool ownsHttpClient, ILogger? logger = null)
     {
         Options = options;
         _httpClient = httpClient;
+        _ownsHttpClient = ownsHttpClient;
         _tokenProvider = new AccessTokenProvider(options, httpClient);
         _http = new WecomHttpClient(httpClient, _tokenProvider, options, logger);
 
@@ -301,7 +303,7 @@ public sealed class WecomClient : IDisposable
         }
 
         var httpClient = new HttpClient { Timeout = options.HttpTimeout };
-        var client = new WecomClient(options, httpClient, logger);
+        var client = new WecomClient(options, httpClient, ownsHttpClient: true, logger);
         // SecretShareUrl 模式：阻塞式预热，确保 CorpId / CorpSecret / AgentId / Tickets 在客户端返回前已就绪
         if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
             client._tokenProvider.GetTokenAsync().GetAwaiter().GetResult();
@@ -319,7 +321,7 @@ public sealed class WecomClient : IDisposable
     {
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(httpClient);
-        var client = new WecomClient(options, httpClient, logger);
+        var client = new WecomClient(options, httpClient, ownsHttpClient: false, logger);
         // SecretShareUrl 模式：阻塞式预热，确保 CorpId / CorpSecret / AgentId / Tickets 在客户端返回前已就绪
         if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
             client._tokenProvider.GetTokenAsync().GetAwaiter().GetResult();
@@ -462,6 +464,7 @@ public sealed class WecomClient : IDisposable
     public void Dispose()
     {
         MsgAudit.Dispose();
-        _httpClient.Dispose();
+        if (_ownsHttpClient)
+            _httpClient.Dispose();
     }
 }

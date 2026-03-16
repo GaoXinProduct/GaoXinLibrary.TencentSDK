@@ -21,6 +21,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat;
 public sealed class WechatOpenClient : IDisposable
 {
     private readonly HttpClient _httpClient;
+    private readonly bool _ownsHttpClient;
 
     /// <summary>网站应用微信登录</summary>
     public IOpenPlatformService WebLogin { get; }
@@ -28,10 +29,11 @@ public sealed class WechatOpenClient : IDisposable
     /// <summary>当前配置</summary>
     public WechatOpenOptions Options { get; }
 
-    private WechatOpenClient(WechatOpenOptions options, HttpClient httpClient, ILogger? logger = null)
+    private WechatOpenClient(WechatOpenOptions options, HttpClient httpClient, bool ownsHttpClient, ILogger? logger = null)
     {
         Options = options;
         _httpClient = httpClient;
+        _ownsHttpClient = ownsHttpClient;
         // 开放平台网站登录不需要 access_token 自动获取，使用 SNS 接口
         // AccessTokenProvider 仅作为 WechatHttpClient 构造参数传入，不会主动触发自动刷新
         var tokenProvider = new AccessTokenProvider(options, httpClient);
@@ -47,7 +49,7 @@ public sealed class WechatOpenClient : IDisposable
     {
         ValidateOptions(options);
         var httpClient = new HttpClient { Timeout = options.HttpTimeout };
-        return new WechatOpenClient(options, httpClient, logger);
+        return new WechatOpenClient(options, httpClient, ownsHttpClient: true, logger);
     }
 
     /// <summary>
@@ -57,7 +59,7 @@ public sealed class WechatOpenClient : IDisposable
     {
         ValidateOptions(options);
         ArgumentNullException.ThrowIfNull(httpClient);
-        return new WechatOpenClient(options, httpClient, logger);
+        return new WechatOpenClient(options, httpClient, ownsHttpClient: false, logger);
     }
 
     private static void ValidateOptions(WechatOpenOptions options)
@@ -73,6 +75,7 @@ public sealed class WechatOpenClient : IDisposable
 
     public void Dispose()
     {
-        _httpClient.Dispose();
+        if (_ownsHttpClient)
+            _httpClient.Dispose();
     }
 }

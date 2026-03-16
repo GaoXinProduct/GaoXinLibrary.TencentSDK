@@ -22,6 +22,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat;
 public sealed class WechatOfficialClient : IDisposable
 {
     private readonly HttpClient _httpClient;
+    private readonly bool _ownsHttpClient;
     private readonly AccessTokenProvider _tokenProvider;
     private readonly JsApiTicketProvider _ticketProvider;
 
@@ -85,10 +86,11 @@ public sealed class WechatOfficialClient : IDisposable
     /// <summary>当前配置</summary>
     public WechatOfficialOptions Options { get; }
 
-    private WechatOfficialClient(WechatOfficialOptions options, HttpClient httpClient, ILogger? logger = null)
+    private WechatOfficialClient(WechatOfficialOptions options, HttpClient httpClient, bool ownsHttpClient, ILogger? logger = null)
     {
         Options = options;
         _httpClient = httpClient;
+        _ownsHttpClient = ownsHttpClient;
         _tokenProvider = new AccessTokenProvider(options, httpClient);
         var http = new WechatHttpClient(httpClient, _tokenProvider, options, logger);
 
@@ -144,7 +146,7 @@ public sealed class WechatOfficialClient : IDisposable
     {
         ValidateOptions(options);
         var httpClient = new HttpClient { Timeout = options.HttpTimeout };
-        var client = new WechatOfficialClient(options, httpClient, logger);
+        var client = new WechatOfficialClient(options, httpClient, ownsHttpClient: true, logger);
         // SecretShareUrl 模式：阻塞式预热，确保 AppId / AppSecret / Ticket 在客户端返回前已就绪
         if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
             client._tokenProvider.GetTokenAsync().GetAwaiter().GetResult();
@@ -158,7 +160,7 @@ public sealed class WechatOfficialClient : IDisposable
     {
         ValidateOptions(options);
         ArgumentNullException.ThrowIfNull(httpClient);
-        var client = new WechatOfficialClient(options, httpClient, logger);
+        var client = new WechatOfficialClient(options, httpClient, ownsHttpClient: false, logger);
         // SecretShareUrl 模式：阻塞式预热，确保 AppId / AppSecret / Ticket 在客户端返回前已就绪
         if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
             client._tokenProvider.GetTokenAsync().GetAwaiter().GetResult();
@@ -268,6 +270,7 @@ public sealed class WechatOfficialClient : IDisposable
 
     public void Dispose()
     {
-        _httpClient.Dispose();
+        if (_ownsHttpClient)
+            _httpClient.Dispose();
     }
 }

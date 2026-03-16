@@ -1,3 +1,4 @@
+using System.Net.Http;
 using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Services;
@@ -73,15 +74,9 @@ public static class WechatServiceCollectionExtensions
 
         services.TryAddSingleton(options);
 
-        services.AddHttpClient(TencentConstants.MiniProgramHttpClientName, client =>
-        {
-            client.Timeout = options.HttpTimeout;
-        });
-
         services.TryAddSingleton<WechatMiniProgramClient>(sp =>
         {
-            var factory = sp.GetRequiredService<IHttpClientFactory>();
-            var httpClient = factory.CreateClient(TencentConstants.MiniProgramHttpClientName);
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatMiniProgramClient>();
             return WechatMiniProgramClient.Create(options, httpClient, logger);
         });
@@ -129,15 +124,11 @@ public static class WechatServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(name);
         ValidateOptions(options);
 
-        var httpClientName = $"{TencentConstants.MiniProgramHttpClientName}.{name}";
-
         services.AddKeyedSingleton(name, options);
-        services.AddHttpClient(httpClientName, client => { client.Timeout = options.HttpTimeout; });
 
         services.AddKeyedSingleton<WechatMiniProgramClient>(name, (sp, _) =>
         {
-            var factory = sp.GetRequiredService<IHttpClientFactory>();
-            var httpClient = factory.CreateClient(httpClientName);
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatMiniProgramClient>();
             return WechatMiniProgramClient.Create(options, httpClient, logger);
         });
@@ -185,15 +176,9 @@ public static class WechatServiceCollectionExtensions
 
         services.TryAddSingleton(options);
 
-        services.AddHttpClient(TencentConstants.OfficialHttpClientName, client =>
-        {
-            client.Timeout = options.HttpTimeout;
-        });
-
         services.TryAddSingleton<WechatOfficialClient>(sp =>
         {
-            var factory = sp.GetRequiredService<IHttpClientFactory>();
-            var httpClient = factory.CreateClient(TencentConstants.OfficialHttpClientName);
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOfficialClient>();
             return WechatOfficialClient.Create(options, httpClient, logger);
         });
@@ -247,15 +232,11 @@ public static class WechatServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(name);
         ValidateOptions(options);
 
-        var httpClientName = $"{TencentConstants.OfficialHttpClientName}.{name}";
-
         services.AddKeyedSingleton(name, options);
-        services.AddHttpClient(httpClientName, client => { client.Timeout = options.HttpTimeout; });
 
         services.AddKeyedSingleton<WechatOfficialClient>(name, (sp, _) =>
         {
-            var factory = sp.GetRequiredService<IHttpClientFactory>();
-            var httpClient = factory.CreateClient(httpClientName);
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOfficialClient>();
             return WechatOfficialClient.Create(options, httpClient, logger);
         });
@@ -309,15 +290,9 @@ public static class WechatServiceCollectionExtensions
 
         services.TryAddSingleton(options);
 
-        services.AddHttpClient(TencentConstants.OpenHttpClientName, client =>
-        {
-            client.Timeout = options.HttpTimeout;
-        });
-
         services.TryAddSingleton<WechatOpenClient>(sp =>
         {
-            var factory = sp.GetRequiredService<IHttpClientFactory>();
-            var httpClient = factory.CreateClient(TencentConstants.OpenHttpClientName);
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOpenClient>();
             return WechatOpenClient.Create(options, httpClient, logger);
         });
@@ -353,15 +328,11 @@ public static class WechatServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(name);
         ValidateOptions(options);
 
-        var httpClientName = $"{TencentConstants.OpenHttpClientName}.{name}";
-
         services.AddKeyedSingleton(name, options);
-        services.AddHttpClient(httpClientName, client => { client.Timeout = options.HttpTimeout; });
 
         services.AddKeyedSingleton<WechatOpenClient>(name, (sp, _) =>
         {
-            var factory = sp.GetRequiredService<IHttpClientFactory>();
-            var httpClient = factory.CreateClient(httpClientName);
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOpenClient>();
             return WechatOpenClient.Create(options, httpClient, logger);
         });
@@ -397,15 +368,9 @@ public static class WechatServiceCollectionExtensions
 
         services.TryAddSingleton(options);
 
-        services.AddHttpClient(TencentConstants.QQConnectHttpClientName, client =>
-        {
-            client.Timeout = options.HttpTimeout;
-        });
-
         services.TryAddSingleton<QQConnectClient>(sp =>
         {
-            var factory = sp.GetRequiredService<IHttpClientFactory>();
-            var httpClient = factory.CreateClient(TencentConstants.QQConnectHttpClientName);
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             return QQConnectClient.Create(options, httpClient);
         });
 
@@ -440,15 +405,11 @@ public static class WechatServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(name);
         ValidateOptions(options);
 
-        var httpClientName = $"{TencentConstants.QQConnectHttpClientName}.{name}";
-
         services.AddKeyedSingleton(name, options);
-        services.AddHttpClient(httpClientName, client => { client.Timeout = options.HttpTimeout; });
 
         services.AddKeyedSingleton<QQConnectClient>(name, (sp, _) =>
         {
-            var factory = sp.GetRequiredService<IHttpClientFactory>();
-            var httpClient = factory.CreateClient(httpClientName);
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             return QQConnectClient.Create(options, httpClient);
         });
 
@@ -596,6 +557,23 @@ public static class WechatServiceCollectionExtensions
     }
 
     // ─── 内部辅助 ──────────────────────────────────────────────────────
+
+    /// <summary>
+    /// 创建适合 Singleton 持有的长生命周期 HttpClient。
+    /// 使用 SocketsHttpHandler.PooledConnectionLifetime 实现连接级 DNS 轮换，
+    /// 从而避免 IHttpClientFactory Handler 轮换导致的 ObjectDisposedException。
+    /// </summary>
+    private static HttpClient CreateLongLivedHttpClient(TimeSpan timeout)
+    {
+        var handler = new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = TimeSpan.FromMinutes(15)
+        };
+        return new HttpClient(handler, disposeHandler: false)
+        {
+            Timeout = timeout
+        };
+    }
 
     private static void ValidateOptions(WechatOptions options)
     {

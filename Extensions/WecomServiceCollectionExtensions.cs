@@ -1,3 +1,4 @@
+using System.Net.Http;
 using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Services;
@@ -70,19 +71,12 @@ public static class WecomServiceCollectionExtensions
         // 注册配置
         services.TryAddSingleton(options);
 
-        var httpClientName = TencentConstants.WecomHttpClientName;
-
-        // 注册命名 HttpClient
-        services.AddHttpClient(httpClientName, client =>
-        {
-            client.Timeout = options.HttpTimeout;
-        });
-
         // 注册主客户端（单例）
+        // 使用 SocketsHttpHandler + PooledConnectionLifetime 创建长生命周期 HttpClient，
+        // 避免 IHttpClientFactory 因 Handler 轮换导致 Singleton 持有已释放的 HttpClient。
         services.TryAddSingleton<WecomClient>(sp =>
         {
-            var factory = sp.GetRequiredService<IHttpClientFactory>();
-            var httpClient = factory.CreateClient(httpClientName);
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WecomClient>();
             return WecomClient.Create(options, httpClient, logger);
         });
@@ -166,22 +160,15 @@ public static class WecomServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(name);
         ValidateOptions(options);
 
-        var httpClientName = $"{TencentConstants.WecomHttpClientName}.{name}";
-
         // 注册配置（Keyed）
         services.AddKeyedSingleton(name, options);
 
-        // 注册命名 HttpClient（每个 key 独立）
-        services.AddHttpClient(httpClientName, client =>
-        {
-            client.Timeout = options.HttpTimeout;
-        });
-
         // 注册主客户端（Keyed 单例）
+        // 使用 SocketsHttpHandler + PooledConnectionLifetime 创建长生命周期 HttpClient，
+        // 避免 IHttpClientFactory 因 Handler 轮换导致 Singleton 持有已释放的 HttpClient。
         services.AddKeyedSingleton<WecomClient>(name, (sp, _) =>
         {
-            var factory = sp.GetRequiredService<IHttpClientFactory>();
-            var httpClient = factory.CreateClient(httpClientName);
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WecomClient>();
             return WecomClient.Create(options, httpClient, logger);
         });
@@ -281,6 +268,23 @@ public static class WecomServiceCollectionExtensions
     }
 
     // ─── 内部辅助 ──────────────────────────────────────────────────────
+
+    /// <summary>
+    /// 创建适合 Singleton 持有的长生命周期 HttpClient。
+    /// 使用 SocketsHttpHandler.PooledConnectionLifetime 实现连接级 DNS 轮换，
+    /// 从而避免 IHttpClientFactory Handler 轮换导致的 ObjectDisposedException。
+    /// </summary>
+    private static HttpClient CreateLongLivedHttpClient(TimeSpan timeout)
+    {
+        var handler = new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = TimeSpan.FromMinutes(15)
+        };
+        return new HttpClient(handler, disposeHandler: false)
+        {
+            Timeout = timeout
+        };
+    }
 
     private static void ValidateOptions(WecomOptions options)
     {

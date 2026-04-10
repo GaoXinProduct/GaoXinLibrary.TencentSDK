@@ -19,34 +19,21 @@ public class WechatOptions
     /// <summary>HTTP 请求超时时间，默认 30 秒</summary>
     public TimeSpan HttpTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
-    // ─── 共享 Token 配置 ─────────────────────────────────────────────────────
-
     /// <summary>
-    /// 共享 Token 密钥（采用 ChaCha20-Poly1305 加密）
+    /// 共享密钥
     /// <para>
-    /// 设置后可通过 <c>GetSharedAccessTokenAsync()</c> 获取加密形式的 Token 供其他服务消费，
-    /// 或配合 <see cref="TokenShareUrl"/> 从远端获取并自动解密。
-    /// 密钥可为任意字符串，内部使用 SHA-256 派生为 32 字节密钥。
+    /// 备服务器模式下必填，与主服务器约定的同一密钥（ChaCha20-Poly1305，内部通过 SHA-256 派生为 32 字节密钥）。<br/>
+    /// 主服务器侧亦可配置，供 <see cref="TencentTokenCrypto"/> 工具类直接使用。
     /// </para>
     /// </summary>
     public string? ShareSecret { get; set; }
 
     /// <summary>
-    /// 共享 Token 远端地址
-    /// <para>
-    /// 设置后将从此地址（HTTP GET）获取加密 Token，而非直接向微信 API 请求。
-    /// 远端响应格式：<c>{"token":"BASE64加密数据","expires_in":7200}</c>，需与 <see cref="ShareSecret"/> 配合使用。
-    /// </para>
-    /// </summary>
-    public string? TokenShareUrl { get; set; }
-
-    /// <summary>
     /// 统一共享密钥远端地址
     /// <para>
-    /// 设置后将从此地址（HTTP GET）获取加密的 <see cref="SharedSecretPayload"/>，而非直接向微信 API 请求。<br/>
-    /// 远端响应格式：<c>{"data":"BASE64加密数据"}</c>，密文解密后为包含 access_token、jsapi_ticket、AppId、AppSecret 等全部敏感信息的 JSON。<br/>
-    /// 需与 <see cref="ShareSecret"/> 配合使用。设置此项后无需配置 <see cref="WechatOptions.AppId"/>、
-    /// <see cref="WechatOptions.AppSecret"/>、<see cref="TokenShareUrl"/>。
+    /// 配置后，SDK 将从该 URL 拉取加密的 <see cref="SharedSecretPayload"/> 载荷（JSON 格式，字段 <c>data</c> 为加密字符串）。<br/>
+    /// 载荷解密后包含 access_token、jsapi_ticket、AppId、AppSecret 等全部敏感信息，备服务器无需配置 AppSecret 即可正常运行。<br/>
+    /// 注意：配置 <see cref="SecretShareUrl"/> 时必须同时配置 <see cref="ShareSecret"/>。
     /// </para>
     /// </summary>
     public string? SecretShareUrl { get; set; }

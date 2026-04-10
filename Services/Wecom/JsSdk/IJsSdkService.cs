@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 using System.Text;
-using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Models.JsSdk;
 
@@ -10,7 +9,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 /// <summary>
 /// 企业微信 H5 / JS-SDK 服务接口
 /// <para>
-/// 提供企业微信 JS-SDK 所需的 jsapi_ticket 获取（含缓存/共享）、签名计算等功能，
+/// 提供企业微信 JS-SDK 所需的 jsapi_ticket 获取（含缓存）、签名计算等功能，
 /// 用于在企业微信 H5 页面中调用 JS-SDK 接口。
 /// 参考文档：<see href="https://developer.work.weixin.qq.com/document/path/90506"/>
 /// </para>
@@ -40,14 +39,6 @@ public interface IJsSdkService
     /// <param name="expiresIn">有效期，默认 7200 秒（内部提前 60 秒过期以留出安全余量）</param>
     void SetJsApiTicket(string ticket, TimeSpan? expiresIn = null);
 
-    /// <summary>
-    /// 获取当前企业级 jsapi_ticket 的共享加密形式（ChaCha20-Poly1305）
-    /// <para>
-    /// 用于主服务对外暴露 Ticket 共享接口，需在 Options 中配置 <c>JsApiTicketShareSecret</c>。
-    /// </para>
-    /// </summary>
-    Task<SharedTokenResult> GetSharedJsApiTicketAsync(CancellationToken ct = default);
-
     // ─── 应用级 jsapi_ticket（用于 wx.agentConfig） ────────────────────────
 
     /// <summary>
@@ -69,14 +60,6 @@ public interface IJsSdkService
     /// <param name="ticket">jsapi_ticket 值</param>
     /// <param name="expiresIn">有效期，默认 7200 秒（内部提前 60 秒过期以留出安全余量）</param>
     void SetAgentTicket(string ticket, TimeSpan? expiresIn = null);
-
-    /// <summary>
-    /// 获取当前应用级 jsapi_ticket 的共享加密形式（ChaCha20-Poly1305）
-    /// <para>
-    /// 用于主服务对外暴露 Ticket 共享接口，需在 Options 中配置 <c>AgentTicketShareSecret</c>。
-    /// </para>
-    /// </summary>
-    Task<SharedTokenResult> GetSharedAgentTicketAsync(CancellationToken ct = default);
 
     // ─── 签名计算 ─────────────────────────────────────────────────────────
 

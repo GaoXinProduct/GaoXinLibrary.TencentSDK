@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 namespace GaoXinLibrary.TencentSDK.Wecom.Extensions;
 
 /// <summary>
-/// 企业微信 SDK 依赖注入扩展方法
+/// 企业微信 SDK 核心服务依赖注入扩展方法
 /// <para>
 /// <b>单实例用法</b>（无 key，向后兼容）：
 /// <code>
@@ -39,14 +39,44 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Extensions;
 ///     [FromKeyedServices("agent1")] IMessageService msg1,
 ///     [FromKeyedServices("agent2")] IMessageService msg2) { ... }
 /// </code>
+///
+/// <b>群机器人</b>（可选，需额外调用）：
+/// <code>
+/// // 群机器人需调用 AddWecomWebHookService（位于 WecomWebHookServiceCollectionExtensions）
+/// builder.Services.AddWecomWebHookService(options =>
+/// {
+///     options.WebhookKey = "your_webhook_key";
+/// });
+/// </code>
+///
+/// <b>智能机器人（含长连接）及消息回调</b>（可选，需额外调用）：
+/// <code>
+/// // 智能机器人需调用 AddWecomSmartBotService（位于 WecomSmartBotServiceCollectionExtensions）
+/// builder.Services.AddWecomSmartBotService(options =>
+/// {
+///     options.CorpId                 = "your_corpid";
+///     options.CorpSecret             = "your_corpsecret";
+///     options.AgentId                = 1000001;
+///     options.CallbackToken          = "your_token";
+///     options.CallbackEncodingAesKey = "your_43char_key";
+///     options.BotId     = "your_bot_id";      // 可选，启用 SmartRobotWs
+///     options.BotSecret = "your_bot_secret";   // 可选，启用 SmartRobotWs
+/// });
+/// </code>
 /// </para>
 /// </summary>
 public static class WecomServiceCollectionExtensions
 {
-    // ─── 无 key（单实例，向后兼容） ──────────────────────────────────────
+    // ─── AddWecomService 无 key（单实例，向后兼容） ───────────────────────
 
     /// <summary>
-    /// 注册企业微信 SDK 服务（使用委托配置选项，无 key 单实例）
+    /// 注册企业微信 SDK 核心服务（使用委托配置选项，无 key 单实例）
+    /// <para>
+    /// 若需要群机器人（<see cref="IWebhookService"/>），请调用
+    /// <c>AddWecomWebHookService</c>（位于 <c>WecomWebHookServiceCollectionExtensions</c>）。<br/>
+    /// 若需要智能机器人（<see cref="ISmartRobotService"/>/<see cref="ISmartRobotWsClient"/>）或消息回调（<see cref="ICallbackService"/>），
+    /// 请调用 <c>AddWecomSmartBotService</c>（位于 <c>WecomSmartBotServiceCollectionExtensions</c>）。
+    /// </para>
     /// </summary>
     public static IServiceCollection AddWecomService(
         this IServiceCollection services,
@@ -60,7 +90,7 @@ public static class WecomServiceCollectionExtensions
     }
 
     /// <summary>
-    /// 注册企业微信 SDK 服务（使用已有配置对象，无 key 单实例）
+    /// 注册企业微信 SDK 核心服务（使用已有配置对象，无 key 单实例）
     /// </summary>
     public static IServiceCollection AddWecomService(
         this IServiceCollection services,
@@ -86,15 +116,11 @@ public static class WecomServiceCollectionExtensions
         services.TryAddSingleton<IDepartmentService>(sp => sp.GetRequiredService<WecomClient>().Department);
         services.TryAddSingleton<ITagService>(sp => sp.GetRequiredService<WecomClient>().Tag);
         services.TryAddSingleton<IMessageService>(sp => sp.GetRequiredService<WecomClient>().Message);
-        services.TryAddSingleton<IWebhookService>(sp => sp.GetRequiredService<WecomClient>().Webhook);
         services.TryAddSingleton<IAgentService>(sp => sp.GetRequiredService<WecomClient>().Agent);
         services.TryAddSingleton<IMediaService>(sp => sp.GetRequiredService<WecomClient>().Media);
         services.TryAddSingleton<IGroupChatService>(sp => sp.GetRequiredService<WecomClient>().GroupChat);
         services.TryAddSingleton<IMenuService>(sp => sp.GetRequiredService<WecomClient>().Menu);
         services.TryAddSingleton<IOAuthService>(sp => sp.GetRequiredService<WecomClient>().OAuth);
-        services.TryAddSingleton<ICallbackService>(sp => sp.GetRequiredService<WecomClient>().Callback);
-        services.TryAddSingleton<ISmartRobotService>(sp => sp.GetRequiredService<WecomClient>().SmartRobot);
-        services.TryAddSingleton(sp => sp.GetRequiredService<WecomClient>().SmartRobotWs!);
         services.TryAddSingleton<ICorpGroupService>(sp => sp.GetRequiredService<WecomClient>().CorpGroup);
         services.TryAddSingleton<ILinkedCorpService>(sp => sp.GetRequiredService<WecomClient>().LinkedCorp);
         services.TryAddSingleton<IKfService>(sp => sp.GetRequiredService<WecomClient>().Kf);
@@ -129,10 +155,10 @@ public static class WecomServiceCollectionExtensions
         return services;
     }
 
-    // ─── 带 key（多实例，Keyed Services） ──────────────────────────────
+    // ─── AddWecomService 带 key（多实例，Keyed Services） ────────────────
 
     /// <summary>
-    /// 注册企业微信 SDK 服务（带 key，使用委托配置选项）
+    /// 注册企业微信 SDK 核心服务（带 key，使用委托配置选项）
     /// <para>支持多次调用以注册不同 Agent / CorpSecret 实例，通过 <c>[FromKeyedServices("name")]</c> 注入。</para>
     /// </summary>
     public static IServiceCollection AddWecomService(
@@ -149,7 +175,7 @@ public static class WecomServiceCollectionExtensions
     }
 
     /// <summary>
-    /// 注册企业微信 SDK 服务（带 key，使用已有配置对象）
+    /// 注册企业微信 SDK 核心服务（带 key，使用已有配置对象）
     /// <para>支持多次调用以注册不同 Agent / CorpSecret 实例，通过 <c>[FromKeyedServices("name")]</c> 注入。</para>
     /// </summary>
     public static IServiceCollection AddWecomService(
@@ -178,15 +204,11 @@ public static class WecomServiceCollectionExtensions
         services.AddKeyedSingleton<IDepartmentService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Department);
         services.AddKeyedSingleton<ITagService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Tag);
         services.AddKeyedSingleton<IMessageService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Message);
-        services.AddKeyedSingleton<IWebhookService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Webhook);
         services.AddKeyedSingleton<IAgentService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Agent);
         services.AddKeyedSingleton<IMediaService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Media);
         services.AddKeyedSingleton<IGroupChatService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).GroupChat);
         services.AddKeyedSingleton<IMenuService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Menu);
         services.AddKeyedSingleton<IOAuthService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).OAuth);
-        services.AddKeyedSingleton<ICallbackService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Callback);
-        services.AddKeyedSingleton<ISmartRobotService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).SmartRobot);
-        services.AddKeyedSingleton<ISmartRobotWsClient>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).SmartRobotWs!);
         services.AddKeyedSingleton<ICorpGroupService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).CorpGroup);
         services.AddKeyedSingleton<ILinkedCorpService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).LinkedCorp);
         services.AddKeyedSingleton<IKfService>(name, (sp, key) => sp.GetRequiredKeyedService<WecomClient>(key).Kf);
@@ -221,10 +243,10 @@ public static class WecomServiceCollectionExtensions
         return services;
     }
 
-    // ─── IConfiguration 绑定 ────────────────────────────────────────────
+    // ─── AddWecomService IConfiguration 绑定 ────────────────────────────
 
     /// <summary>
-    /// 注册企业微信 SDK 服务（从 <see cref="IConfiguration"/> 绑定配置）
+    /// 注册企业微信 SDK 核心服务（从 <see cref="IConfiguration"/> 绑定配置）
     /// <para>
     /// 用法示例：
     /// <code>
@@ -253,7 +275,7 @@ public static class WecomServiceCollectionExtensions
     }
 
     /// <summary>
-    /// 注册企业微信 SDK 服务（带 key，从 <see cref="IConfiguration"/> 绑定配置）
+    /// 注册企业微信 SDK 核心服务（带 key，从 <see cref="IConfiguration"/> 绑定配置）
     /// </summary>
     public static IServiceCollection AddWecomService(
         this IServiceCollection services,
@@ -274,7 +296,7 @@ public static class WecomServiceCollectionExtensions
     /// 使用 SocketsHttpHandler.PooledConnectionLifetime 实现连接级 DNS 轮换，
     /// 从而避免 IHttpClientFactory Handler 轮换导致的 ObjectDisposedException。
     /// </summary>
-    private static HttpClient CreateLongLivedHttpClient(TimeSpan timeout)
+    internal static HttpClient CreateLongLivedHttpClient(TimeSpan timeout)
     {
         var handler = new SocketsHttpHandler
         {
@@ -286,20 +308,13 @@ public static class WecomServiceCollectionExtensions
         };
     }
 
-    private static void ValidateOptions(WecomOptions options)
+    internal static void ValidateOptions(WecomOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        // 统一共享密钥模式：仅需 ShareSecret + SecretShareUrl
-        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl) && !string.IsNullOrWhiteSpace(options.ShareSecret))
-            return;
-
         if (string.IsNullOrWhiteSpace(options.CorpId))
-            throw new ArgumentException("WecomOptions.CorpId 不能为空（或配置 SecretShareUrl + ShareSecret 使用统一共享密钥模式）", nameof(options));
-        if (string.IsNullOrWhiteSpace(options.CorpSecret) &&
-            (string.IsNullOrWhiteSpace(options.ShareSecret) || string.IsNullOrWhiteSpace(options.TokenShareUrl)))
-        {
-            throw new ArgumentException("WecomOptions.CorpSecret 不能为空，或者需要同时配置 ShareSecret 和 TokenShareUrl（或使用 SecretShareUrl 统一共享密钥模式）", nameof(options));
-        }
+            throw new ArgumentException("WecomOptions.CorpId 不能为空", nameof(options));
+        if (string.IsNullOrWhiteSpace(options.CorpSecret))
+            throw new ArgumentException("WecomOptions.CorpSecret 不能为空", nameof(options));
     }
 }

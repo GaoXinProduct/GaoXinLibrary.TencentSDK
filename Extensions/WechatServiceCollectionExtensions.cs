@@ -201,7 +201,13 @@ public static class WechatServiceCollectionExtensions
         services.TryAddSingleton<IOfficialPoiService>(sp => sp.GetRequiredService<WechatOfficialClient>().Poi);
         services.TryAddSingleton<IOfficialInvoiceService>(sp => sp.GetRequiredService<WechatOfficialClient>().Invoice);
         services.TryAddSingleton<IOfficialOpenApiService>(sp => sp.GetRequiredService<WechatOfficialClient>().OpenApi);
-        services.TryAddSingleton<IOfficialCallbackService>(sp => sp.GetRequiredService<WechatOfficialClient>().Callback);
+
+        // 回调服务：仅在配置了 CallbackToken 和 CallbackEncodingAesKey 时注册
+        if (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
+            !string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
+        {
+            services.TryAddSingleton<IOfficialCallbackService>(sp => sp.GetRequiredService<WechatOfficialClient>().Callback);
+        }
 
         return services;
     }
@@ -259,7 +265,13 @@ public static class WechatServiceCollectionExtensions
         services.AddKeyedSingleton<IOfficialPoiService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Poi);
         services.AddKeyedSingleton<IOfficialInvoiceService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Invoice);
         services.AddKeyedSingleton<IOfficialOpenApiService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).OpenApi);
-        services.AddKeyedSingleton<IOfficialCallbackService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Callback);
+
+        // 回调服务：仅在配置了 CallbackToken 和 CallbackEncodingAesKey 时注册（Keyed）
+        if (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
+            !string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
+        {
+            services.AddKeyedSingleton<IOfficialCallbackService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Callback);
+        }
 
         return services;
     }
@@ -579,16 +591,9 @@ public static class WechatServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        // 统一共享密钥模式：仅需 ShareSecret + SecretShareUrl
-        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl) && !string.IsNullOrWhiteSpace(options.ShareSecret))
-            return;
-
         if (string.IsNullOrWhiteSpace(options.AppId))
-            throw new ArgumentException("WechatOptions.AppId 不能为空（或配置 SecretShareUrl + ShareSecret 使用统一共享密钥模式）", nameof(options));
-        if (string.IsNullOrWhiteSpace(options.AppSecret) &&
-            (string.IsNullOrWhiteSpace(options.ShareSecret) || string.IsNullOrWhiteSpace(options.TokenShareUrl)))
-        {
-            throw new ArgumentException("WechatOptions.AppSecret 不能为空，或者需要同时配置 ShareSecret 和 TokenShareUrl（或使用 SecretShareUrl 统一共享密钥模式）", nameof(options));
-        }
+            throw new ArgumentException("WechatOptions.AppId 不能为空", nameof(options));
+        if (string.IsNullOrWhiteSpace(options.AppSecret))
+            throw new ArgumentException("WechatOptions.AppSecret 不能为空", nameof(options));
     }
 }

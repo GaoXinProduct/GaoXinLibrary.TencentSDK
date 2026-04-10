@@ -5,11 +5,9 @@ using System.Text;
 namespace GaoXinLibrary.TencentSDK.Core;
 
 /// <summary>
-/// 腾讯 SDK Token 共享加解密工具（ChaCha20-Poly1305）
+/// 腾讯 SDK 加解密工具（ChaCha20-Poly1305）
 /// <para>
-/// 适用于多服务共享 access_token 场景：<br/>
-/// 主服务（持有真实 AppSecret）通过 <see cref="Encrypt"/> 加密后对外暴露，
-/// 从服务配置 <c>TokenShareUrl</c> 与 <c>ShareSecret</c> 后由 SDK 自动获取并解密。<br/>
+/// 适用于需要在服务间安全传输敏感字符串的场景，配合 <c>ShareSecret</c> 使用。<br/>
 /// 加密格式：<c>Base64( nonce[12] + ciphertext[N] + tag[16] )</c>
 /// </para>
 /// </summary>

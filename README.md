@@ -4,7 +4,11 @@
 
 一个包覆盖腾讯主流开放平台，开箱即用、接口对齐官方文档、支持依赖注入与多实例。
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![NuGet](https://img.shields.io/nuget/v/GaoXinLibrary.TencentSDK.svg)](https://www.nuget.org/packages/GaoXinLibrary.TencentSDK)
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/download/dotnet/10.0)
+[![.NET](https://img.shields.io/badge/.NET-9.0-512BD4)](https://dotnet.microsoft.com/download/dotnet/9.0)
+[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/download/dotnet/8.0)
 
 ---
 
@@ -79,7 +83,7 @@ Install-Package GaoXinLibrary.TencentSDK
 | 用户管理 | `User` | `IOfficialUserService` | `GetInfoAsync` 获取用户信息 / `BatchGetInfoAsync` 批量获取 / `GetListAsync` 用户列表 / `GetAllOpenIdsAsync` 全部 OpenId（自动分页） / `UpdateRemarkAsync` 设置备注名 / `BatchBlacklistAsync` 拉黑用户 / `BatchUnblacklistAsync` 取消拉黑 / `GetBlacklistAsync` 黑名单列表 / `ChangeOpenIdAsync` 迁移后转换 OpenId |
 | 服务号二维码 | `QrCode` | `IOfficialQrCodeService` | 带参二维码：`CreateTemporaryAsync`/`CreatePermanentAsync`/`BuildShowUrl` / 扫码打开小程序：`AddOrUpdateJumpRuleAsync`/`GetJumpRulesAsync`/`PublishJumpRuleAsync`/`DeleteJumpRuleAsync` / 长短链：`GenerateShortLinkAsync`/`FetchShortLinkAsync` |
 | 素材管理 | `Material` | `IOfficialMaterialService` | `GetCountAsync` 素材总数 / `GetMaterialAsync` 获取永久素材 / `DeleteMaterialAsync` 删除永久素材 / `BatchGetAsync` 素材列表 / `UploadTempMaterialAsync` 上传临时素材（Stream / ReadOnlyMemory） / `DownloadTempMaterialBytesAsync` 下载临时素材 byte[] / `DownloadTempMaterialReadOnlyAsync` 下载 ReadOnlyMemory / `AddPermanentMaterialAsync` 新增永久素材（Stream / ReadOnlyMemory） |
-| JS-SDK | `JsSdk` | `IOfficialJsSdkService` | `GetTicketAsync` 获取 jsapi_ticket（自动缓存） / `CreateSignature` 计算签名 / `InvalidateTicketCache` 使缓存失效 / `RefreshTicketAsync` 强制刷新 / `SetTicket` 手动设置 / `GetSharedTicketAsync` 获取共享加密 Ticket |
+| JS-SDK | `JsSdk` | `IOfficialJsSdkService` | `GetTicketAsync` 获取 jsapi_ticket（自动缓存） / `CreateSignature` 计算签名 / `InvalidateTicketCache` 使缓存失效 / `RefreshTicketAsync` 强制刷新 / `SetTicket` 手动设置 / `GetSharedSecretAsync` 获取统一共享密钥载荷（含 Token、Ticket、AppId、AppSecret） |
 | 用户标签 | `Tag` | `IOfficialTagService` | `CreateAsync` 创建标签 / `GetAllAsync` 获取全部标签 / `UpdateAsync` 编辑标签 / `DeleteAsync` 删除标签 / `GetUsersAsync` 标签下粉丝列表 / `BatchTagAsync` 批量打标签 / `BatchUntagAsync` 批量取消 / `GetUserTagsAsync` 获取用户标签 |
 | 草稿箱 | `Draft` | `IOfficialDraftService` | `AddAsync` 新建草稿 / `GetAsync` 获取草稿 / `DeleteAsync` 删除草稿 / `BatchGetAsync` 草稿列表 / `GetCountAsync` 草稿总数 |
 | 发布能力 | `Publish` | `IOfficialPublishService` | `SubmitAsync` 发布草稿 / `GetAsync` 查询发布状态 / `DeleteAsync` 删除发布 / `GetArticleAsync` 获取已发布文章 / `BatchGetAsync` 成功发布列表 |
@@ -401,9 +405,9 @@ await client.User.BatchDeleteUsersAsync(new BatchDeleteUserRequest
 // 获取部门列表
 var depts = await client.Department.GetDepartmentListAsync();
 
-// Webhook 群机器人
-await client.Webhook.SendTextAsync("YOUR_WEBHOOK_KEY", "机器人消息");
-await client.Webhook.SendMarkdownAsync("YOUR_WEBHOOK_KEY", "## 告警\n> 服务异常");
+// Webhook 群机器人（通过 DI 注入 IWebhookService，注册时已绑定 WebhookKey）
+await client.Webhook.SendTextAsync("机器人消息");
+await client.Webhook.SendMarkdownAsync("## 告警\n> 服务异常");
 
 // 获取当前应用信息（AgentId 自动取自 WecomOptions，无需手动传入）
 var agentInfo = await client.Agent.GetAgentAsync();
@@ -474,12 +478,13 @@ builder.Services.AddWechatMiniProgramService(options =>
 });
 
 // 注册微信公众号
+// - IOfficialCallbackService：仅当 CallbackToken + CallbackEncodingAesKey 均配置时注册
 builder.Services.AddWechatOfficialService(options =>
 {
     options.AppId                  = "official_appid";
     options.AppSecret              = "official_secret";
-    options.CallbackToken          = "callback_token";
-    options.CallbackEncodingAesKey = "encoding_aes_key";
+    options.CallbackToken          = "callback_token";      // 可选，启用回调
+    options.CallbackEncodingAesKey = "encoding_aes_key";   // 可选，启用回调
 });
 
 // 注册微信开放平台
@@ -496,12 +501,37 @@ builder.Services.AddQQConnectService(options =>
     options.AppSecret = "qq_appkey";
 });
 
-// 注册企业微信
+// 注册企业微信（核心服务：成员、消息、部门等）
 builder.Services.AddWecomService(options =>
 {
     options.CorpId     = "your_corpid";
     options.CorpSecret = "your_corpsecret";
     options.AgentId    = 1000001;
+});
+
+// 注册企业微信群机器人（可选，按需调用）
+// - 内部幂等地调用 AddWecomService，可单独使用无需提前调用 AddWecomService
+// - 始终注册 IWebhookService（群机器人）
+// - ICallbackService：仅当 CallbackToken + CallbackEncodingAesKey 均配置时注册
+builder.Services.AddWecomWebHookService(options =>
+{
+    options.WebhookKey = "your_webhook_key"; // 群机器人 Key，注入后无需每次传入
+});
+
+// 注册企业微信智能机器人（可选，按需调用）
+// - 内部幂等地调用 AddWecomService，可单独使用无需提前调用 AddWecomService
+// - 始终注册 ISmartRobotService（智能机器人）
+// - ISmartRobotWsClient：仅当 BotId + BotSecret 均配置时注册
+// - ICallbackService：仅当 CallbackToken + CallbackEncodingAesKey 均配置时注册
+builder.Services.AddWecomSmartBotService(options =>
+{
+    options.CorpId                 = "your_corpid";
+    options.CorpSecret             = "your_corpsecret";
+    options.AgentId                = 1000001;
+    options.BotId                  = "your_bot_id";                 // 可选，启用长连接
+    options.BotSecret              = "your_bot_secret";             // 可选，启用长连接
+    options.CallbackToken          = "your_callback_token";         // 可选，启用回调
+    options.CallbackEncodingAesKey = "your_43char_encoding_aes_key"; // 可选，启用回调
 });
 ```
 
@@ -674,8 +704,7 @@ builder.Services.AddWechatMiniProgramService("appB", config.GetSection("MiniProg
 | `AppSecret` | `string` | `""` | 应用密钥（AppSecret） |
 | `BaseUrl` | `string` | `https://api.weixin.qq.com` | API 基础地址 |
 | `HttpTimeout` | `TimeSpan` | 30 秒 | HTTP 请求超时时间 |
-| `ShareSecret` | `string?` | — | 共享 Token 密钥（ChaCha20-Poly1305，详见[跨服务共享 Token](#-跨服务共享-token)） |
-| `TokenShareUrl` | `string?` | — | 远端共享 Token 地址；设置后从此地址拉取加密 Token，而非直接请求微信 API |
+| `ShareSecret` | `string?` | — | 共享密钥（ChaCha20-Poly1305），用于统一共享密钥加解密；详见[统一共享密钥](#-统一共享密钥unified-sharedsecret) |
 | `SecretShareUrl` | `string?` | — | 统一共享密钥远端地址；详见[统一共享密钥](#-统一共享密钥unified-sharedsecret) |
 | `OnTokenChanged` | `Func<string, CancellationToken, Task>?` | — | Token 刷新成功后的变更通知回调，参数为新的明文 access_token |
 | `RetryOptions` | `TencentRetryOptions` | `new()` | 瞬态故障重试配置（网络抖动、超时、5xx），详见[瞬态故障自动重试](#-瞬态故障自动重试) |
@@ -684,8 +713,6 @@ builder.Services.AddWechatMiniProgramService("appB", config.GetSection("MiniProg
 |------|------|------|
 | `CallbackToken` | `string?` | 接收消息回调的 Token（签名校验） |
 | `CallbackEncodingAesKey` | `string?` | 接收消息回调的 EncodingAESKey（43 位字符） |
-| `TicketShareSecret` | `string?` | jsapi_ticket 共享密钥（ChaCha20-Poly1305） |
-| `TicketShareUrl` | `string?` | jsapi_ticket 共享远端地址 |
 | `OnTicketChanged` | `Func<string, CancellationToken, Task>?` | jsapi_ticket 刷新成功后的变更通知回调 |
 
 #### `QQConnectOptions`（继承 `WechatOptions`）
@@ -710,17 +737,32 @@ builder.Services.AddWechatMiniProgramService("appB", config.GetSection("MiniProg
 | `BotWsUrl` | `string` | `wss://openws.work.weixin.qq.com` | 智能机器人 WebSocket 长连接地址 |
 | `MsgAuditSecret` | `string?` | — | 会话内容存档密钥 |
 | `MsgAuditPrivateKey` | `string?` | — | 会话内容存档 RSA 私钥（PEM 格式） |
-| `ShareSecret` | `string?` | — | 共享 Token 密钥（ChaCha20-Poly1305，详见[跨服务共享 Token](#-跨服务共享-token)） |
-| `TokenShareUrl` | `string?` | — | 远端共享 Token 地址；设置后从此地址拉取加密 Token，而非直接请求企业微信 API |
+| `ShareSecret` | `string?` | — | 共享密钥（ChaCha20-Poly1305），用于统一共享密钥加解密；详见[统一共享密钥](#-统一共享密钥unified-sharedsecret) |
 | `SecretShareUrl` | `string?` | — | 统一共享密钥远端地址；详见[统一共享密钥](#-统一共享密钥unified-sharedsecret) |
 | `OnTokenChanged` | `Func<string, CancellationToken, Task>?` | — | Token 刷新成功后的变更通知回调，参数为新的明文 access_token |
-| `JsApiTicketShareSecret` | `string?` | — | 企业级 jsapi_ticket 共享密钥（ChaCha20-Poly1305） |
-| `JsApiTicketShareUrl` | `string?` | — | 企业级 jsapi_ticket 共享远端地址 |
 | `OnJsApiTicketChanged` | `Func<string, CancellationToken, Task>?` | — | 企业级 jsapi_ticket 刷新成功后的变更通知回调 |
-| `AgentTicketShareSecret` | `string?` | — | 应用级 jsapi_ticket 共享密钥（ChaCha20-Poly1305） |
-| `AgentTicketShareUrl` | `string?` | — | 应用级 jsapi_ticket 共享远端地址 |
 | `OnAgentTicketChanged` | `Func<string, CancellationToken, Task>?` | — | 应用级 jsapi_ticket 刷新成功后的变更通知回调 |
 | `RetryOptions` | `TencentRetryOptions` | `new()` | 瞬态故障重试配置（网络抖动、超时、5xx），详见[瞬态故障自动重试](#-瞬态故障自动重试) |
+
+#### `WecomWebHookOptions`（独立配置类）
+
+通过 `AddWecomWebHookService` 注册时使用此类型，**不继承** `WecomOptions`，仅包含群机器人所需配置：
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `WebhookKey` | `string?` | — | 群机器人 Webhook Key（在企业微信群机器人配置页获取）；注册后 `IWebhookService` 所有方法无需再传入此 Key |
+
+#### `WecomSmartBotOptions`（继承 `WecomOptions`）
+
+通过 `AddWecomSmartBotService` 注册时使用此类型，在 `WecomOptions` 全部字段基础上新增智能机器人长连接专属配置：
+
+| 属性 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `BotId` | `string?` | — | 智能机器人 WebSocket 长连接的 BotId（从企业微信管理端获取） |
+| `BotSecret` | `string?` | — | 智能机器人 WebSocket 长连接的 BotSecret（从企业微信管理端获取） |
+| `BotWsUrl` | `string` | `wss://openws.work.weixin.qq.com` | 智能机器人 WebSocket 长连接地址 |
+
+> `CallbackToken` / `CallbackEncodingAesKey` 等回调字段**继承自 `WecomOptions`**，可直接在 `WecomSmartBotOptions` 中配置。
 
 ---
 
@@ -1129,8 +1171,8 @@ client.SmartRobotWs!.OnToolCallCallback += async (reqId, toolCalls) =>
 #### 依赖注入方式使用 WebSocket 客户端
 
 ```csharp
-// Program.cs — 注册时配置 BotId / BotSecret
-builder.Services.AddWecomService(opt =>
+// Program.cs — 使用 AddWecomSmartBotService 注册（含 BotId / BotSecret 启用长连接）
+builder.Services.AddWecomSmartBotService(opt =>
 {
     opt.CorpId     = "your_corpid";
     opt.CorpSecret = "your_corpsecret";
@@ -1200,8 +1242,12 @@ public class BotHostedService(ISmartRobotWsClient wsClient) : BackgroundService
 | `ISmartRobotService.cs` | 修改 | 接口升级：强类型 `SendMessageRequest`/`SendMessageResponse`；新增智能表格群聊 API |
 | `SmartRobotService.cs` | 修改 | 实现所有新接口方法 |
 | `WecomOptions.cs` | 修改 | 新增 `BotId` / `BotSecret` / `BotWsUrl` 配置属性 |
+| `WecomWebHookOptions.cs` | 新增/修改 | 独立配置类（不继承 `WecomOptions`），只含 `WebhookKey` |
+| `WecomSmartBotOptions.cs` | 新增 | 继承 `WecomOptions`，独立智能机器人长连接配置（`BotId` / `BotSecret` / `BotWsUrl`） |
 | `WecomClient.cs` | 修改 | 新增 `SmartRobotWs` 属性（条件实例化） |
-| `WecomServiceCollectionExtensions.cs` | 修改 | 注册 `ISmartRobotWsClient` DI 服务 |
+| `WecomServiceCollectionExtensions.cs` | 修改 | 回调改为可选注册；不再注册 Webhook/SmartRobot；移除 `AddWecomWebHookService` |
+| `WecomWebHookServiceCollectionExtensions.cs` | 新增 | 独立文件：`AddWecomWebHookService` 的全部重载（仅注册 `IWebhookService`） |
+| `WecomSmartBotServiceCollectionExtensions.cs` | 新增 | 独立文件：`AddWecomSmartBotService` 的全部重载（注册 `ISmartRobotService` / 条件注册 `ISmartRobotWsClient` / `ICallbackService`） |
 
 ---
 
@@ -1290,6 +1336,8 @@ GaoXinLibrary.TencentSDK/
 │   ├── WechatCryptoHelper.cs              #   微信消息加解密
 │   ├── JsApiTicketProvider.cs             #   公众号 JS-SDK Ticket 缓存与共享
 │   ├── WecomOptions.cs                    #   企业微信配置类
+│   ├── WecomWebHookOptions.cs             #   企业微信群机器人配置（独立，仅含 WebhookKey）
+│   ├── WecomSmartBotOptions.cs            #   企业微信智能机器人长连接配置（继承 WecomOptions）
 │   ├── WecomHttpClient.cs                 #   企业微信 HTTP 客户端
 │   ├── WecomAccessTokenProvider.cs        #   企业微信 access_token 管理
 │   ├── WecomBaseResponse.cs               #   企业微信响应类
@@ -1397,7 +1445,9 @@ GaoXinLibrary.TencentSDK/
 │       └── CollectForm/                   #     收集表
 ├── Extensions/                            # DI 扩展
 │   ├── WechatServiceCollectionExtensions.cs
-│   └── WecomServiceCollectionExtensions.cs
+│   ├── WecomServiceCollectionExtensions.cs
+│   ├── WecomWebHookServiceCollectionExtensions.cs
+│   └── WecomSmartBotServiceCollectionExtensions.cs
 ├── WechatMiniProgramClient.cs             # 小程序主客户端
 ├── WechatOfficialClient.cs                # 公众号主客户端
 ├── WechatOpenClient.cs                    # 开放平台主客户端
@@ -1409,208 +1459,6 @@ GaoXinLibrary.TencentSDK/
 ---
 
 ## 🔧 进阶用法
-
-### 跨服务共享 Token
-
-多台服务器部署时，只需一台**主服务器**持有真实的 `AppSecret` 向腾讯 API 获取 token，其他**备服务器**通过主服务器的接口获取加密后的 token，无需存储 `AppSecret`。
-
-加密算法使用 **ChaCha20-Poly1305**，密钥由 `ShareSecret` 经 SHA-256 派生，格式为 `Base64( nonce[12] + ciphertext[N] + tag[16] )`。
-
-#### 主服务器（持有 AppSecret，对外暴露加密 Token 接口）
-
-```csharp
-// Program.cs
-builder.Services.AddWecomService(opt =>
-{
-    opt.CorpId     = "your_corpid";
-    opt.CorpSecret = "your_corpsecret"; // 仅主服务器配置
-    opt.AgentId    = 1000001;
-    opt.ShareSecret = "any-strong-shared-secret"; // 与备服务器约定
-
-    // 可选：Token 刷新时推送到 Redis / 消息队列等
-    opt.OnTokenChanged = async (newToken, ct) =>
-    {
-        await redis.StringSetAsync("wecom:token", newToken);
-    };
-});
-
-// Controller — 对外暴露加密 Token 接口（建议加鉴权）
-[HttpGet("/internal/wecom/token")]
-public async Task<IActionResult> GetSharedToken([FromServices] WecomClient client)
-{
-    var result = await client.GetSharedAccessTokenAsync();
-    // result.Token     — ChaCha20-Poly1305 加密后的 token（Base64）
-    // result.ExpiresIn — 主服务器侧 token 的剩余有效秒数
-    return Ok(new { token = result.Token, expires_in = result.ExpiresIn });
-}
-```
-
-#### 备服务器（无 AppSecret，从主服务器拉取加密 Token）
-
-```csharp
-// Program.cs
-builder.Services.AddWecomService(opt =>
-{
-    opt.CorpId      = "your_corpid";
-    opt.AgentId     = 1000001;
-    opt.ShareSecret  = "any-strong-shared-secret"; // 与主服务器一致
-    opt.TokenShareUrl = "https://main-server/internal/wecom/token"; // 主服务器接口
-    // 不需要配置 CorpSecret
-});
-
-// 注入后正常使用，SDK 自动在 token 过期时请求主服务器接口并解密
-public class MyService(WecomClient client)
-{
-    public async Task NotifyAsync()
-        => await client.Message.SendTextAsync("Hello!", toUser: "@all");
-}
-```
-
-#### 也可直接使用加解密工具类
-
-```csharp
-using GaoXinLibrary.TencentSDK.Core;
-
-// 加密（主服务器侧）
-string encrypted = TencentTokenCrypto.Encrypt(plainToken, "shared-secret");
-
-// 解密（备服务器侧）
-string plainToken = TencentTokenCrypto.Decrypt(encrypted, "shared-secret");
-```
-
-> 备服务器响应的 `expires_in` 会被 SDK 原样用于设置本地缓存过期时间，确保备服务器的缓存节奏与主服务器保持一致，避免过早或过晚失效。
-
-### 跨服务共享 jsapi_ticket
-
-jsapi_ticket 同样有调用频率限制（企业级每小时 400 次，应用级每小时 100 次），SDK 内置了与 access_token 相同的缓存与共享机制。
-
-#### 公众号 jsapi_ticket 共享
-
-```csharp
-// 主服务器
-builder.Services.AddWechatOfficialService(opt =>
-{
-    opt.AppId     = "official_appid";
-    opt.AppSecret = "official_secret"; // 仅主服务器配置
-    opt.ShareSecret       = "any-strong-shared-secret"; // access_token 共享密钥，与备服务器约定
-    opt.TicketShareSecret = "ticket-shared-secret";      // jsapi_ticket 共享密钥，与备服务器约定
-
-    // 可选：Token / Ticket 刷新时推送到 Redis 等
-    opt.OnTokenChanged = async (newToken, ct) =>
-    {
-        await redis.StringSetAsync("official:token", newToken);
-    };
-    opt.OnTicketChanged = async (newTicket, ct) =>
-    {
-        await redis.StringSetAsync("official:ticket", newTicket);
-    };
-});
-
-// Controller — 对外暴露加密 Token / Ticket 接口（建议加鉴权）
-[HttpGet("/internal/official/token")]
-public async Task<IActionResult> GetSharedToken([FromServices] WechatOfficialClient client)
-{
-    var result = await client.GetSharedAccessTokenAsync();
-    return Ok(new { token = result.Token, expires_in = result.ExpiresIn });
-}
-
-[HttpGet("/internal/official/ticket")]
-public async Task<IActionResult> GetSharedTicket([FromServices] WechatOfficialClient client)
-{
-    var result = await client.GetSharedTicketAsync();
-    return Ok(new { token = result.Token, expires_in = result.ExpiresIn });
-}
-
-// 备服务器（无 AppSecret，access_token 和 jsapi_ticket 均从主服务器获取）
-builder.Services.AddWechatOfficialService(opt =>
-{
-    opt.AppId     = "official_appid";
-    // 不需要配置 AppSecret
-    opt.ShareSecret   = "any-strong-shared-secret";                       // access_token 共享密钥
-    opt.TokenShareUrl = "https://main-server/internal/official/token";    // access_token 共享地址
-    opt.TicketShareSecret = "ticket-shared-secret";                       // jsapi_ticket 共享密钥
-    opt.TicketShareUrl    = "https://main-server/internal/official/ticket"; // jsapi_ticket 共享地址
-});
-```
-
-#### 企业微信 jsapi_ticket 共享
-
-企业微信有 **两种** jsapi_ticket：
-- **企业级** `jsapi_ticket`（用于 `wx.config`）
-- **应用级** `jsapi_ticket`（用于 `wx.agentConfig`）
-
-两者均支持独立的缓存、共享、手动设置和刷新。
-
-```csharp
-// 主服务器
-builder.Services.AddWecomService(opt =>
-{
-    opt.CorpId     = "your_corpid";
-    opt.CorpSecret = "your_corpsecret"; // 仅主服务器配置
-    opt.AgentId    = 1000001;
-    opt.ShareSecret = "any-strong-shared-secret"; // access_token 共享密钥，与备服务器约定
-
-    // 企业级 jsapi_ticket 共享
-    opt.JsApiTicketShareSecret = "jsapi-ticket-secret";
-    opt.OnJsApiTicketChanged = async (ticket, ct) =>
-    {
-        await redis.StringSetAsync("wecom:jsapi_ticket", ticket);
-    };
-
-    // 应用级 jsapi_ticket 共享
-    opt.AgentTicketShareSecret = "agent-ticket-secret";
-    opt.OnAgentTicketChanged = async (ticket, ct) =>
-    {
-        await redis.StringSetAsync("wecom:agent_ticket", ticket);
-    };
-
-    // 可选：Token 刷新时推送到 Redis 等
-    opt.OnTokenChanged = async (newToken, ct) =>
-    {
-        await redis.StringSetAsync("wecom:token", newToken);
-    };
-});
-
-// Controller — 对外暴露加密 Token / Ticket 接口（建议加鉴权）
-[HttpGet("/internal/wecom/token")]
-public async Task<IActionResult> GetSharedToken([FromServices] WecomClient client)
-{
-    var result = await client.GetSharedAccessTokenAsync();
-    return Ok(new { token = result.Token, expires_in = result.ExpiresIn });
-}
-
-[HttpGet("/internal/wecom/jsapi-ticket")]
-public async Task<IActionResult> GetSharedJsApiTicket([FromServices] WecomClient client)
-{
-    var result = await client.GetSharedJsApiTicketAsync();
-    return Ok(new { token = result.Token, expires_in = result.ExpiresIn });
-}
-
-[HttpGet("/internal/wecom/agent-ticket")]
-public async Task<IActionResult> GetSharedAgentTicket([FromServices] WecomClient client)
-{
-    var result = await client.GetSharedAgentTicketAsync();
-    return Ok(new { token = result.Token, expires_in = result.ExpiresIn });
-}
-
-// 备服务器（无 CorpSecret，access_token 和 jsapi_ticket 均从主服务器获取）
-builder.Services.AddWecomService(opt =>
-{
-    opt.CorpId  = "your_corpid";
-    opt.AgentId = 1000001;
-    // 不需要配置 CorpSecret
-    opt.ShareSecret   = "any-strong-shared-secret";                            // access_token 共享密钥
-    opt.TokenShareUrl = "https://main-server/internal/wecom/token";            // access_token 共享地址
-
-    // 企业级 jsapi_ticket 从主服务器获取
-    opt.JsApiTicketShareSecret = "jsapi-ticket-secret";
-    opt.JsApiTicketShareUrl    = "https://main-server/internal/wecom/jsapi-ticket";
-
-    // 应用级 jsapi_ticket 从主服务器获取
-    opt.AgentTicketShareSecret = "agent-ticket-secret";
-    opt.AgentTicketShareUrl    = "https://main-server/internal/wecom/agent-ticket";
-});
-```
 
 ### 统一共享密钥（Unified SharedSecret）
 
@@ -1698,7 +1546,7 @@ builder.Services.AddWecomService(opt =>
 // - CorpId / CorpSecret / AgentId 自动回写到 Options，OAuth / JsSdk 等服务动态读取
 ```
 
-> 💡 **统一共享密钥 vs 逐项共享**：统一共享密钥（`SecretShareUrl`）将所有敏感信息打包在一个请求中返回，备服务器只需调用一个接口；而逐项共享（`TokenShareUrl` + `TicketShareUrl` + `AgentTicketShareUrl`）需要分别配置和调用多个接口。当 `SecretShareUrl` 与 `TokenShareUrl` 同时设置时，`SecretShareUrl` **优先**。
+> 💡 **统一共享密钥优势**：`SecretShareUrl` 将所有敏感信息（access_token、jsapi_ticket、AppId/CorpId、AppSecret/CorpSecret 等）打包在一个请求中返回，备服务器只需配置一个接口，无需为 Token 和各类 Ticket 分别配置和调用多个接口。加密算法使用 **ChaCha20-Poly1305**，密钥由 `ShareSecret` 经 SHA-256 派生，格式为 `Base64( nonce[12] + ciphertext[N] + tag[16] )`。
 
 #### 手动管理 jsapi_ticket
 

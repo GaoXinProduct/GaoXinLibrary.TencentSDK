@@ -30,23 +30,6 @@ public class WecomOptions
     /// <summary>接收消息回调的 EncodingAESKey（用于消息加解密，43 位字符）</summary>
     public string? CallbackEncodingAesKey { get; set; }
 
-    // ─── 智能机器人长连接配置 ─────────────────────────────────────────────
-
-    /// <summary>
-    /// 智能机器人 BotID（长连接模式专用）
-    /// <para>在企业微信管理后台智能机器人配置页获取。</para>
-    /// </summary>
-    public string? BotId { get; set; }
-
-    /// <summary>
-    /// 智能机器人长连接专用密钥 Secret
-    /// <para>与回调模式的 Token/EncodingAESKey 不同，请妥善保管。</para>
-    /// </summary>
-    public string? BotSecret { get; set; }
-
-    /// <summary>智能机器人长连接 WebSocket 地址，默认 wss://openws.work.weixin.qq.com</summary>
-    public string BotWsUrl { get; set; } = "wss://openws.work.weixin.qq.com";
-
     // ─── 会话内容存档配置 ───────────────────────────────────────────────
 
     /// <summary>
@@ -61,35 +44,22 @@ public class WecomOptions
     /// </summary>
     public string? MsgAuditPrivateKey { get; set; }
 
-    // ─── 共享 Token 配置 ─────────────────────────────────────────────────────
-
     /// <summary>
-    /// 共享 Token 密钥（采用 ChaCha20-Poly1305 加密）
+    /// 共享密钥
     /// <para>
-    /// 设置后可通过 <c>GetSharedAccessTokenAsync()</c> 获取加密形式的 Token 供其他服务消费，
-    /// 或配合 <see cref="TokenShareUrl"/> 从远端获取并自动解密。
-    /// 密钥可为任意字符串，内部使用 SHA-256 派生为 32 字节密钥。
+    /// 备服务器模式下必填，与主服务器约定的同一密钥（ChaCha20-Poly1305，内部通过 SHA-256 派生为 32 字节密钥）。<br/>
+    /// 主服务器侧亦可配置，供 <see cref="TencentTokenCrypto"/> 工具类直接使用。
     /// </para>
     /// </summary>
     public string? ShareSecret { get; set; }
 
     /// <summary>
-    /// 共享 Token 远端地址
-    /// <para>
-    /// 设置后将从此地址（HTTP GET）获取加密 Token，而非直接向企业微信 API 请求。
-    /// 远端响应格式：<c>{"token":"BASE64加密数据","expires_in":7200}</c>，需与 <see cref="ShareSecret"/> 配合使用。
-    /// </para>
-    /// </summary>
-    public string? TokenShareUrl { get; set; }
-
-    /// <summary>
     /// 统一共享密钥远端地址
     /// <para>
-    /// 设置后将从此地址（HTTP GET）获取加密的 <see cref="SharedSecretPayload"/>，
-    /// 备服务器自动解密后获得 access_token、jsapi_ticket（企业级+应用级）、CorpId、CorpSecret、AgentId 等所有敏感信息，
-    /// 无需在配置中存储 CorpSecret。<br/>
-    /// 远端响应格式：<c>{"data":"BASE64加密数据"}</c>，需与 <see cref="ShareSecret"/> 配合使用。<br/>
-    /// 当同时设置 <c>SecretShareUrl</c> 与 <c>TokenShareUrl</c> 时，<c>SecretShareUrl</c> 优先。
+    /// 配置后，SDK 将从该 URL 拉取加密的 <see cref="SharedSecretPayload"/> 载荷（JSON 格式，字段 <c>data</c> 为加密字符串）。<br/>
+    /// 载荷解密后包含 access_token、jsapi_ticket（企业级和应用级）、CorpId、CorpSecret、AgentId 等全部敏感信息，<br/>
+    /// 备服务器无需配置 CorpSecret 即可正常运行。<br/>
+    /// 注意：配置 <see cref="SecretShareUrl"/> 时必须同时配置 <see cref="ShareSecret"/>。
     /// </para>
     /// </summary>
     public string? SecretShareUrl { get; set; }
@@ -99,58 +69,6 @@ public class WecomOptions
     /// <para>每次成功刷新 access_token 后触发，参数为新的明文 access_token 及 CancellationToken。</para>
     /// </summary>
     public Func<string, CancellationToken, Task>? OnTokenChanged { get; set; }
-
-    // ─── 共享 JS-SDK Ticket 配置（企业级 jsapi_ticket） ──────────────────────
-
-    /// <summary>
-    /// 企业级 jsapi_ticket 共享密钥（ChaCha20-Poly1305 加密）
-    /// <para>
-    /// 设置后可通过 <c>GetSharedJsApiTicketAsync()</c> 获取加密形式的 Ticket 供其他服务消费，
-    /// 或配合 <see cref="JsApiTicketShareUrl"/> 从远端获取并自动解密。
-    /// </para>
-    /// </summary>
-    public string? JsApiTicketShareSecret { get; set; }
-
-    /// <summary>
-    /// 企业级 jsapi_ticket 共享远端地址
-    /// <para>
-    /// 设置后将从此地址（HTTP GET）获取加密 Ticket，而非直接向企业微信 API 请求。
-    /// 远端响应格式：<c>{"token":"BASE64加密数据","expires_in":7200}</c>，需与 <see cref="JsApiTicketShareSecret"/> 配合使用。
-    /// </para>
-    /// </summary>
-    public string? JsApiTicketShareUrl { get; set; }
-
-    /// <summary>
-    /// 企业级 jsapi_ticket 变更通知回调
-    /// <para>每次成功刷新 jsapi_ticket 后触发，参数为新的明文 jsapi_ticket 及 CancellationToken。</para>
-    /// </summary>
-    public Func<string, CancellationToken, Task>? OnJsApiTicketChanged { get; set; }
-
-    // ─── 共享 JS-SDK Ticket 配置（应用级 agent_ticket） ──────────────────────
-
-    /// <summary>
-    /// 应用级 jsapi_ticket 共享密钥（ChaCha20-Poly1305 加密）
-    /// <para>
-    /// 设置后可通过 <c>GetSharedAgentTicketAsync()</c> 获取加密形式的 Ticket 供其他服务消费，
-    /// 或配合 <see cref="AgentTicketShareUrl"/> 从远端获取并自动解密。
-    /// </para>
-    /// </summary>
-    public string? AgentTicketShareSecret { get; set; }
-
-    /// <summary>
-    /// 应用级 jsapi_ticket 共享远端地址
-    /// <para>
-    /// 设置后将从此地址（HTTP GET）获取加密 Ticket，而非直接向企业微信 API 请求。
-    /// 远端响应格式：<c>{"token":"BASE64加密数据","expires_in":7200}</c>，需与 <see cref="AgentTicketShareSecret"/> 配合使用。
-    /// </para>
-    /// </summary>
-    public string? AgentTicketShareUrl { get; set; }
-
-    /// <summary>
-    /// 应用级 jsapi_ticket 变更通知回调
-    /// <para>每次成功刷新应用 jsapi_ticket 后触发，参数为新的明文 jsapi_ticket 及 CancellationToken。</para>
-    /// </summary>
-    public Func<string, CancellationToken, Task>? OnAgentTicketChanged { get; set; }
 
     // ─── 瞬态故障重试配置 ─────────────────────────────────────────────────────
 

@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 using System.Text;
-using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
@@ -32,10 +31,6 @@ public class OfficialJsSdkService : IOfficialJsSdkService
     /// <inheritdoc/>
     public void SetTicket(string ticket, TimeSpan? expiresIn = null)
         => _ticketProvider.SetTicket(ticket, expiresIn);
-
-    /// <inheritdoc/>
-    public Task<SharedTokenResult> GetSharedTicketAsync(CancellationToken ct = default)
-        => _ticketProvider.GetSharedTicketAsync(ct);
 
     /// <inheritdoc/>
     public JsSdkSignature CreateSignature(string ticket, string url)

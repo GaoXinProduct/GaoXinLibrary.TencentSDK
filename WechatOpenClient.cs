@@ -66,11 +66,8 @@ public sealed class WechatOpenClient : IDisposable
     {
         ArgumentNullException.ThrowIfNull(options);
         if (string.IsNullOrWhiteSpace(options.AppId)) throw new ArgumentException("AppId 不能为空", nameof(options));
-        if (string.IsNullOrWhiteSpace(options.AppSecret) &&
-            (string.IsNullOrWhiteSpace(options.ShareSecret) || string.IsNullOrWhiteSpace(options.TokenShareUrl)))
-        {
-            throw new ArgumentException("AppSecret 不能为空，或者需要同时配置 ShareSecret 和 TokenShareUrl", nameof(options));
-        }
+        if (string.IsNullOrWhiteSpace(options.AppSecret))
+            throw new ArgumentException("AppSecret 不能为空", nameof(options));
     }
 
     public void Dispose()

@@ -40,10 +40,6 @@ public class JsSdkService : IJsSdkService
     public void SetJsApiTicket(string ticket, TimeSpan? expiresIn = null)
         => _jsApiTicketProvider.SetTicket(ticket, expiresIn);
 
-    /// <inheritdoc/>
-    public Task<SharedTokenResult> GetSharedJsApiTicketAsync(CancellationToken ct = default)
-        => _jsApiTicketProvider.GetSharedTicketAsync(ct);
-
     // ─── 应用级 jsapi_ticket ──────────────────────────────────────────────
 
     /// <inheritdoc/>
@@ -60,10 +56,6 @@ public class JsSdkService : IJsSdkService
     /// <inheritdoc/>
     public void SetAgentTicket(string ticket, TimeSpan? expiresIn = null)
         => _agentTicketProvider.SetTicket(ticket, expiresIn);
-
-    /// <inheritdoc/>
-    public Task<SharedTokenResult> GetSharedAgentTicketAsync(CancellationToken ct = default)
-        => _agentTicketProvider.GetSharedTicketAsync(ct);
 
     // ─── 签名计算 ─────────────────────────────────────────────────────────
 

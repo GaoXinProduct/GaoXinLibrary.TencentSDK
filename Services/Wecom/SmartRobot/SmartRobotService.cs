@@ -17,7 +17,7 @@ public class SmartRobotService : ISmartRobotService
     /// 初始化智能机器人服务
     /// </summary>
     /// <param name="http">企业微信 HTTP 客户端</param>
-    /// <param name="options">企业微信配置（需包含 CallbackToken 和 CallbackEncodingAesKey）</param>
+    /// <param name="options">企业微信智能机器人配置（需包含 CallbackToken 和 CallbackEncodingAesKey）</param>
     public SmartRobotService(WecomHttpClient http, WecomOptions options)
     {
         _http = http;
@@ -87,6 +87,6 @@ public class SmartRobotService : ISmartRobotService
     private void EnsureCryptoConfigured()
     {
         if (_crypto is null)
-            throw new TencentException("智能机器人回调功能未配置：请在 WecomOptions 中设置 CallbackToken 和 CallbackEncodingAesKey");
+            throw new TencentException("智能机器人回调功能未配置：请在 WecomSmartBotOptions 中设置 CallbackToken 和 CallbackEncodingAesKey");
     }
 }

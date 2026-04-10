@@ -27,7 +27,7 @@ public sealed class SmartRobotWsClient : ISmartRobotWsClient
         DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
     };
 
-    private readonly WecomOptions _options;
+    private readonly WecomSmartBotOptions _options;
     private ClientWebSocket? _ws;
     private CancellationTokenSource? _receiveCts;
     private Task? _receiveTask;
@@ -52,16 +52,16 @@ public sealed class SmartRobotWsClient : ISmartRobotWsClient
     public event Action<Exception?>? OnDisconnected;
 
     /// <summary>
-    /// 使用企业微信配置创建 WebSocket 客户端
+    /// 使用企业微信智能机器人配置创建 WebSocket 客户端
     /// </summary>
-    /// <param name="options">包含 BotId、BotSecret、BotWsUrl 的配置</param>
-    public SmartRobotWsClient(WecomOptions options)
+    /// <param name="options">包含 BotId、BotSecret、BotWsUrl 的智能机器人配置</param>
+    public SmartRobotWsClient(WecomSmartBotOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
         if (string.IsNullOrWhiteSpace(options.BotId))
-            throw new ArgumentException("WecomOptions.BotId 不能为空", nameof(options));
+            throw new ArgumentException("WecomWebHookOptions.BotId 不能为空", nameof(options));
         if (string.IsNullOrWhiteSpace(options.BotSecret))
-            throw new ArgumentException("WecomOptions.BotSecret 不能为空", nameof(options));
+            throw new ArgumentException("WecomWebHookOptions.BotSecret 不能为空", nameof(options));
 
         _options = options;
     }

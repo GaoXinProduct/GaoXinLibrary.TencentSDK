@@ -1,25 +1,59 @@
+using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Models.Webhook;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
+/// <summary>
+/// 群机器人（Webhook）消息推送服务实现
+/// </summary>
 public class WebhookService : IWebhookService
 {
-    private readonly WecomHttpClient _http;
-    private readonly string _baseUrl;
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
+    };
 
-    public WebhookService(WecomHttpClient http, string baseUrl)
+    private readonly HttpClient _http;
+    private readonly string _sendUrl;
+
+    /// <summary>
+    /// 初始化群机器人服务
+    /// </summary>
+    /// <param name="http">HTTP 客户端</param>
+    /// <param name="baseUrl">API 基础地址</param>
+    /// <param name="webhookKey">群机器人 Webhook Key（来自机器人配置页面）</param>
+    public WebhookService(HttpClient http, string baseUrl, string webhookKey)
     {
         _http = http;
-        _baseUrl = baseUrl.TrimEnd('/');
+        _sendUrl = $"{baseUrl.TrimEnd('/')}/cgi-bin/webhook/send?key={webhookKey}";
     }
 
-    public async Task SendAsync(string webhookKey, WebhookMessageRequest request, CancellationToken ct = default)
-        => await _http.PostWithoutTokenAsync<WecomBaseResponse>(
-            $"{_baseUrl}/cgi-bin/webhook/send?key={webhookKey}", request, ct);
+    /// <inheritdoc/>
+    public async Task SendAsync(WebhookMessageRequest request, CancellationToken ct = default)
+    {
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(request, JsonOptions);
+        var content = new ByteArrayContent(bytes);
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/json") { CharSet = "utf-8" };
 
-    public Task SendTextAsync(string webhookKey, string content, string[]? mentionedList = null, string[]? mentionedMobileList = null, CancellationToken ct = default)
-        => SendAsync(webhookKey, new WebhookMessageRequest
+        var response = await _http.PostAsync(_sendUrl, content, ct);
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync(ct);
+        var result = JsonSerializer.Deserialize<WecomBaseResponse>(json, JsonOptions)
+                     ?? throw new TencentException("群机器人响应反序列化失败");
+
+        if (result.ErrCode != 0)
+            throw new TencentException(result.ErrCode, result.ErrMsg ?? "未知错误", "企业微信");
+    }
+
+    /// <inheritdoc/>
+    public Task SendTextAsync(string content, string[]? mentionedList = null, string[]? mentionedMobileList = null, CancellationToken ct = default)
+        => SendAsync(new WebhookMessageRequest
         {
             MsgType = "text",
             Text = new WebhookTextContent
@@ -30,29 +64,33 @@ public class WebhookService : IWebhookService
             }
         }, ct);
 
-    public Task SendMarkdownAsync(string webhookKey, string content, CancellationToken ct = default)
-        => SendAsync(webhookKey, new WebhookMessageRequest
+    /// <inheritdoc/>
+    public Task SendMarkdownAsync(string content, CancellationToken ct = default)
+        => SendAsync(new WebhookMessageRequest
         {
             MsgType = "markdown",
             Markdown = new WebhookMarkdownContent { Content = content }
         }, ct);
 
-    public Task SendNewsAsync(string webhookKey, WebhookNewsArticle[] articles, CancellationToken ct = default)
-        => SendAsync(webhookKey, new WebhookMessageRequest
+    /// <inheritdoc/>
+    public Task SendNewsAsync(WebhookNewsArticle[] articles, CancellationToken ct = default)
+        => SendAsync(new WebhookMessageRequest
         {
             MsgType = "news",
             News = new WebhookNewsContent { Articles = articles }
         }, ct);
 
-    public Task SendImageAsync(string webhookKey, string base64, string md5, CancellationToken ct = default)
-        => SendAsync(webhookKey, new WebhookMessageRequest
+    /// <inheritdoc/>
+    public Task SendImageAsync(string base64, string md5, CancellationToken ct = default)
+        => SendAsync(new WebhookMessageRequest
         {
             MsgType = "image",
             Image = new WebhookImageContent { Base64 = base64, Md5 = md5 }
         }, ct);
 
-    public Task SendFileAsync(string webhookKey, string mediaId, CancellationToken ct = default)
-        => SendAsync(webhookKey, new WebhookMessageRequest
+    /// <inheritdoc/>
+    public Task SendFileAsync(string mediaId, CancellationToken ct = default)
+        => SendAsync(new WebhookMessageRequest
         {
             MsgType = "file",
             File = new WebhookFileContent { MediaId = mediaId }

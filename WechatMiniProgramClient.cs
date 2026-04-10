@@ -1,4 +1,3 @@
-using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Services;
 using Microsoft.Extensions.Logging;
@@ -129,26 +128,12 @@ public sealed class WechatMiniProgramClient : IDisposable
     public Task<string> GetAccessTokenAsync(CancellationToken ct = default)
         => _tokenProvider.GetTokenAsync(ct);
 
-    /// <summary>
-    /// 获取当前 access_token 的共享加密形式（ChaCha20-Poly1305）
-    /// <para>
-    /// 用于主服务对外暴露 Token 共享接口，需在 Options 中配置 <c>ShareSecret</c>。<br/>
-    /// 将返回的 <see cref="SharedTokenResult.Token"/> 和 <see cref="SharedTokenResult.ExpiresIn"/> 原样写入响应 JSON，
-    /// 备服务据此同步本地缓存过期时间。
-    /// </para>
-    /// </summary>
-    public Task<SharedTokenResult> GetSharedAccessTokenAsync(CancellationToken ct = default)
-        => _tokenProvider.GetSharedTokenAsync(ct);
-
     private static void ValidateOptions(WechatMiniProgramOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
         if (string.IsNullOrWhiteSpace(options.AppId)) throw new ArgumentException("AppId 不能为空", nameof(options));
-        if (string.IsNullOrWhiteSpace(options.AppSecret) &&
-            (string.IsNullOrWhiteSpace(options.ShareSecret) || string.IsNullOrWhiteSpace(options.TokenShareUrl)))
-        {
-            throw new ArgumentException("AppSecret 不能为空，或者需要同时配置 ShareSecret 和 TokenShareUrl", nameof(options));
-        }
+        if (string.IsNullOrWhiteSpace(options.AppSecret))
+            throw new ArgumentException("AppSecret 不能为空", nameof(options));
     }
 
     public void Dispose()

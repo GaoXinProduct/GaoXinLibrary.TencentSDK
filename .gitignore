@@ -4,3 +4,12 @@
 
 /obj
 /bin
+/.sisyphus
+.vs/
+*.user
+*.suo
+.DS_Store
+/packages/
+TestResults/
+*.nupkg
+/AGENTS.md

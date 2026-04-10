@@ -19,8 +19,8 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Extensions;
 ///     options.AppId     = "your_appid";
 ///     options.AppSecret = "your_appsecret";
 /// });
-/// // 注入：
-/// public class MyService(IMiniProgramAuthService auth) { ... }
+/// // 注入门面客户端，通过属性访问子服务：
+/// public class MyService(WechatMiniProgramClient miniProgram) { ... }
 /// </code>
 ///
 /// <b>公众号</b>：
@@ -30,8 +30,8 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Extensions;
 ///     options.AppId     = "your_appid";
 ///     options.AppSecret = "your_appsecret";
 /// });
-/// // 注入：
-/// public class MyService(IOfficialOAuthService oauth) { ... }
+/// // 注入门面客户端，通过属性访问子服务：
+/// public class MyService(WechatOfficialClient official) { ... }
 /// </code>
 ///
 /// <b>开放平台</b>：
@@ -41,8 +41,8 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Extensions;
 ///     options.AppId     = "your_appid";
 ///     options.AppSecret = "your_appsecret";
 /// });
-/// // 注入：
-/// public class MyService(IOpenPlatformService webLogin) { ... }
+/// // 注入门面客户端，通过属性访问子服务：
+/// public class MyService(WechatOpenClient open) { ... }
 /// </code>
 /// </para>
 /// </summary>
@@ -80,20 +80,6 @@ public static class WechatServiceCollectionExtensions
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatMiniProgramClient>();
             return WechatMiniProgramClient.Create(options, httpClient, logger);
         });
-
-        services.TryAddSingleton<IMiniProgramAuthService>(sp => sp.GetRequiredService<WechatMiniProgramClient>().Auth);
-        services.TryAddSingleton<IMiniProgramQrCodeService>(sp => sp.GetRequiredService<WechatMiniProgramClient>().QrCode);
-        services.TryAddSingleton<IMiniProgramSubscribeMessageService>(sp => sp.GetRequiredService<WechatMiniProgramClient>().SubscribeMessage);
-        services.TryAddSingleton<IMiniProgramSecurityService>(sp => sp.GetRequiredService<WechatMiniProgramClient>().Security);
-        services.TryAddSingleton<IMiniProgramShippingService>(sp => sp.GetRequiredService<WechatMiniProgramClient>().Shipping);
-        services.TryAddSingleton<IMiniProgramOcrService>(sp => sp.GetRequiredService<WechatMiniProgramClient>().Ocr);
-        services.TryAddSingleton<IMiniProgramLinkService>(sp => sp.GetRequiredService<WechatMiniProgramClient>().Link);
-        services.TryAddSingleton<IMiniProgramDataAnalysisService>(sp => sp.GetRequiredService<WechatMiniProgramClient>().DataAnalysis);
-        services.TryAddSingleton<IMiniProgramExpressService>(sp => sp.GetRequiredService<WechatMiniProgramClient>().Express);
-        services.TryAddSingleton<IMiniProgramOperationService>(sp => sp.GetRequiredService<WechatMiniProgramClient>().Operation);
-        services.TryAddSingleton<IMiniProgramDeviceService>(sp => sp.GetRequiredService<WechatMiniProgramClient>().Device);
-        services.TryAddSingleton<IMiniProgramCustomMessageService>(sp => sp.GetRequiredService<WechatMiniProgramClient>().CustomMessage);
-        services.TryAddSingleton<IMiniProgramOpenApiService>(sp => sp.GetRequiredService<WechatMiniProgramClient>().OpenApi);
 
         return services;
     }
@@ -133,19 +119,8 @@ public static class WechatServiceCollectionExtensions
             return WechatMiniProgramClient.Create(options, httpClient, logger);
         });
 
-        services.AddKeyedSingleton<IMiniProgramAuthService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatMiniProgramClient>(key).Auth);
-        services.AddKeyedSingleton<IMiniProgramQrCodeService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatMiniProgramClient>(key).QrCode);
-        services.AddKeyedSingleton<IMiniProgramSubscribeMessageService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatMiniProgramClient>(key).SubscribeMessage);
-        services.AddKeyedSingleton<IMiniProgramSecurityService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatMiniProgramClient>(key).Security);
-        services.AddKeyedSingleton<IMiniProgramShippingService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatMiniProgramClient>(key).Shipping);
-        services.AddKeyedSingleton<IMiniProgramOcrService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatMiniProgramClient>(key).Ocr);
-        services.AddKeyedSingleton<IMiniProgramLinkService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatMiniProgramClient>(key).Link);
-        services.AddKeyedSingleton<IMiniProgramDataAnalysisService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatMiniProgramClient>(key).DataAnalysis);
-        services.AddKeyedSingleton<IMiniProgramExpressService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatMiniProgramClient>(key).Express);
-        services.AddKeyedSingleton<IMiniProgramOperationService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatMiniProgramClient>(key).Operation);
-        services.AddKeyedSingleton<IMiniProgramDeviceService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatMiniProgramClient>(key).Device);
-        services.AddKeyedSingleton<IMiniProgramCustomMessageService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatMiniProgramClient>(key).CustomMessage);
-        services.AddKeyedSingleton<IMiniProgramOpenApiService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatMiniProgramClient>(key).OpenApi);
+        // 注册工厂（幂等），使 MVC Controller 构造函数可通过工厂按名称解析 Keyed 实例
+        services.TryAddSingleton<IWechatMiniProgramClientFactory, WechatMiniProgramClientFactory>();
 
         return services;
     }
@@ -182,25 +157,6 @@ public static class WechatServiceCollectionExtensions
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOfficialClient>();
             return WechatOfficialClient.Create(options, httpClient, logger);
         });
-
-        services.TryAddSingleton<IOfficialOAuthService>(sp => sp.GetRequiredService<WechatOfficialClient>().OAuth);
-        services.TryAddSingleton<IOfficialMenuService>(sp => sp.GetRequiredService<WechatOfficialClient>().Menu);
-        services.TryAddSingleton<IOfficialTemplateMessageService>(sp => sp.GetRequiredService<WechatOfficialClient>().TemplateMessage);
-        services.TryAddSingleton<IOfficialUserService>(sp => sp.GetRequiredService<WechatOfficialClient>().User);
-        services.TryAddSingleton<IOfficialQrCodeService>(sp => sp.GetRequiredService<WechatOfficialClient>().QrCode);
-        services.TryAddSingleton<IOfficialMaterialService>(sp => sp.GetRequiredService<WechatOfficialClient>().Material);
-        services.TryAddSingleton<IOfficialJsSdkService>(sp => sp.GetRequiredService<WechatOfficialClient>().JsSdk);
-        services.TryAddSingleton<IOfficialTagService>(sp => sp.GetRequiredService<WechatOfficialClient>().Tag);
-        services.TryAddSingleton<IOfficialDraftService>(sp => sp.GetRequiredService<WechatOfficialClient>().Draft);
-        services.TryAddSingleton<IOfficialPublishService>(sp => sp.GetRequiredService<WechatOfficialClient>().Publish);
-        services.TryAddSingleton<IOfficialCommentService>(sp => sp.GetRequiredService<WechatOfficialClient>().Comment);
-        services.TryAddSingleton<IOfficialCustomMessageService>(sp => sp.GetRequiredService<WechatOfficialClient>().CustomMessage);
-        services.TryAddSingleton<IOfficialMessageService>(sp => sp.GetRequiredService<WechatOfficialClient>().Message);
-        services.TryAddSingleton<IOfficialDataAnalysisService>(sp => sp.GetRequiredService<WechatOfficialClient>().DataAnalysis);
-        services.TryAddSingleton<IOfficialAiService>(sp => sp.GetRequiredService<WechatOfficialClient>().Ai);
-        services.TryAddSingleton<IOfficialPoiService>(sp => sp.GetRequiredService<WechatOfficialClient>().Poi);
-        services.TryAddSingleton<IOfficialInvoiceService>(sp => sp.GetRequiredService<WechatOfficialClient>().Invoice);
-        services.TryAddSingleton<IOfficialOpenApiService>(sp => sp.GetRequiredService<WechatOfficialClient>().OpenApi);
 
         // 回调服务：仅在配置了 CallbackToken 和 CallbackEncodingAesKey 时注册
         if (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
@@ -247,31 +203,15 @@ public static class WechatServiceCollectionExtensions
             return WechatOfficialClient.Create(options, httpClient, logger);
         });
 
-        services.AddKeyedSingleton<IOfficialOAuthService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).OAuth);
-        services.AddKeyedSingleton<IOfficialMenuService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Menu);
-        services.AddKeyedSingleton<IOfficialTemplateMessageService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).TemplateMessage);
-        services.AddKeyedSingleton<IOfficialUserService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).User);
-        services.AddKeyedSingleton<IOfficialQrCodeService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).QrCode);
-        services.AddKeyedSingleton<IOfficialMaterialService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Material);
-        services.AddKeyedSingleton<IOfficialJsSdkService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).JsSdk);
-        services.AddKeyedSingleton<IOfficialTagService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Tag);
-        services.AddKeyedSingleton<IOfficialDraftService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Draft);
-        services.AddKeyedSingleton<IOfficialPublishService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Publish);
-        services.AddKeyedSingleton<IOfficialCommentService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Comment);
-        services.AddKeyedSingleton<IOfficialCustomMessageService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).CustomMessage);
-        services.AddKeyedSingleton<IOfficialMessageService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Message);
-        services.AddKeyedSingleton<IOfficialDataAnalysisService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).DataAnalysis);
-        services.AddKeyedSingleton<IOfficialAiService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Ai);
-        services.AddKeyedSingleton<IOfficialPoiService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Poi);
-        services.AddKeyedSingleton<IOfficialInvoiceService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Invoice);
-        services.AddKeyedSingleton<IOfficialOpenApiService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).OpenApi);
-
         // 回调服务：仅在配置了 CallbackToken 和 CallbackEncodingAesKey 时注册（Keyed）
         if (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
             !string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
         {
             services.AddKeyedSingleton<IOfficialCallbackService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Callback);
         }
+
+        // 注册工厂（幂等），使 MVC Controller 构造函数可通过工厂按名称解析 Keyed 实例
+        services.TryAddSingleton<IWechatOfficialClientFactory, WechatOfficialClientFactory>();
 
         return services;
     }
@@ -308,8 +248,6 @@ public static class WechatServiceCollectionExtensions
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOpenClient>();
             return WechatOpenClient.Create(options, httpClient, logger);
         });
-
-        services.TryAddSingleton<IOpenPlatformService>(sp => sp.GetRequiredService<WechatOpenClient>().WebLogin);
 
         return services;
     }
@@ -349,7 +287,8 @@ public static class WechatServiceCollectionExtensions
             return WechatOpenClient.Create(options, httpClient, logger);
         });
 
-        services.AddKeyedSingleton<IOpenPlatformService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOpenClient>(key).WebLogin);
+        // 注册工厂（幂等），使 MVC Controller 构造函数可通过工厂按名称解析 Keyed 实例
+        services.TryAddSingleton<IWechatOpenClientFactory, WechatOpenClientFactory>();
 
         return services;
     }
@@ -385,8 +324,6 @@ public static class WechatServiceCollectionExtensions
             var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             return QQConnectClient.Create(options, httpClient);
         });
-
-        services.TryAddSingleton<IQQConnectService>(sp => sp.GetRequiredService<QQConnectClient>().Login);
 
         return services;
     }
@@ -425,7 +362,8 @@ public static class WechatServiceCollectionExtensions
             return QQConnectClient.Create(options, httpClient);
         });
 
-        services.AddKeyedSingleton<IQQConnectService>(name, (sp, key) => sp.GetRequiredKeyedService<QQConnectClient>(key).Login);
+        // 注册工厂（幂等），使 MVC Controller 构造函数可通过工厂按名称解析 Keyed 实例
+        services.TryAddSingleton<IQQConnectClientFactory, QQConnectClientFactory>();
 
         return services;
     }
@@ -590,6 +528,14 @@ public static class WechatServiceCollectionExtensions
     private static void ValidateOptions(WechatOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
+
+        // 备服务器模式（SecretShareUrl 已配置）：无需 AppId / AppSecret
+        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
+        {
+            if (string.IsNullOrWhiteSpace(options.ShareSecret))
+                throw new ArgumentException("配置 SecretShareUrl 时必须同时配置 ShareSecret", nameof(options));
+            return;
+        }
 
         if (string.IsNullOrWhiteSpace(options.AppId))
             throw new ArgumentException("WechatOptions.AppId 不能为空", nameof(options));

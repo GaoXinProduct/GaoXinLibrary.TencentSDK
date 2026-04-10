@@ -99,6 +99,10 @@ public static class WecomWebHookServiceCollectionExtensions
     /// <summary>
     /// 注册企业微信群机器人服务（带 key，使用已有配置对象）
     /// <para>支持多次调用以注册不同群机器人实例，通过 <c>[FromKeyedServices("name")]</c> 注入。</para>
+    /// <para>
+    /// 同时自动注册 <see cref="IWebhookServiceFactory"/>（仅注册一次），
+    /// 供无法使用 <c>[FromKeyedServices]</c> 的场景（如 MVC Controller 构造函数）按名称解析实例。
+    /// </para>
     /// </summary>
     public static IServiceCollection AddWecomWebHookService(
         this IServiceCollection services,
@@ -116,6 +120,9 @@ public static class WecomWebHookServiceCollectionExtensions
                 WecomServiceCollectionExtensions.CreateLongLivedHttpClient(TimeSpan.FromSeconds(30)),
                 "https://qyapi.weixin.qq.com",
                 options.WebhookKey ?? string.Empty));
+
+        // 工厂（幂等注册，供 MVC Controller 构造函数等无法使用 [FromKeyedServices] 的场景）
+        services.TryAddSingleton<IWebhookServiceFactory, WebhookServiceFactory>();
 
         return services;
     }

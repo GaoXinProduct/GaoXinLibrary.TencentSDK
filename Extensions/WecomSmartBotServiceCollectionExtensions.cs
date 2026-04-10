@@ -164,6 +164,9 @@ public static class WecomSmartBotServiceCollectionExtensions
                     ToWecomOptions(options)));
         }
 
+        // 注册工厂（幂等），使 MVC Controller 构造函数可通过工厂按名称解析 Keyed 实例
+        services.TryAddSingleton<IWecomSmartBotServiceFactory, WecomSmartBotServiceFactory>();
+
         return services;
     }
 

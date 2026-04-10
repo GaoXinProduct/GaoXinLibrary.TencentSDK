@@ -1,0 +1,20 @@
+using GaoXinLibrary.TencentSDK.Wechat;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace GaoXinLibrary.TencentSDK.Wechat.Services;
+
+/// <summary>
+/// <see cref="IWechatOpenClientFactory"/> 的默认实现，通过 <see cref="IServiceProvider"/> 按名称解析 <see cref="WechatOpenClient"/>。
+/// </summary>
+internal sealed class WechatOpenClientFactory(IServiceProvider serviceProvider) : IWechatOpenClientFactory
+{
+    /// <inheritdoc/>
+    public WechatOpenClient CreateClient(string name)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+
+        return serviceProvider.GetKeyedService<WechatOpenClient>(name)
+            ?? throw new InvalidOperationException(
+                $"未找到名称为 \"{name}\" 的微信开放平台客户端。请确认已调用 AddWechatOpenService(\"{name}\", ...)。");
+    }
+}

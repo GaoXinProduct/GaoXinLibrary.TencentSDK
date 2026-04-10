@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Core;
@@ -53,6 +55,7 @@ public sealed class SharedSecretPayload
 
     /// <summary>自建应用 AgentId；备服务器可凭此回写 Options</summary>
     [JsonPropertyName("agent_id")]
+    [JsonConverter(typeof(FlexibleInt32JsonConverter))]
     public int AgentId { get; set; }
 
     /// <summary>
@@ -65,4 +68,21 @@ public sealed class SharedSecretPayload
     /// <summary>应用级 jsapi_ticket 剩余有效秒数</summary>
     [JsonPropertyName("agent_ticket_expires_in")]
     public int AgentTicketExpiresIn { get; set; }
+
+    private sealed class FlexibleInt32JsonConverter : JsonConverter<int>
+    {
+        public override int Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return reader.TokenType switch
+            {
+                JsonTokenType.Number when reader.TryGetInt32(out var value) => value,
+                JsonTokenType.String when int.TryParse(reader.GetString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var value) => value,
+                JsonTokenType.Null => 0,
+                _ => throw new JsonException($"无法将 JSON 值 \"{reader.GetString()}\" 转换为 Int32。")
+            };
+        }
+
+        public override void Write(Utf8JsonWriter writer, int value, JsonSerializerOptions options)
+            => writer.WriteNumberValue(value);
+    }
 }

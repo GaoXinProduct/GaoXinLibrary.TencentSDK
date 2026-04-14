@@ -50,18 +50,30 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Extensions;
 /// });
 /// </code>
 ///
-/// <b>智能机器人（含长连接）及消息回调</b>（可选，需额外调用）：
+/// <b>消息回调</b>（可选，在 <see cref="WecomOptions"/> 中配置后自动注册）：
 /// <code>
-/// // 智能机器人需调用 AddWecomSmartBotService（位于 WecomSmartBotServiceCollectionExtensions）
-/// builder.Services.AddWecomSmartBotService(options =>
+/// builder.Services.AddWecomService(options =>
 /// {
 ///     options.CorpId                 = "your_corpid";
 ///     options.CorpSecret             = "your_corpsecret";
 ///     options.AgentId                = 1000001;
-///     options.CallbackToken          = "your_token";
+///     options.CallbackToken          = "your_token";        // 同时配置两项时自动注册 ICallbackService
 ///     options.CallbackEncodingAesKey = "your_43char_key";
-///     options.BotId     = "your_bot_id";      // 可选，启用 SmartRobotWs
-///     options.BotSecret = "your_bot_secret";   // 可选，启用 SmartRobotWs
+/// });
+/// // 注入回调服务（URL 验证/消息解密/加密回复）：
+/// public class CallbackHandler(ICallbackService callback) { ... }
+/// </code>
+///
+/// <b>智能机器人（含长连接）</b>（可选，需额外调用）：
+/// <code>
+/// // 智能机器人需调用 AddWecomSmartBotService（位于 WecomSmartBotServiceCollectionExtensions）
+/// builder.Services.AddWecomSmartBotService(options =>
+/// {
+///     options.CorpId     = "your_corpid";
+///     options.CorpSecret = "your_corpsecret";
+///     options.AgentId    = 1000001;
+///     options.BotId      = "your_bot_id";      // 可选，启用 SmartRobotWs
+///     options.BotSecret  = "your_bot_secret";  // 可选，启用 SmartRobotWs
 /// });
 /// </code>
 /// </para>
@@ -73,9 +85,11 @@ public static class WecomServiceCollectionExtensions
     /// <summary>
     /// 注册企业微信 SDK 核心服务（使用委托配置选项，无 key 单实例）
     /// <para>
+    /// 若 <see cref="WecomOptions.CallbackToken"/> 与 <see cref="WecomOptions.CallbackEncodingAesKey"/> 均非空，
+    /// 则自动注册 <see cref="ICallbackService"/>（URL 验证/消息解密/加密回复）。<br/>
     /// 若需要群机器人（<see cref="IWebhookService"/>），请调用
     /// <c>AddWecomWebHookService</c>（位于 <c>WecomWebHookServiceCollectionExtensions</c>）。<br/>
-    /// 若需要智能机器人（<see cref="ISmartRobotService"/>/<see cref="ISmartRobotWsClient"/>）或消息回调（<see cref="ICallbackService"/>），
+    /// 若需要智能机器人（<see cref="ISmartRobotService"/>/<see cref="ISmartRobotWsClient"/>），
     /// 请调用 <c>AddWecomSmartBotService</c>（位于 <c>WecomSmartBotServiceCollectionExtensions</c>）。
     /// </para>
     /// </summary>
@@ -112,6 +126,16 @@ public static class WecomServiceCollectionExtensions
             return WecomClient.Create(options, httpClient, logger);
         });
 
+        // 回调服务（仅当 CallbackToken + CallbackEncodingAesKey 均配置时注册）
+        if (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
+            !string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
+        {
+            services.TryAddSingleton<ICallbackService>(sp =>
+                new CallbackService(
+                    sp.GetRequiredService<WecomClient>().GetInternalHttpClient(),
+                    options));
+        }
+
         return services;
     }
 
@@ -137,6 +161,10 @@ public static class WecomServiceCollectionExtensions
     /// <summary>
     /// 注册企业微信 SDK 核心服务（带 key，使用已有配置对象）
     /// <para>支持多次调用以注册不同 Agent / CorpSecret 实例，通过 <c>[FromKeyedServices("name")]</c> 注入。</para>
+    /// <para>
+    /// 若 <see cref="WecomOptions.CallbackToken"/> 与 <see cref="WecomOptions.CallbackEncodingAesKey"/> 均非空，
+    /// 则自动注册对应 key 的 <see cref="ICallbackService"/>。
+    /// </para>
     /// </summary>
     public static IServiceCollection AddWecomService(
         this IServiceCollection services,
@@ -158,6 +186,16 @@ public static class WecomServiceCollectionExtensions
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WecomClient>();
             return WecomClient.Create(options, httpClient, logger);
         });
+
+        // 回调服务（仅当 CallbackToken + CallbackEncodingAesKey 均配置时注册，Keyed）
+        if (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
+            !string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
+        {
+            services.TryAddKeyedSingleton<ICallbackService>(name, (sp, key) =>
+                new CallbackService(
+                    sp.GetRequiredKeyedService<WecomClient>(key).GetInternalHttpClient(),
+                    options));
+        }
 
         // 注册工厂（幂等），使 MVC Controller 构造函数可通过工厂按名称解析 Keyed 实例
         services.TryAddSingleton<IWecomClientFactory, WecomClientFactory>();

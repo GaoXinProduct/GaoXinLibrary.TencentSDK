@@ -41,9 +41,8 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Extensions;
 /// 注意：本方法内部会幂等地调用 <see cref="WecomServiceCollectionExtensions.AddWecomService(Microsoft.Extensions.DependencyInjection.IServiceCollection,WecomOptions)"/>，
 /// 无需提前手动调用 <c>AddWecomService</c>。
 /// <list type="bullet">
-///   <item><see cref="ISmartRobotService"/>（API 模式，含回调验证/消息解密）始终注册。</item>
+///   <item><see cref="ISmartRobotService"/>（API 模式）始终注册。</item>
 ///   <item><see cref="ISmartRobotWsClient"/>（WebSocket 长连接）仅当 <see cref="WecomSmartBotOptions.BotId"/> 与 <see cref="WecomSmartBotOptions.BotSecret"/> 均非空时注册。</item>
-///   <item><see cref="ICallbackService"/> 仅当 <see cref="WecomSmartBotOptions.CallbackToken"/> 与 <see cref="WecomSmartBotOptions.CallbackEncodingAesKey"/> 均非空时注册。</item>
 /// </list>
 /// </para>
 /// </summary>
@@ -90,16 +89,6 @@ public static class WecomSmartBotServiceCollectionExtensions
         if (!string.IsNullOrWhiteSpace(options.BotId) && !string.IsNullOrWhiteSpace(options.BotSecret))
         {
             services.TryAddSingleton<ISmartRobotWsClient>(_ => new SmartRobotWsClient(options));
-        }
-
-        // 回调服务（仅当 CallbackToken + CallbackEncodingAesKey 均配置时注册）
-        if (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
-            !string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
-        {
-            services.TryAddSingleton<ICallbackService>(sp =>
-                new CallbackService(
-                    sp.GetRequiredService<WecomClient>().GetInternalHttpClient(),
-                    ToWecomOptions(options)));
         }
 
         return services;
@@ -152,16 +141,6 @@ public static class WecomSmartBotServiceCollectionExtensions
         if (!string.IsNullOrWhiteSpace(options.BotId) && !string.IsNullOrWhiteSpace(options.BotSecret))
         {
             services.AddKeyedSingleton<ISmartRobotWsClient>(name, (_, _) => new SmartRobotWsClient(options));
-        }
-
-        // 回调服务（仅当 CallbackToken + CallbackEncodingAesKey 均配置时注册，Keyed）
-        if (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
-            !string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
-        {
-            services.AddKeyedSingleton<ICallbackService>(name, (sp, key) =>
-                new CallbackService(
-                    sp.GetRequiredKeyedService<WecomClient>(key).GetInternalHttpClient(),
-                    ToWecomOptions(options)));
         }
 
         // 注册工厂（幂等），使 MVC Controller 构造函数可通过工厂按名称解析 Keyed 实例

@@ -154,6 +154,10 @@ public sealed class WecomClient : IDisposable
     /// <summary>收集表</summary>
     public CollectFormService CollectForm { get; }
 
+    /// <summary>应用消息回调（URL 验证 / 消息解密 / 加密回复）</summary>
+    /// <remarks>仅当 <see cref="WecomOptions.CallbackToken"/> 与 <see cref="WecomOptions.CallbackEncodingAesKey"/> 均已配置时非 <c>null</c>。</remarks>
+    public CallbackService? Callback { get; }
+
     /// <summary>当前配置</summary>
     public WecomOptions Options { get; }
 
@@ -225,8 +229,12 @@ public sealed class WecomClient : IDisposable
         Invoice = new InvoiceService(_http);
         SmartSheet = new SmartSheetService(_http);
         CollectForm = new CollectFormService(_http);
+        Callback = (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
+                    !string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
+            ? new CallbackService(_http, options)
+            : null;
 
-        #region 备服务器模式：挂载载荷接收回调，分发 Ticket 并回写 Options
+        #region 备服务器模式
         if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
         {
             _tokenProvider.OnSecretPayloadReceived = (payload, ct) =>

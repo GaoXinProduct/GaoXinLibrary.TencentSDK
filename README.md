@@ -31,7 +31,6 @@
 - [消息回调与加解密](#消息回调与加解密)
 - [会话内容存档（Finance）](#会话内容存档finance)
 - [瞬态故障重试](#瞬态故障重试)
-- [构建与发布](#构建与发布)
 
 ---
 
@@ -470,8 +469,9 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 | `Invoice` | `InvoiceService` | 电子发票 |
 | `SmartSheet` | `SmartSheetService` | 智能表格 |
 | `CollectForm` | `CollectFormService` | 收集表 |
+| `Callback` | `CallbackService?` | 应用消息回调（URL 验证 / 消息解密 / 加密回复）；未配置 `CallbackToken` + `CallbackEncodingAesKey` 时为 `null` |
 
-> 群机器人（`WebhookService`）和智能机器人（`SmartRobotService` / `ISmartRobotWsClient`）是独立注册服务，不通过 `WecomClient` 属性访问。
+> 群机器人
 
 ### WechatMiniProgramClient — 微信小程序
 

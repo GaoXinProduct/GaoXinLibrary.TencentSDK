@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.GroupChat;
 
-// ─── 群聊信息 ──────────────────────────────────────────────────────────────
+#region 群聊信息
 
 /// <summary>群聊信息</summary>
 public class GroupChatInfo
@@ -22,3 +22,4 @@ public class GroupChatInfo
     [JsonPropertyName("userlist")] public string[]? UserList { get; set; }
 }
 
+#endregion

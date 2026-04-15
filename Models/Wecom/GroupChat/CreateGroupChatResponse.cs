@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.GroupChat;
 
-// ─── 响应模型 ──────────────────────────────────────────────────────────────
+#region 响应模型
 
 /// <summary>创建群聊会话响应</summary>
 public class CreateGroupChatResponse : WecomBaseResponse
@@ -13,3 +13,4 @@ public class CreateGroupChatResponse : WecomBaseResponse
     [JsonPropertyName("chat_info")] public GroupChatInfo? ChatInfo { get; set; }
 }
 
+#endregion

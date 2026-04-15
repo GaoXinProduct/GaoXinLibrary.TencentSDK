@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.OAuth;
 
-// ─── 获取访问用户身份 ─────────────────────────────────────────────────────
+#region 获取访问用户身份
 
 /// <summary>
 /// 获取访问用户身份响应（GET /cgi-bin/auth/getuserinfo）
@@ -42,3 +42,4 @@ public class OAuthUserInfoResponse : WecomBaseResponse
     [JsonPropertyName("deviceid")] public string? DeviceId { get; set; }
 }
 
+#endregion

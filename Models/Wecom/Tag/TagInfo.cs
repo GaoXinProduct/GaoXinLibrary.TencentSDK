@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Tag;
 
-// ─── 标签信息 ──────────────────────────────────────────────────────────────
+#region 标签信息
 
 /// <summary>标签信息</summary>
 public class TagInfo
@@ -12,3 +12,4 @@ public class TagInfo
     [JsonPropertyName("tagname")] public string? TagName { get; set; }
 }
 
+#endregion

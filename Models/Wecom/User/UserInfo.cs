@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.User;
 
-// ─── 成员信息 ───────────────────────────────────────────────────────────────
+#region 成员信息
 
 /// <summary>
 /// 成员详细信息
@@ -120,3 +120,4 @@ public class UserInfo
     [JsonPropertyName("english_name")] public string? EnglishName { get; set; }
 }
 
+#endregion

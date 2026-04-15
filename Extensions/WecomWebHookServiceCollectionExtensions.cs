@@ -16,7 +16,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Extensions;
 ///     options.WebhookKey = "your_webhook_key";
 /// });
 /// // 注入：
-/// public class MyService(IWebhookService webhook) { ... }
+/// public class MyService(WebhookService webhook) { ... }
 /// </code>
 ///
 /// <b>多实例用法</b>（Keyed Services，.NET 8+）：
@@ -25,23 +25,23 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Extensions;
 /// builder.Services.AddWecomWebHookService("bot2", opt => { opt.WebhookKey = "key2"; });
 /// // 注入：
 /// public class MyService(
-///     [FromKeyedServices("bot1")] IWebhookService webhook1,
-///     [FromKeyedServices("bot2")] IWebhookService webhook2) { ... }
+///     [FromKeyedServices("bot1")] WebhookService webhook1,
+///     [FromKeyedServices("bot2")] WebhookService webhook2) { ... }
 /// </code>
 /// </para>
 /// <para>
-/// 注意：群机器人（<see cref="IWebhookService"/>）不依赖 access_token，直接通过 Webhook Key 推送消息，
+/// 注意：群机器人（<see cref="WebhookService"/>）不依赖 access_token，直接通过 Webhook Key 推送消息，
 /// 无需提前调用 <see cref="WecomServiceCollectionExtensions.AddWecomService(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{WecomOptions})"/>。
 /// </para>
 /// </summary>
 public static class WecomWebHookServiceCollectionExtensions
 {
-    // ─── AddWecomWebHookService 无 key（单实例） ─────────────────────────
+    #region AddWecomWebHookService 无 key（单实例）
 
     /// <summary>
     /// 注册企业微信群机器人服务（使用委托配置选项，无 key 单实例）
     /// <para>
-    /// 仅注册 <see cref="IWebhookService"/>，使用 <see cref="WecomWebHookOptions.WebhookKey"/> 绑定目标群机器人，
+    /// 仅注册 <see cref="WebhookService"/>，使用 <see cref="WecomWebHookOptions.WebhookKey"/> 绑定目标群机器人，
     /// 注入后调用时无需再传入 Webhook Key。
     /// </para>
     /// </summary>
@@ -68,7 +68,7 @@ public static class WecomWebHookServiceCollectionExtensions
         services.TryAddSingleton(options);
 
         // 群机器人（注入时绑定固定 WebhookKey，调用时无需再传入）
-        services.TryAddSingleton<IWebhookService>(_ =>
+        services.TryAddSingleton<WebhookService>(_ =>
             new WebhookService(
                 WecomServiceCollectionExtensions.CreateLongLivedHttpClient(TimeSpan.FromSeconds(30)),
                 "https://qyapi.weixin.qq.com",
@@ -77,7 +77,8 @@ public static class WecomWebHookServiceCollectionExtensions
         return services;
     }
 
-    // ─── AddWecomWebHookService 带 key（多实例，Keyed Services） ─────────
+    #endregion
+    #region AddWecomWebHookService 带 key（多实例，Keyed Services）
 
     /// <summary>
     /// 注册企业微信群机器人服务（带 key，使用委托配置选项）
@@ -100,7 +101,7 @@ public static class WecomWebHookServiceCollectionExtensions
     /// 注册企业微信群机器人服务（带 key，使用已有配置对象）
     /// <para>支持多次调用以注册不同群机器人实例，通过 <c>[FromKeyedServices("name")]</c> 注入。</para>
     /// <para>
-    /// 同时自动注册 <see cref="IWebhookServiceFactory"/>（仅注册一次），
+    /// 同时自动注册 <see cref="WebhookServiceFactory"/>（仅注册一次），
     /// 供无法使用 <c>[FromKeyedServices]</c> 的场景（如 MVC Controller 构造函数）按名称解析实例。
     /// </para>
     /// </summary>
@@ -115,19 +116,20 @@ public static class WecomWebHookServiceCollectionExtensions
         services.AddKeyedSingleton(name, options);
 
         // 群机器人（Keyed，注入时绑定固定 WebhookKey）
-        services.AddKeyedSingleton<IWebhookService>(name, (_, _) =>
+        services.AddKeyedSingleton<WebhookService>(name, (_, _) =>
             new WebhookService(
                 WecomServiceCollectionExtensions.CreateLongLivedHttpClient(TimeSpan.FromSeconds(30)),
                 "https://qyapi.weixin.qq.com",
                 options.WebhookKey ?? string.Empty));
 
         // 工厂（幂等注册，供 MVC Controller 构造函数等无法使用 [FromKeyedServices] 的场景）
-        services.TryAddSingleton<IWebhookServiceFactory, WebhookServiceFactory>();
+        services.TryAddSingleton<WebhookServiceFactory, WebhookServiceFactory>();
 
         return services;
     }
 
-    // ─── AddWecomWebHookService IConfiguration 绑定 ──────────────────────
+    #endregion
+    #region AddWecomWebHookService IConfiguration 绑定
 
     /// <summary>
     /// 注册企业微信群机器人服务（从 <see cref="IConfiguration"/> 绑定配置）
@@ -170,4 +172,5 @@ public static class WecomWebHookServiceCollectionExtensions
         configuration.Bind(options);
         return services.AddWecomWebHookService(name, options);
     }
+    #endregion
 }

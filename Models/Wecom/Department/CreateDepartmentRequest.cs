@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Department;
 
-// ─── 请求模型 ──────────────────────────────────────────────────────────────
+#region 请求模型
 
 /// <summary>创建部门请求</summary>
 public class CreateDepartmentRequest
@@ -15,3 +15,4 @@ public class CreateDepartmentRequest
     [JsonPropertyName("id")] public int? Id { get; set; }
 }
 
+#endregion

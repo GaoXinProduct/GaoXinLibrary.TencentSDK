@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
-// ─── 标签变更通知 ──────────────────────────────────────────────────────
+#region 标签变更通知
 
 /// <summary>
 /// 标签成员变更事件（ChangeType = update_tag）
@@ -28,3 +28,4 @@ public class CallbackUpdateTagEvent : CallbackChangeContactEvent
     public string? DelPartyItems { get; set; }
 }
 
+#endregion

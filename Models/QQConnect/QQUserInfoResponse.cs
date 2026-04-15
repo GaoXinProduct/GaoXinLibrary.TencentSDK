@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.QQConnect;
 
-// ─── 获取用户信息 ────────────────────────────────────────────────────────
+#region 获取用户信息
 
 /// <summary>
 /// 获取 QQ 用户信息响应
@@ -64,3 +64,4 @@ public class QQUserInfoResponse : QQOpenApiBaseResponse
     [JsonPropertyName("level")] public string? Level { get; set; }
 }
 
+#endregion

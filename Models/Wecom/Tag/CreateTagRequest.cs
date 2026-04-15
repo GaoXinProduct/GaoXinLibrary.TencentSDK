@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Tag;
 
-// ─── 请求模型 ──────────────────────────────────────────────────────────────
+#region 请求模型
 
 /// <summary>创建标签请求</summary>
 public class CreateTagRequest
@@ -12,3 +12,4 @@ public class CreateTagRequest
     [JsonPropertyName("tagid")] public int? TagId { get; set; }
 }
 
+#endregion

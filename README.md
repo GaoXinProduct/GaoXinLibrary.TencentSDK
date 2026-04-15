@@ -224,7 +224,7 @@ builder.Services.AddWecomService(options =>
 });
 ```
 
-> `AddWecomService` 小注册 `WecomClient` 核心功能及 `ICallbackService`（当 `CallbackToken` + `CallbackEncodingAesKey` 均配置时自动注册）。`IWebhookService`、`ISmartRobotService`、`ISmartRobotWsClient` 不包含，如需这些服务请分别调用对应的注册方法。
+> `AddWecomService` 仅注册 `WecomClient` 核心功能及 `CallbackService`（当 `CallbackToken` + `CallbackEncodingAesKey` 均配置时自动注册）。`WebhookService`、`SmartRobotService`、`ISmartRobotWsClient` 不包含，如需这些服务请分别调用对应的注册方法。
 
 注入示例：
 
@@ -252,7 +252,7 @@ builder.Services.AddWecomWebHookService(options =>
 注入后调用时无需再传入 `webhookKey` 参数：
 
 ```csharp
-public class AlertService(IWebhookService webhook)
+public class AlertService(WebhookService webhook)
 {
     public Task SendAlertAsync(string text)
         => webhook.SendTextAsync(text);
@@ -288,14 +288,14 @@ builder.Services.AddWecomSmartBotService(options =>
 | 服务 | 注册条件 |
 |---|---|
 | `WecomClient` | 始终（内部幂等调用 `AddWecomService`） |
-| `ISmartRobotService` | 始终 |
+| `SmartRobotService` | 始终 |
 | `ISmartRobotWsClient` | `BotId` 与 `BotSecret` 均非空时 |
 
 注入示例：
 
 ```csharp
 // API 模式机器人（始终可注入）
-public class BotService(ISmartRobotService robot) { ... }
+public class BotService(SmartRobotService robot) { ... }
 
 // 长连接客户端（仅当 BotId + BotSecret 均配置时可注入）
 public class WsService(ISmartRobotWsClient wsClient) { ... }
@@ -353,8 +353,8 @@ public class MyController(
 | 平台 | 工厂接口 | 主要方法 | 返回类型 |
 |---|---|---|---|
 | 企业微信 | `IWecomClientFactory` | `CreateClient(name)` | `WecomClient` |
-| 群机器人 | `IWebhookServiceFactory` | `CreateClient(name)` | `IWebhookService` |
-| 智能机器人 | `IWecomSmartBotServiceFactory` | `CreateClient(name)` / `CreateWsClient(name)` | `ISmartRobotService` / `ISmartRobotWsClient?` |
+| 群机器人 | `IWebhookServiceFactory` | `CreateClient(name)` | `WebhookService` |
+| 智能机器人 | `IWecomSmartBotServiceFactory` | `CreateClient(name)` / `CreateWsClient(name)` | `SmartRobotService` / `ISmartRobotWsClient?` |
 | 微信小程序 | `IWechatMiniProgramClientFactory` | `CreateClient(name)` | `WechatMiniProgramClient` |
 | 微信公众号 | `IWechatOfficialClientFactory` | `CreateClient(name)` | `WechatOfficialClient` |
 | 微信开放平台 | `IWechatOpenClientFactory` | `CreateClient(name)` | `WechatOpenClient` |
@@ -431,101 +431,101 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 
 | 属性 | 类型 | 说明 |
 |---|---|---|
-| `User` | `IUserService` | 成员管理（增删改查、部门成员列表） |
-| `Department` | `IDepartmentService` | 部门管理 |
-| `Tag` | `ITagService` | 标签管理 |
-| `Message` | `IMessageService` | 应用消息发送（文本、图片、视频、卡片等） |
-| `Agent` | `IAgentService` | 应用管理与配置 |
-| `Menu` | `IMenuService` | 自定义菜单（与 `Agent` 共用同一实例） |
-| `Media` | `IMediaService` | 素材管理（上传/下载） |
-| `GroupChat` | `IGroupChatService` | 应用群聊会话管理 |
-| `OAuth` | `IOAuthService` | 网页授权登录（OAuth2） |
-| `CorpGroup` | `ICorpGroupService` | 企业互联 |
-| `LinkedCorp` | `ILinkedCorpService` | 上下游 / 互联企业 |
-| `Kf` | `IKfService` | 微信客服 |
-| `MsgAudit` | `IMsgAuditService` | 会话内容存档 |
-| `JsSdk` | `IJsSdkService` | 企业微信 H5 / JS-SDK（企业级与应用级 ticket） |
-| `Checkin` | `ICheckinService` | 打卡 |
-| `Approval` | `IApprovalService` | 审批 |
-| `Export` | `IExportService` | 异步导出 |
-| `AsyncImport` | `IAsyncImportService` | 异步导入 |
-| `SecondVerify` | `ISecondVerifyService` | 二次验证 |
-| `Security` | `ISecurityService` | 安全管理 |
-| `AdvancedAccount` | `IAdvancedAccountService` | 高级功能账号管理 |
-| `OperationLog` | `IOperationLogService` | 操作日志 |
-| `AccountId` | `IAccountIdService` | 账号 ID 管理 |
-| `IpRange` | `IIpRangeService` | IP 段查询 |
-| `ExternalContact` | `IExternalContactService` | 客户联系 |
-| `CorpPay` | `ICorpPayService` | 企业支付 |
-| `Email` | `IEmailService` | 邮件 |
-| `Document` | `IDocumentService` | 文档 |
-| `Calendar` | `ICalendarService` | 日程 |
-| `Meeting` | `IMeetingService` | 会议 |
-| `Wedrive` | `IWedriveService` | 微盘 |
-| `Living` | `ILivingService` | 直播 |
-| `Dial` | `IDialService` | 公费电话 |
-| `Report` | `IReportService` | 汇报 |
-| `Hr` | `IHrService` | 人事助手 |
-| `MeetingRoom` | `IMeetingRoomService` | 会议室 |
-| `Invoice` | `IInvoiceService` | 电子发票 |
-| `SmartSheet` | `ISmartSheetService` | 智能表格 |
-| `CollectForm` | `ICollectFormService` | 收集表 |
+| `User` | `UserService` | 成员管理（增删改查、部门成员列表） |
+| `Department` | `DepartmentService` | 部门管理 |
+| `Tag` | `TagService` | 标签管理 |
+| `Message` | `MessageService` | 应用消息发送（文本、图片、视频、卡片等） |
+| `Agent` | `AgentService` | 应用管理与配置 |
+| `Menu` | `AgentService` | 自定义菜单（与 `Agent` 共用同一 `AgentService` 实例） |
+| `Media` | `MediaService` | 素材管理（上传/下载） |
+| `GroupChat` | `GroupChatService` | 应用群聊会话管理 |
+| `OAuth` | `OAuthService` | 网页授权登录（OAuth2） |
+| `CorpGroup` | `CorpGroupService` | 企业互联 |
+| `LinkedCorp` | `LinkedCorpService` | 上下游 / 互联企业 |
+| `Kf` | `KfService` | 微信客服 |
+| `MsgAudit` | `MsgAuditService` | 会话内容存档 |
+| `JsSdk` | `JsSdkService` | 企业微信 H5 / JS-SDK（企业级与应用级 ticket） |
+| `Checkin` | `CheckinService` | 打卡 |
+| `Approval` | `ApprovalService` | 审批 |
+| `Export` | `ExportService` | 异步导出 |
+| `AsyncImport` | `AsyncImportService` | 异步导入 |
+| `SecondVerify` | `SecondVerifyService` | 二次验证 |
+| `Security` | `SecurityService` | 安全管理 |
+| `AdvancedAccount` | `AdvancedAccountService` | 高级功能账号管理 |
+| `OperationLog` | `OperationLogService` | 操作日志 |
+| `AccountId` | `AccountIdService` | 账号 ID 管理 |
+| `IpRange` | `IpRangeService` | IP 段查询 |
+| `ExternalContact` | `ExternalContactService` | 客户联系 |
+| `CorpPay` | `CorpPayService` | 企业支付 |
+| `Email` | `EmailService` | 邮件 |
+| `Document` | `DocumentService` | 文档 |
+| `Calendar` | `CalendarService` | 日程 |
+| `Meeting` | `MeetingService` | 会议 |
+| `Wedrive` | `WedriveService` | 微盘 |
+| `Living` | `LivingService` | 直播 |
+| `Dial` | `DialService` | 公费电话 |
+| `Report` | `ReportService` | 汇报 |
+| `Hr` | `HrService` | 人事助手 |
+| `MeetingRoom` | `MeetingRoomService` | 会议室 |
+| `Invoice` | `InvoiceService` | 电子发票 |
+| `SmartSheet` | `SmartSheetService` | 智能表格 |
+| `CollectForm` | `CollectFormService` | 收集表 |
 
-> 群机器人（`IWebhookService`）和智能机器人（`ISmartRobotService` / `ISmartRobotWsClient`）是独立注册服务，不通过 `WecomClient` 属性访问。
+> 群机器人（`WebhookService`）和智能机器人（`SmartRobotService` / `ISmartRobotWsClient`）是独立注册服务，不通过 `WecomClient` 属性访问。
 
 ### WechatMiniProgramClient — 微信小程序
 
 | 属性 | 类型 | 说明 |
 |---|---|---|
-| `Auth` | `IMiniProgramAuthService` | 登录（code2session）、手机号解密 |
-| `QrCode` | `IMiniProgramQrCodeService` | 小程序码 / 二维码生成 |
-| `SubscribeMessage` | `IMiniProgramSubscribeMessageService` | 订阅消息 |
-| `Security` | `IMiniProgramSecurityService` | 内容安全检测 |
-| `Shipping` | `IMiniProgramShippingService` | 发货信息管理 |
-| `Ocr` | `IMiniProgramOcrService` | OCR 与图像处理 |
-| `Link` | `IMiniProgramLinkService` | URL Scheme / URL Link / Short Link |
-| `DataAnalysis` | `IMiniProgramDataAnalysisService` | 数据分析 |
-| `Express` | `IMiniProgramExpressService` | 物流助手 |
-| `Operation` | `IMiniProgramOperationService` | 运维中心 |
-| `Device` | `IMiniProgramDeviceService` | 硬件设备 |
-| `CustomMessage` | `IMiniProgramCustomMessageService` | 客服消息 |
-| `OpenApi` | `IMiniProgramOpenApiService` | OpenAPI 管理 |
+| `Auth` | `MiniProgramAuthService` | 登录（code2session）、手机号解密 |
+| `QrCode` | `MiniProgramQrCodeService` | 小程序码 / 二维码生成 |
+| `SubscribeMessage` | `MiniProgramSubscribeMessageService` | 订阅消息 |
+| `Security` | `MiniProgramSecurityService` | 内容安全检测 |
+| `Shipping` | `MiniProgramShippingService` | 发货信息管理 |
+| `Ocr` | `MiniProgramOcrService` | OCR 与图像处理 |
+| `Link` | `MiniProgramLinkService` | URL Scheme / URL Link / Short Link |
+| `DataAnalysis` | `MiniProgramDataAnalysisService` | 数据分析 |
+| `Express` | `MiniProgramExpressService` | 物流助手 |
+| `Operation` | `MiniProgramOperationService` | 运维中心 |
+| `Device` | `MiniProgramDeviceService` | 硬件设备 |
+| `CustomMessage` | `MiniProgramCustomMessageService` | 客服消息 |
+| `OpenApi` | `MiniProgramOpenApiService` | OpenAPI 管理 |
 
 ### WechatOfficialClient — 微信公众号
 
 | 属性 | 类型 | 说明 |
 |---|---|---|
-| `OAuth` | `IOfficialOAuthService` | 网页授权（静默 / 用户信息） |
-| `Menu` | `IOfficialMenuService` | 自定义菜单 |
-| `TemplateMessage` | `IOfficialTemplateMessageService` | 模板消息 |
-| `User` | `IOfficialUserService` | 用户管理 |
-| `QrCode` | `IOfficialQrCodeService` | 服务号二维码 |
-| `Material` | `IOfficialMaterialService` | 素材管理 |
-| `JsSdk` | `IOfficialJsSdkService` | JS-SDK（ticket 自动获取 + 签名生成） |
-| `Tag` | `IOfficialTagService` | 用户标签管理 |
-| `Draft` | `IOfficialDraftService` | 草稿管理 |
-| `Publish` | `IOfficialPublishService` | 发布能力 |
-| `Comment` | `IOfficialCommentService` | 留言管理 |
-| `CustomMessage` | `IOfficialCustomMessageService` | 客服消息 |
-| `Message` | `IOfficialMessageService` | 群发消息 / 模板管理 |
-| `DataAnalysis` | `IOfficialDataAnalysisService` | 数据统计 |
-| `Ai` | `IOfficialAiService` | 语义理解 / OCR |
-| `Poi` | `IOfficialPoiService` | 微信门店 |
-| `Invoice` | `IOfficialInvoiceService` | 微信发票 |
-| `OpenApi` | `IOfficialOpenApiService` | OpenAPI 管理 |
-| `Callback` | `IOfficialCallbackService` | 消息回调解析与加密回复 |
+| `OAuth` | `OfficialOAuthService` | 网页授权（静默 / 用户信息） |
+| `Menu` | `OfficialMenuService` | 自定义菜单 |
+| `TemplateMessage` | `OfficialTemplateMessageService` | 模板消息 |
+| `User` | `OfficialUserService` | 用户管理 |
+| `QrCode` | `OfficialQrCodeService` | 服务号二维码 |
+| `Material` | `OfficialMaterialService` | 素材管理 |
+| `JsSdk` | `OfficialJsSdkService` | JS-SDK（ticket 自动获取 + 签名生成） |
+| `Tag` | `OfficialTagService` | 用户标签管理 |
+| `Draft` | `OfficialDraftService` | 草稿管理 |
+| `Publish` | `OfficialPublishService` | 发布能力 |
+| `Comment` | `OfficialCommentService` | 留言管理 |
+| `CustomMessage` | `OfficialCustomMessageService` | 客服消息 |
+| `Message` | `OfficialMessageService` | 群发消息 / 模板管理 |
+| `DataAnalysis` | `OfficialDataAnalysisService` | 数据统计 |
+| `Ai` | `OfficialAiService` | 语义理解 / OCR |
+| `Poi` | `OfficialPoiService` | 微信门店 |
+| `Invoice` | `OfficialInvoiceService` | 微信发票 |
+| `OpenApi` | `OfficialOpenApiService` | OpenAPI 管理 |
+| `Callback` | `OfficialCallbackService` | 消息回调解析与加密回复 |
 
 ### WechatOpenClient — 微信开放平台
 
 | 属性 | 类型 | 说明 |
 |---|---|---|
-| `WebLogin` | `IOpenPlatformService` | 网站应用微信扫码登录（OAuth2 + 用户信息） |
+| `WebLogin` | `OpenPlatformService` | 网站应用微信扫码登录（OAuth2 + 用户信息） |
 
 ### QQConnectClient — QQ 互联
 
 | 属性 | 类型 | 说明 |
 |---|---|---|
-| `Login` | `IQQConnectService` | QQ 登录（构建授权 URL、code 换 token、获取用户信息） |
+| `Login` | `QQConnectService` | QQ 登录（构建授权 URL、code 换 token、获取用户信息） |
 
 ---
 
@@ -581,8 +581,8 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 | `AgentId` | `int` | `0` | 自建应用 AgentId；消息发送时自动注入，无需手动传参 |
 | `BaseUrl` | `string` | `https://qyapi.weixin.qq.com` | API 基础地址 |
 | `HttpTimeout` | `TimeSpan` | 30 秒 | HTTP 请求超时 |
-| `CallbackToken` | `string?` | `null` | 应用消息回调 Token；与 `CallbackEncodingAesKey` 同时配置时 `AddWecomService` 自动注册 `ICallbackService` |
-| `CallbackEncodingAesKey` | `string?` | `null` | 消息加解密 AES Key（43 位字符）；与 `CallbackToken` 同时配置时 `AddWecomService` 自动注册 `ICallbackService` |
+| `CallbackToken` | `string?` | `null` | 应用消息回调 Token；与 `CallbackEncodingAesKey` 同时配置时 `AddWecomService` 自动注册 `CallbackService` |
+| `CallbackEncodingAesKey` | `string?` | `null` | 消息加解密 AES Key（43 位字符）；与 `CallbackToken` 同时配置时 `AddWecomService` 自动注册 `CallbackService` |
 | `MsgAuditSecret` | `string?` | `null` | 会话存档专用密钥（在企业微信管理后台「管理工具 - 会话内容存档」获取，非 CorpSecret） |
 | `MsgAuditPrivateKey` | `string?` | `null` | 会话存档 RSA 私钥（PEM 格式），用于解密 `encrypt_random_key` |
 | `ShareSecret` | `string?` | `null` | 备服务器共享密钥 |
@@ -609,7 +609,7 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 | `AgentId` | `int` | `0` | 自建应用 AgentId |
 | `BaseUrl` | `string` | `https://qyapi.weixin.qq.com` | API 基础地址 |
 | `HttpTimeout` | `TimeSpan` | 30 秒 | HTTP 请求超时 |
-| `CallbackToken` | `string?` | `null` | API 回调 Token（与 `CallbackEncodingAesKey` 同时配置时注册 `ICallbackService`） |
+| `CallbackToken` | `string?` | `null` | API 回调 Token（与 `CallbackEncodingAesKey` 同时配置时注册 `CallbackService`） |
 | `CallbackEncodingAesKey` | `string?` | `null` | API 回调 AES Key（43 位字符） |
 | `BotId` | `string?` | `null` | 长连接机器人 ID（与 `BotSecret` 同时配置时注册 `ISmartRobotWsClient`） |
 | `BotSecret` | `string?` | `null` | 长连接专用密钥 |
@@ -740,18 +740,18 @@ builder.Services.AddWecomService(options =>
 
 ### 微信公众号
 
-`AddWechatOfficialService` 中，当 `CallbackToken` + `CallbackEncodingAesKey` **同时配置**时，`IOfficialCallbackService` 会被自动注册到 DI 容器，无需手动注册；也可直接通过 `client.Callback` 属性访问（始终可用）。
+`AddWechatOfficialService` 中，当 `CallbackToken` + `CallbackEncodingAesKey` **同时配置**时，`OfficialCallbackService` 会被自动注册到 DI 容器，无需手动注册；也可直接通过 `client.Callback` 属性访问（始终可用）。
 
-`IOfficialCallbackService` 提供：
+`OfficialCallbackService` 提供：
 - 签名校验（`ValidateSignature`）
 - AES-256-CBC 消息解密（`DecryptMessage`）
 - 加密回复报文生成（`BuildEncryptedReply`）
 
 ### 企业微信
 
-企业微信应用回调（URL 验证、消息解密、事件解析、加密回复）由 `ICallbackService` 处理。当 `AddWecomService` 中的 `CallbackToken` 与 `CallbackEncodingAesKey` **同时配置**时，`ICallbackService` 会被自动注册到 DI 容器。
+企业微信应用回调（URL 验证、消息解密、事件解析、加密回复）由 `CallbackService` 处理。当 `AddWecomService` 中的 `CallbackToken` 与 `CallbackEncodingAesKey` **同时配置**时，`CallbackService` 会被自动注册到 DI 容器。
 
-`ICallbackService` 提供：
+`CallbackService` 提供：
 - URL 验证（`VerifyUrl`）
 - 消息解密与事件解析（`DecryptAndParse`）
 - 加密被动回复（`EncryptReply`）
@@ -840,27 +840,3 @@ options.RetryOptions = new TencentRetryOptions { MaxRetries = 0 };
 ```
 
 ---
-
-## 构建与发布
-
-```bash
-# 还原依赖
-dotnet restore
-
-# 编译（多目标框架）
-dotnet build -c Release
-
-# 打包为 NuGet
-dotnet pack -c Release --output ./nupkgs
-
-# 发布到 NuGet.org（替换为实际 API Key）
-dotnet nuget push ./nupkgs/GaoXinLibrary.TencentSDK.*.nupkg \
-    --api-key YOUR_NUGET_API_KEY \
-    --source https://api.nuget.org/v3/index.json
-```
-
----
-
-## License
-
-[MIT](LICENSE)

@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
-// ─── 部门变更通知 ──────────────────────────────────────────────────────
+#region 部门变更通知
 
 /// <summary>
 /// 新建部门事件（ChangeType = create_party）
@@ -25,3 +25,4 @@ public class CallbackCreatePartyEvent : CallbackChangeContactEvent
     public int Order { get; set; }
 }
 
+#endregion

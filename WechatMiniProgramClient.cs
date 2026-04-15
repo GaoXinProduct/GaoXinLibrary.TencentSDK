@@ -1,4 +1,4 @@
-using GaoXinLibrary.TencentSDK.Wechat.Core;
+﻿using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Services;
 using Microsoft.Extensions.Logging;
 
@@ -25,43 +25,43 @@ public sealed class WechatMiniProgramClient : IDisposable
     private readonly AccessTokenProvider _tokenProvider;
 
     /// <summary>登录与手机号</summary>
-    public IMiniProgramAuthService Auth { get; }
+    public MiniProgramAuthService Auth { get; }
 
     /// <summary>小程序码</summary>
-    public IMiniProgramQrCodeService QrCode { get; }
+    public MiniProgramQrCodeService QrCode { get; }
 
     /// <summary>订阅消息</summary>
-    public IMiniProgramSubscribeMessageService SubscribeMessage { get; }
+    public MiniProgramSubscribeMessageService SubscribeMessage { get; }
 
     /// <summary>内容安全</summary>
-    public IMiniProgramSecurityService Security { get; }
+    public MiniProgramSecurityService Security { get; }
 
     /// <summary>发货信息管理</summary>
-    public IMiniProgramShippingService Shipping { get; }
+    public MiniProgramShippingService Shipping { get; }
 
     /// <summary>OCR 与图像处理</summary>
-    public IMiniProgramOcrService Ocr { get; }
+    public MiniProgramOcrService Ocr { get; }
 
     /// <summary>小程序链接（URL Scheme / URL Link / Short Link）</summary>
-    public IMiniProgramLinkService Link { get; }
+    public MiniProgramLinkService Link { get; }
 
     /// <summary>数据分析</summary>
-    public IMiniProgramDataAnalysisService DataAnalysis { get; }
+    public MiniProgramDataAnalysisService DataAnalysis { get; }
 
     /// <summary>物流助手</summary>
-    public IMiniProgramExpressService Express { get; }
+    public MiniProgramExpressService Express { get; }
 
     /// <summary>运维中心</summary>
-    public IMiniProgramOperationService Operation { get; }
+    public MiniProgramOperationService Operation { get; }
 
     /// <summary>硬件设备</summary>
-    public IMiniProgramDeviceService Device { get; }
+    public MiniProgramDeviceService Device { get; }
 
     /// <summary>客服消息</summary>
-    public IMiniProgramCustomMessageService CustomMessage { get; }
+    public MiniProgramCustomMessageService CustomMessage { get; }
 
     /// <summary>OpenAPI 管理</summary>
-    public IMiniProgramOpenApiService OpenApi { get; }
+    public MiniProgramOpenApiService OpenApi { get; }
 
     /// <summary>当前配置</summary>
     public WechatMiniProgramOptions Options { get; }

@@ -44,7 +44,7 @@ public class OfficialCallbackMessageBase
         };
     }
 
-    // ─── 解析各消息类型 ─────────────────────────────────────────────────
+    #region 解析各消息类型
 
     private static OfficialCallbackTextMessage ParseTextMessage(XElement root)
     {
@@ -125,7 +125,8 @@ public class OfficialCallbackMessageBase
         return msg;
     }
 
-    // ─── 解析事件 ──────────────────────────────────────────────────────
+    #endregion
+    #region 解析事件
 
     private static OfficialCallbackMessageBase ParseEvent(XElement root)
     {
@@ -207,7 +208,8 @@ public class OfficialCallbackMessageBase
         return evt;
     }
 
-    // ─── 解析辅助方法 ──────────────────────────────────────────────────
+    #endregion
+    #region 解析辅助方法
 
     private static OfficialCallbackMessageBase ParseBase(XElement root, string msgType)
     {
@@ -242,5 +244,6 @@ public class OfficialCallbackMessageBase
 
     private static double GetDouble(XElement? root, string name)
         => double.TryParse(root?.Element(name)?.Value, out var v) ? v : 0;
+    #endregion
 }
 

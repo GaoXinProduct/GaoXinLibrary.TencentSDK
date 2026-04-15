@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
-// ─── 成员变更通知 ──────────────────────────────────────────────────────
+#region 成员变更通知
 
 /// <summary>
 /// 新建成员事件（ChangeType = create_user）
@@ -64,3 +64,4 @@ public class CallbackCreateUserEvent : CallbackChangeContactEvent
     public CallbackExtAttrItem[]? ExtAttr { get; set; }
 }
 
+#endregion

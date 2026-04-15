@@ -48,7 +48,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Extensions;
 /// </summary>
 public static class WechatServiceCollectionExtensions
 {
-    // ─── 小程序 ──────────────────────────────────────────────────────
+    #region 小程序
 
     /// <summary>
     /// 注册微信小程序 SDK 服务（使用委托配置选项）
@@ -125,7 +125,8 @@ public static class WechatServiceCollectionExtensions
         return services;
     }
 
-    // ─── 公众号 ──────────────────────────────────────────────────────
+    #endregion
+    #region 公众号
 
     /// <summary>
     /// 注册微信公众号 SDK 服务（使用委托配置选项）
@@ -162,7 +163,7 @@ public static class WechatServiceCollectionExtensions
         if (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
             !string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
         {
-            services.TryAddSingleton<IOfficialCallbackService>(sp => sp.GetRequiredService<WechatOfficialClient>().Callback);
+            services.TryAddSingleton<OfficialCallbackService>(sp => sp.GetRequiredService<WechatOfficialClient>().Callback);
         }
 
         return services;
@@ -207,7 +208,7 @@ public static class WechatServiceCollectionExtensions
         if (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
             !string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
         {
-            services.AddKeyedSingleton<IOfficialCallbackService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Callback);
+            services.AddKeyedSingleton<OfficialCallbackService>(name, (sp, key) => sp.GetRequiredKeyedService<WechatOfficialClient>(key).Callback);
         }
 
         // 注册工厂（幂等），使 MVC Controller 构造函数可通过工厂按名称解析 Keyed 实例
@@ -216,7 +217,8 @@ public static class WechatServiceCollectionExtensions
         return services;
     }
 
-    // ─── 开放平台 ────────────────────────────────────────────────────
+    #endregion
+    #region 开放平台
 
     /// <summary>
     /// 注册微信开放平台 SDK 服务（使用委托配置选项）
@@ -293,7 +295,8 @@ public static class WechatServiceCollectionExtensions
         return services;
     }
 
-    // ─── QQ 互联 ─────────────────────────────────────────────────────────
+    #endregion
+    #region QQ 互联
 
     /// <summary>
     /// 注册 QQ 互联 SDK 服务（使用委托配置选项）
@@ -368,7 +371,8 @@ public static class WechatServiceCollectionExtensions
         return services;
     }
 
-    // ─── IConfiguration 绑定 ────────────────────────────────────────────
+    #endregion
+    #region IConfiguration 绑定
 
     /// <summary>
     /// 注册微信小程序 SDK 服务（从 <see cref="IConfiguration"/> 绑定配置）
@@ -506,7 +510,8 @@ public static class WechatServiceCollectionExtensions
         return services.AddQQConnectService(name, options);
     }
 
-    // ─── 内部辅助 ──────────────────────────────────────────────────────
+    #endregion
+    #region 内部辅助
 
     /// <summary>
     /// 创建适合 Singleton 持有的长生命周期 HttpClient。
@@ -542,4 +547,5 @@ public static class WechatServiceCollectionExtensions
         if (string.IsNullOrWhiteSpace(options.AppSecret))
             throw new ArgumentException("WechatOptions.AppSecret 不能为空", nameof(options));
     }
+    #endregion
 }

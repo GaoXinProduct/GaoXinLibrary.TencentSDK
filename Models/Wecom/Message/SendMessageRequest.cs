@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
-// ─── 发送消息请求基类 ─────────────────────────────────────────────────────
+#region 发送消息请求基类
 
 /// <summary>发送应用消息请求（支持多种消息类型）</summary>
 public record SendMessageRequest
@@ -30,3 +30,4 @@ public record SendMessageRequest
     [JsonPropertyName("duplicate_check_interval")] public int? DuplicateCheckInterval { get; set; }
 }
 
+#endregion

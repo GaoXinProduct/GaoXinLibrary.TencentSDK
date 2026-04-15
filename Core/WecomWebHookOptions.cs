@@ -1,4 +1,4 @@
-namespace GaoXinLibrary.TencentSDK.Wecom.Core;
+﻿namespace GaoXinLibrary.TencentSDK.Wecom.Core;
 
 /// <summary>
 /// 企业微信群机器人配置

@@ -48,7 +48,7 @@ public class CallbackMessageBase
         };
     }
 
-    // ─── 解析各消息类型 ─────────────────────────────────────────────────
+    #region 解析各消息类型
 
     private static CallbackTextMessage ParseTextMessage(XElement root)
     {
@@ -132,7 +132,8 @@ public class CallbackMessageBase
         return msg;
     }
 
-    // ─── 解析事件 ──────────────────────────────────────────────────────
+    #endregion
+    #region 解析事件
 
     private static CallbackMessageBase ParseEvent(XElement root)
     {
@@ -263,7 +264,8 @@ public class CallbackMessageBase
         return evt;
     }
 
-    // ─── 解析通讯录变更事件 ─────────────────────────────────────────────
+    #endregion
+    #region 解析通讯录变更事件
 
     private static CallbackMessageBase ParseChangeContactEvent(XElement root)
     {
@@ -394,7 +396,8 @@ public class CallbackMessageBase
         return evt;
     }
 
-    // ─── 解析审批回调 ──────────────────────────────────────────────────
+    #endregion
+    #region 解析审批回调
 
     private static CallbackApprovalEvent ParseApprovalChangeEvent(XElement root)
     {
@@ -452,7 +455,8 @@ public class CallbackMessageBase
         return evt;
     }
 
-    // ─── 解析辅助方法 ──────────────────────────────────────────────────
+    #endregion
+    #region 解析辅助方法
 
     private static CallbackMessageBase ParseBase(XElement root, string msgType)
     {
@@ -488,5 +492,6 @@ public class CallbackMessageBase
 
     private static double GetDouble(XElement? root, string name)
         => double.TryParse(root?.Element(name)?.Value, out var v) ? v : 0;
+    #endregion
 }
 

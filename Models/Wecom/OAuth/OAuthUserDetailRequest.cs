@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.OAuth;
 
-// ─── 获取用户敏感信息 ─────────────────────────────────────────────────────
+#region 获取用户敏感信息
 
 /// <summary>
 /// 获取用户敏感信息请求（POST /cgi-bin/auth/getuserdetail）
@@ -16,3 +16,4 @@ public class OAuthUserDetailRequest
     [JsonPropertyName("user_ticket")] public required string UserTicket { get; set; }
 }
 
+#endregion

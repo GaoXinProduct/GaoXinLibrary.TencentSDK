@@ -81,7 +81,7 @@ public class ApplyEventBuilder
         return this;
     }
 
-    // ─── 控件值设置 ──────────────────────────────────────────────────────
+    #region 控件值设置
 
     /// <summary>添加文本控件（Text / Textarea）</summary>
     /// <param name="controlId">控件 id</param>
@@ -419,4 +419,5 @@ public class ApplyEventBuilder
         _request.ApplyData = new ApplyData { Contents = [.. _contents] };
         return _request;
     }
+    #endregion
 }

@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Menu;
 
-// ─── 工作台自定义展示 ─────────────────────────────────────────────────────
+#region 工作台自定义展示
 
 /// <summary>设置工作台自定义展示请求</summary>
 public class SetWorkbenchTemplateRequest
@@ -37,3 +37,4 @@ public class SetWorkbenchTemplateRequest
     [JsonPropertyName("replace_user_data")] public int ReplaceUserData { get; set; }
 }
 
+#endregion

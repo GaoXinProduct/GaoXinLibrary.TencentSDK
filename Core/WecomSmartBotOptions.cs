@@ -9,7 +9,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Core;
 /// </summary>
 public class WecomSmartBotOptions
 {
-    // ─── 企业微信核心配置（主动发消息所需）─────────────────────────────
+    #region 企业微信核心配置（主动发消息所需）
 
     /// <summary>企业ID（corpid）</summary>
     public string CorpId { get; set; } = string.Empty;
@@ -26,7 +26,8 @@ public class WecomSmartBotOptions
     /// <summary>HTTP 请求超时时间，默认 30 秒</summary>
     public TimeSpan HttpTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
-    // ─── 智能机器人回调配置（API 模式）──────────────────────────────────
+    #endregion
+    #region 智能机器人回调配置（API 模式）
 
     /// <summary>接收消息回调的 Token（用于签名校验）</summary>
     public string? CallbackToken { get; set; }
@@ -34,7 +35,8 @@ public class WecomSmartBotOptions
     /// <summary>接收消息回调的 EncodingAESKey（用于消息加解密，43 位字符）</summary>
     public string? CallbackEncodingAesKey { get; set; }
 
-    // ─── 智能机器人长连接配置 ─────────────────────────────────────────
+    #endregion
+    #region 智能机器人长连接配置
 
     /// <summary>
     /// 智能机器人 BotID（长连接模式专用）
@@ -50,4 +52,5 @@ public class WecomSmartBotOptions
 
     /// <summary>智能机器人长连接 WebSocket 地址，默认 wss://openws.work.weixin.qq.com</summary>
     public string BotWsUrl { get; set; } = "wss://openws.work.weixin.qq.com";
+    #endregion
 }

@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
-// ─── 响应模型 ──────────────────────────────────────────────────────────────
+#region 响应模型
 
 public class SendMessageResponse : WecomBaseResponse
 {
@@ -15,3 +15,4 @@ public class SendMessageResponse : WecomBaseResponse
     [JsonPropertyName("response_code")] public string? ResponseCode { get; set; }
 }
 
+#endregion

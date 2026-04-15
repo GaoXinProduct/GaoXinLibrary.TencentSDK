@@ -53,7 +53,7 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
     /// <summary>创建平台特定的异常（含错误码）</summary>
     protected TencentException CreateException(int errCode, string errMsg) => new(errCode, errMsg, _platformName);
 
-    // ─── 带 Token 请求（含 Token 失效自动重试） ─────────────────────────
+    #region 带 Token 请求（含 Token 失效自动重试）
 
     /// <summary>GET 请求，自动附加 access_token（Token 失效时自动刷新重试一次，瞬态故障自动重试）</summary>
     public async Task<T> GetAsync<T>(string path, Dictionary<string, string?>? queryParams = null, CancellationToken ct = default)
@@ -94,7 +94,8 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
         }, ct);
     }
 
-    // ─── 无 Token 请求 ──────────────────────────────────────────────────
+    #endregion
+    #region 无 Token 请求
 
     /// <summary>GET 请求，不附加 access_token（用于 SNS / OAuth 等场景，瞬态故障自动重试）</summary>
     public async Task<T> GetWithoutTokenAsync<T>(string url, CancellationToken ct = default)
@@ -175,7 +176,8 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
         }, ct);
     }
 
-    // ─── 二进制响应 ─────────────────────────────────────────────────────
+    #endregion
+    #region 二进制响应
 
     /// <summary>GET 请求，返回原始字节流（如获取反馈图片）（Token 失效时自动刷新重试一次，瞬态故障自动重试）</summary>
     public async Task<byte[]> GetForBytesAsync(string path, Dictionary<string, string?>? queryParams = null, CancellationToken ct = default)
@@ -231,7 +233,8 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
         }, ct);
     }
 
-    // ─── Token 失效自动重试 ──────────────────────────────────────────────
+    #endregion
+    #region Token 失效自动重试
 
     /// <summary>
     /// 执行带 Token 的请求，当遇到 Token 失效错误（40001/40014/42001）时自动刷新 Token 并重试一次
@@ -252,7 +255,8 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
         }
     }
 
-    // ─── 瞬态故障自动重试 ────────────────────────────────────────────────
+    #endregion
+    #region 瞬态故障自动重试
 
     /// <summary>
     /// 执行请求，网络抖动、连接超时、5xx 等瞬态故障时按指数退避自动重试
@@ -302,7 +306,8 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
         };
     }
 
-    // ─── 辅助方法 ───────────────────────────────────────────────────────
+    #endregion
+    #region 辅助方法
 
     private T DeserializeAndValidate<T>(string json) where T : TResponse
     {
@@ -341,4 +346,5 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
         }
         return sb.ToString();
     }
+    #endregion
 }

@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Department;
 
-// ─── 部门信息 ──────────────────────────────────────────────────────────────
+#region 部门信息
 
 /// <summary>部门信息</summary>
 public class DepartmentInfo
@@ -16,3 +16,4 @@ public class DepartmentInfo
     [JsonPropertyName("department_leader")] public string[]? DepartmentLeader { get; set; }
 }
 
+#endregion

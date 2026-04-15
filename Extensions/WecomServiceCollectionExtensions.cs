@@ -57,11 +57,11 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Extensions;
 ///     options.CorpId                 = "your_corpid";
 ///     options.CorpSecret             = "your_corpsecret";
 ///     options.AgentId                = 1000001;
-///     options.CallbackToken          = "your_token";        // 同时配置两项时自动注册 ICallbackService
+///     options.CallbackToken          = "your_token";        // 同时配置两项时自动注册 CallbackService
 ///     options.CallbackEncodingAesKey = "your_43char_key";
 /// });
 /// // 注入回调服务（URL 验证/消息解密/加密回复）：
-/// public class CallbackHandler(ICallbackService callback) { ... }
+/// public class CallbackHandler(CallbackService callback) { ... }
 /// </code>
 ///
 /// <b>智能机器人（含长连接）</b>（可选，需额外调用）：
@@ -80,16 +80,16 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Extensions;
 /// </summary>
 public static class WecomServiceCollectionExtensions
 {
-    // ─── AddWecomService 无 key（单实例，向后兼容） ───────────────────────
+    #region AddWecomService 无 key（单实例，向后兼容）
 
     /// <summary>
     /// 注册企业微信 SDK 核心服务（使用委托配置选项，无 key 单实例）
     /// <para>
     /// 若 <see cref="WecomOptions.CallbackToken"/> 与 <see cref="WecomOptions.CallbackEncodingAesKey"/> 均非空，
-    /// 则自动注册 <see cref="ICallbackService"/>（URL 验证/消息解密/加密回复）。<br/>
-    /// 若需要群机器人（<see cref="IWebhookService"/>），请调用
+    /// 则自动注册 <see cref="CallbackService"/>（URL 验证/消息解密/加密回复）。<br/>
+    /// 若需要群机器人（<see cref="WebhookService"/>），请调用
     /// <c>AddWecomWebHookService</c>（位于 <c>WecomWebHookServiceCollectionExtensions</c>）。<br/>
-    /// 若需要智能机器人（<see cref="ISmartRobotService"/>/<see cref="ISmartRobotWsClient"/>），
+    /// 若需要智能机器人（<see cref="SmartRobotService"/>/<see cref="ISmartRobotWsClient"/>），
     /// 请调用 <c>AddWecomSmartBotService</c>（位于 <c>WecomSmartBotServiceCollectionExtensions</c>）。
     /// </para>
     /// </summary>
@@ -130,7 +130,7 @@ public static class WecomServiceCollectionExtensions
         if (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
             !string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
         {
-            services.TryAddSingleton<ICallbackService>(sp =>
+            services.TryAddSingleton<CallbackService>(sp =>
                 new CallbackService(
                     sp.GetRequiredService<WecomClient>().GetInternalHttpClient(),
                     options));
@@ -139,7 +139,8 @@ public static class WecomServiceCollectionExtensions
         return services;
     }
 
-    // ─── AddWecomService 带 key（多实例，Keyed Services） ────────────────
+    #endregion
+    #region AddWecomService 带 key（多实例，Keyed Services）
 
     /// <summary>
     /// 注册企业微信 SDK 核心服务（带 key，使用委托配置选项）
@@ -163,7 +164,7 @@ public static class WecomServiceCollectionExtensions
     /// <para>支持多次调用以注册不同 Agent / CorpSecret 实例，通过 <c>[FromKeyedServices("name")]</c> 注入。</para>
     /// <para>
     /// 若 <see cref="WecomOptions.CallbackToken"/> 与 <see cref="WecomOptions.CallbackEncodingAesKey"/> 均非空，
-    /// 则自动注册对应 key 的 <see cref="ICallbackService"/>。
+    /// 则自动注册对应 key 的 <see cref="CallbackService"/>。
     /// </para>
     /// </summary>
     public static IServiceCollection AddWecomService(
@@ -191,7 +192,7 @@ public static class WecomServiceCollectionExtensions
         if (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
             !string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
         {
-            services.TryAddKeyedSingleton<ICallbackService>(name, (sp, key) =>
+            services.TryAddKeyedSingleton<CallbackService>(name, (sp, key) =>
                 new CallbackService(
                     sp.GetRequiredKeyedService<WecomClient>(key).GetInternalHttpClient(),
                     options));
@@ -203,7 +204,8 @@ public static class WecomServiceCollectionExtensions
         return services;
     }
 
-    // ─── AddWecomService IConfiguration 绑定 ────────────────────────────
+    #endregion
+    #region AddWecomService IConfiguration 绑定
 
     /// <summary>
     /// 注册企业微信 SDK 核心服务（从 <see cref="IConfiguration"/> 绑定配置）
@@ -249,7 +251,8 @@ public static class WecomServiceCollectionExtensions
         return services.AddWecomService(name, options);
     }
 
-    // ─── 内部辅助 ──────────────────────────────────────────────────────
+    #endregion
+    #region 内部辅助
 
     /// <summary>
     /// 创建适合 Singleton 持有的长生命周期 HttpClient。
@@ -285,4 +288,5 @@ public static class WecomServiceCollectionExtensions
         if (string.IsNullOrWhiteSpace(options.CorpSecret))
             throw new ArgumentException("WecomOptions.CorpSecret 不能为空", nameof(options));
     }
+    #endregion
 }

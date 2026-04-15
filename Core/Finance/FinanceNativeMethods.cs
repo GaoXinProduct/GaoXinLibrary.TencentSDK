@@ -75,7 +75,7 @@ internal static class FinanceNativeMethods
     [DllImport(DllName, EntryPoint = "DestroySdk")]
     internal static extern void DestroySdk(nint sdk);
 
-    // ─── Slice（文本数据容器）───────────────────────────────────────────
+    #region Slice（文本数据容器）
 
     /// <summary>创建文本数据容器</summary>
     [DllImport(DllName, EntryPoint = "NewSlice")]
@@ -93,7 +93,8 @@ internal static class FinanceNativeMethods
     [DllImport(DllName, EntryPoint = "GetSliceLen")]
     internal static extern int GetSliceLen(nint slice);
 
-    // ─── MediaData（媒体数据容器）─────────────────────────────────────
+    #endregion
+    #region MediaData（媒体数据容器）
 
     /// <summary>创建媒体数据容器</summary>
     [DllImport(DllName, EntryPoint = "NewMediaData")]
@@ -122,4 +123,5 @@ internal static class FinanceNativeMethods
     /// <summary>判断媒体数据是否拉取完毕：0-已完成 非0-未完成</summary>
     [DllImport(DllName, EntryPoint = "IsMediaDataFinish")]
     internal static extern int IsMediaDataFinish(nint mediaData);
+    #endregion
 }

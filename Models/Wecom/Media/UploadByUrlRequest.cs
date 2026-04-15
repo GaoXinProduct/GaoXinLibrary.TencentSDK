@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Media;
 
-// ─── 异步上传临时素材（通过 URL） ─────────────────────────────────────────────
+#region 异步上传临时素材（通过 URL）
 
 /// <summary>异步上传临时素材（通过 URL）请求</summary>
 public class UploadByUrlRequest
@@ -24,3 +24,4 @@ public class UploadByUrlRequest
     [JsonPropertyName("md5")] public string Md5 { get; set; } = string.Empty;
 }
 
+#endregion

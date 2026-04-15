@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.QQConnect;
 
-// ─── 刷新 Access Token ──────────────────────────────────────────────────
+#region 刷新 Access Token
 
 /// <summary>
 /// 刷新 Access Token 响应
@@ -25,3 +25,4 @@ public class QQRefreshTokenResponse : QQBaseResponse
     [JsonPropertyName("refresh_token")] public string? RefreshToken { get; set; }
 }
 
+#endregion

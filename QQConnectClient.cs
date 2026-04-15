@@ -1,4 +1,4 @@
-using GaoXinLibrary.TencentSDK.Wechat.Core;
+﻿using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Services;
 
 namespace GaoXinLibrary.TencentSDK.Wechat;
@@ -23,7 +23,7 @@ public sealed class QQConnectClient : IDisposable
     private readonly bool _ownsHttpClient;
 
     /// <summary>QQ 登录服务</summary>
-    public IQQConnectService Login { get; }
+    public QQConnectService Login { get; }
 
     /// <summary>当前配置</summary>
     public QQConnectOptions Options { get; }

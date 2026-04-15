@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Webhook;
 
-// ─── 群机器人消息 ──────────────────────────────────────────────────────────
+#region 群机器人消息
 
 /// <summary>群机器人消息请求</summary>
 public class WebhookMessageRequest
@@ -17,3 +17,4 @@ public class WebhookMessageRequest
     [JsonPropertyName("template_card")] public WebhookTemplateCardContent? TemplateCard { get; set; }
 }
 
+#endregion

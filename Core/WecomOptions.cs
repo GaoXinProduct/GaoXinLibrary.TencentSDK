@@ -22,7 +22,7 @@ public class WecomOptions
     /// <summary>HTTP 请求超时时间，默认 30 秒</summary>
     public TimeSpan HttpTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
-    // ─── 接收消息回调配置 ───────────────────────────────────────────────
+    #region 接收消息回调配置
 
     /// <summary>接收消息回调的 Token（用于签名校验）</summary>
     public string? CallbackToken { get; set; }
@@ -30,7 +30,8 @@ public class WecomOptions
     /// <summary>接收消息回调的 EncodingAESKey（用于消息加解密，43 位字符）</summary>
     public string? CallbackEncodingAesKey { get; set; }
 
-    // ─── 会话内容存档配置 ───────────────────────────────────────────────
+    #endregion
+    #region 会话内容存档配置
 
     /// <summary>
     /// 会话内容存档密钥（非应用 CorpSecret）
@@ -70,7 +71,8 @@ public class WecomOptions
     /// </summary>
     public Func<string, CancellationToken, Task>? OnTokenChanged { get; set; }
 
-    // ─── 瞬态故障重试配置 ─────────────────────────────────────────────────────
+    #endregion
+    #region 瞬态故障重试配置
 
     /// <summary>
     /// 瞬态故障重试配置（网络抖动、连接超时、5xx 等临时性故障）
@@ -80,4 +82,5 @@ public class WecomOptions
     /// </para>
     /// </summary>
     public TencentRetryOptions? RetryOptions { get; set; } = new();
+    #endregion
 }

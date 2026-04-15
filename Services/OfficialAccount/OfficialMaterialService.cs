@@ -6,7 +6,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号素材管理服务实现</summary>
-public class OfficialMaterialService : IOfficialMaterialService
+public class OfficialMaterialService
 {
     private readonly WechatHttpClient _http;
 
@@ -15,22 +15,22 @@ public class OfficialMaterialService : IOfficialMaterialService
         _http = http;
     }
 
-    /// <inheritdoc/>
+    /// <summary>获取素材总数</summary>
     public Task<MaterialCountResponse> GetCountAsync(CancellationToken ct = default)
         => _http.GetAsync<MaterialCountResponse>("/cgi-bin/material/get_materialcount", ct: ct);
 
-    /// <inheritdoc/>
+    /// <summary>获取永久素材</summary>
     public Task<WechatBaseResponse> GetMaterialAsync(string mediaId, CancellationToken ct = default)
         => _http.PostAsync<WechatBaseResponse>("/cgi-bin/material/get_material", new GetMaterialRequest { MediaId = mediaId }, ct);
 
-    /// <inheritdoc/>
+    /// <summary>删除永久素材</summary>
     public Task<DeleteMaterialResponse> DeleteMaterialAsync(string mediaId, CancellationToken ct = default)
         => _http.PostAsync<DeleteMaterialResponse>("/cgi-bin/material/del_material", new DeleteMaterialRequest { MediaId = mediaId }, ct);
 
-    /// <inheritdoc/>
+    /// <summary>获取素材列表</summary>
     public Task<BatchGetMaterialResponse> BatchGetAsync(BatchGetMaterialRequest request, CancellationToken ct = default)
         => _http.PostAsync<BatchGetMaterialResponse>("/cgi-bin/material/batchget_material", request, ct);
-    /// <inheritdoc/>
+    /// <summary>上传临时素材（图片/语音/视频/缩略图）</summary>
     public async Task<UploadMediaResponse> UploadTempMaterialAsync(Stream fileStream, string fileName, string type, CancellationToken ct = default)
     {
         using var ms = new MemoryStream();
@@ -43,7 +43,7 @@ public class OfficialMaterialService : IOfficialMaterialService
             ct);
     }
 
-    /// <inheritdoc/>
+    /// <summary>上传临时素材（图片/语音/视频/缩略图）</summary>
     public async Task<UploadMediaResponse> UploadTempMaterialAsync(ReadOnlyMemory<byte> fileBytes, string fileName, string type, CancellationToken ct = default)
     {
         using var form = BuildMediaForm(fileName, fileBytes);
@@ -54,15 +54,15 @@ public class OfficialMaterialService : IOfficialMaterialService
             ct);
     }
 
-    /// <inheritdoc/>
+    /// <summary>下载临时素材字节流</summary>
     public Task<byte[]> DownloadTempMaterialBytesAsync(string mediaId, CancellationToken ct = default)
         => _http.GetForBytesAsync("/cgi-bin/media/get", new Dictionary<string, string?> { ["media_id"] = mediaId }, ct);
 
-    /// <inheritdoc/>
+    /// <summary>下载临时素材（ReadOnlyMemory 版本）</summary>
     public async Task<ReadOnlyMemory<byte>> DownloadTempMaterialReadOnlyAsync(string mediaId, CancellationToken ct = default)
         => await _http.GetForBytesAsync("/cgi-bin/media/get", new Dictionary<string, string?> { ["media_id"] = mediaId }, ct);
 
-    /// <inheritdoc/>
+    /// <summary>新增永久素材（图片/语音/视频/缩略图）</summary>
     public async Task<AddMaterialResponse> AddPermanentMaterialAsync(Stream fileStream, string fileName, string type, CancellationToken ct = default)
     {
         using var ms = new MemoryStream();
@@ -75,7 +75,7 @@ public class OfficialMaterialService : IOfficialMaterialService
             ct);
     }
 
-    /// <inheritdoc/>
+    /// <summary>新增永久素材（图片/语音/视频/缩略图）</summary>
     public async Task<AddMaterialResponse> AddPermanentMaterialAsync(ReadOnlyMemory<byte> fileBytes, string fileName, string type, CancellationToken ct = default)
     {
         using var form = BuildMediaForm(fileName, fileBytes);
@@ -123,7 +123,3 @@ public class OfficialMaterialService : IOfficialMaterialService
             _                 => "application/octet-stream"
         };
 }
-
-// ═══════════════════════════════════════════════════════════════════════════
-//  公众号 JS-SDK 服务
-

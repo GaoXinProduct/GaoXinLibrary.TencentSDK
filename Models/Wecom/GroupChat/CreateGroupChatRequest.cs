@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.GroupChat;
 
-// ─── 请求模型 ──────────────────────────────────────────────────────────────
+#region 请求模型
 
 /// <summary>创建群聊会话请求</summary>
 public class CreateGroupChatRequest
@@ -22,3 +22,4 @@ public class CreateGroupChatRequest
     [JsonPropertyName("chatid")] public string? ChatId { get; set; }
 }
 
+#endregion

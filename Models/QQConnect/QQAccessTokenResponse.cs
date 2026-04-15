@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.QQConnect;
 
-// ─── 获取 Access Token ──────────────────────────────────────────────────
+#region 获取 Access Token
 
 /// <summary>
 /// 使用 Authorization Code 获取 Access Token 响应
@@ -28,3 +28,4 @@ public class QQAccessTokenResponse : QQBaseResponse
     [JsonPropertyName("openid")] public string? OpenId { get; set; }
 }
 
+#endregion

@@ -1,4 +1,4 @@
-using GaoXinLibrary.TencentSDK.Wechat.Core;
+﻿using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Services;
 using Microsoft.Extensions.Logging;
 
@@ -24,7 +24,7 @@ public sealed class WechatOpenClient : IDisposable
     private readonly bool _ownsHttpClient;
 
     /// <summary>网站应用微信登录</summary>
-    public IOpenPlatformService WebLogin { get; }
+    public OpenPlatformService WebLogin { get; }
 
     /// <summary>当前配置</summary>
     public WechatOpenOptions Options { get; }

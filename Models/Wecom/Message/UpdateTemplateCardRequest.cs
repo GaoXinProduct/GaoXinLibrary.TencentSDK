@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
-// ─── 更新模版卡片消息 ─────────────────────────────────────────────────────
+#region 更新模版卡片消息
 
 /// <summary>更新模版卡片消息请求</summary>
 public class UpdateTemplateCardRequest
@@ -33,3 +33,4 @@ public class UpdateTemplateCardRequest
     [JsonPropertyName("is_replace")] public int IsReplace { get; set; }
 }
 
+#endregion

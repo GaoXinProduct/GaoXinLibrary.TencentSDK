@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号模板消息服务实现</summary>
-public class OfficialTemplateMessageService : IOfficialTemplateMessageService
+public class OfficialTemplateMessageService
 {
     private readonly WechatHttpClient _http;
 
@@ -16,11 +16,11 @@ public class OfficialTemplateMessageService : IOfficialTemplateMessageService
         _http = http;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 发送模板消息
+    /// </summary>
+    /// <param name="request">模板消息请求</param>
+    /// <param name="ct">取消令牌</param>
     public Task<SendTemplateMessageResponse> SendAsync(SendTemplateMessageRequest request, CancellationToken ct = default)
         => _http.PostAsync<SendTemplateMessageResponse>("/cgi-bin/message/template/send", request, ct);
 }
-
-// ═══════════════════════════════════════════════════════════════════════════
-//  公众号用户管理服务
-

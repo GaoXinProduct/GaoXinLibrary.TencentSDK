@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.QQConnect;
 
-// ─── 获取用户 OpenID ────────────────────────────────────────────────────
+#region 获取用户 OpenID
 
 /// <summary>
 /// 获取用户 OpenID 响应
@@ -22,3 +22,4 @@ public class QQOpenIdResponse : QQBaseResponse
     [JsonPropertyName("unionid")] public string? UnionId { get; set; }
 }
 
+#endregion

@@ -34,130 +34,131 @@ public sealed class WecomClient : IDisposable
     private readonly WecomTicketProvider _jsApiTicketProvider;
     private readonly WecomTicketProvider _agentTicketProvider;
 
-    // ─── 子服务 ──────────────────────────────────────────────────────────────
+    #region 子服务
 
     /// <summary>成员管理</summary>
-    public IUserService User { get; }
+    public UserService User { get; }
 
     /// <summary>部门管理</summary>
-    public IDepartmentService Department { get; }
+    public DepartmentService Department { get; }
 
     /// <summary>标签管理</summary>
-    public ITagService Tag { get; }
+    public TagService Tag { get; }
 
     /// <summary>应用消息发送</summary>
-    public IMessageService Message { get; }
+    public MessageService Message { get; }
 
     /// <summary>应用管理（查询/配置自建应用及自定义菜单）</summary>
-    public IAgentService Agent { get; }
+    public AgentService Agent { get; }
 
     /// <summary>素材管理</summary>
-    public IMediaService Media { get; }
+    public MediaService Media { get; }
 
     /// <summary>应用群聊会话管理</summary>
-    public IGroupChatService GroupChat { get; }
+    public GroupChatService GroupChat { get; }
 
     /// <summary>自定义菜单管理</summary>
     /// <remarks>与 <see cref="Agent"/> 共用同一 <c>AgentService</c> 实例。</remarks>
-    public IMenuService Menu { get; }
+    public AgentService Menu { get; }
 
     /// <summary>网页授权登录（OAuth2）</summary>
-    public IOAuthService OAuth { get; }
+    public OAuthService OAuth { get; }
 
     /// <summary>企业互联</summary>
-    public ICorpGroupService CorpGroup { get; }
+    public CorpGroupService CorpGroup { get; }
 
     /// <summary>上下游/互联企业</summary>
-    public ILinkedCorpService LinkedCorp { get; }
+    public LinkedCorpService LinkedCorp { get; }
 
     /// <summary>微信客服</summary>
-    public IKfService Kf { get; }
+    public KfService Kf { get; }
 
     /// <summary>会话内容存档</summary>
-    public IMsgAuditService MsgAudit { get; }
+    public MsgAuditService MsgAudit { get; }
 
     /// <summary>企业微信 H5 / JS-SDK</summary>
-    public IJsSdkService JsSdk { get; }
+    public JsSdkService JsSdk { get; }
 
     /// <summary>打卡</summary>
-    public ICheckinService Checkin { get; }
+    public CheckinService Checkin { get; }
 
     /// <summary>审批</summary>
-    public IApprovalService Approval { get; }
+    public ApprovalService Approval { get; }
 
     /// <summary>异步导出</summary>
-    public IExportService Export { get; }
+    public ExportService Export { get; }
 
     /// <summary>异步导入</summary>
-    public IAsyncImportService AsyncImport { get; }
+    public AsyncImportService AsyncImport { get; }
 
     /// <summary>二次验证</summary>
-    public ISecondVerifyService SecondVerify { get; }
+    public SecondVerifyService SecondVerify { get; }
 
     /// <summary>安全管理</summary>
-    public ISecurityService Security { get; }
+    public SecurityService Security { get; }
 
     /// <summary>高级功能账号管理</summary>
-    public IAdvancedAccountService AdvancedAccount { get; }
+    public AdvancedAccountService AdvancedAccount { get; }
 
     /// <summary>操作日志</summary>
-    public IOperationLogService OperationLog { get; }
+    public OperationLogService OperationLog { get; }
 
     /// <summary>账号ID管理</summary>
-    public IAccountIdService AccountId { get; }
+    public AccountIdService AccountId { get; }
 
     /// <summary>IP段查询</summary>
-    public IIpRangeService IpRange { get; }
+    public IpRangeService IpRange { get; }
 
     /// <summary>客户联系</summary>
-    public IExternalContactService ExternalContact { get; }
+    public ExternalContactService ExternalContact { get; }
 
     /// <summary>企业支付</summary>
-    public ICorpPayService CorpPay { get; }
+    public CorpPayService CorpPay { get; }
 
     /// <summary>邮件</summary>
-    public IEmailService Email { get; }
+    public EmailService Email { get; }
 
     /// <summary>文档</summary>
-    public IDocumentService Document { get; }
+    public DocumentService Document { get; }
 
     /// <summary>日程</summary>
-    public ICalendarService Calendar { get; }
+    public CalendarService Calendar { get; }
 
     /// <summary>会议</summary>
-    public IMeetingService Meeting { get; }
+    public MeetingService Meeting { get; }
 
     /// <summary>微盘</summary>
-    public IWedriveService Wedrive { get; }
+    public WedriveService Wedrive { get; }
 
     /// <summary>直播</summary>
-    public ILivingService Living { get; }
+    public LivingService Living { get; }
 
     /// <summary>公费电话</summary>
-    public IDialService Dial { get; }
+    public DialService Dial { get; }
 
     /// <summary>汇报</summary>
-    public IReportService Report { get; }
+    public ReportService Report { get; }
 
     /// <summary>人事助手</summary>
-    public IHrService Hr { get; }
+    public HrService Hr { get; }
 
     /// <summary>会议室</summary>
-    public IMeetingRoomService MeetingRoom { get; }
+    public MeetingRoomService MeetingRoom { get; }
 
     /// <summary>电子发票</summary>
-    public IInvoiceService Invoice { get; }
+    public InvoiceService Invoice { get; }
 
     /// <summary>智能表格</summary>
-    public ISmartSheetService SmartSheet { get; }
+    public SmartSheetService SmartSheet { get; }
 
     /// <summary>收集表</summary>
-    public ICollectFormService CollectForm { get; }
+    public CollectFormService CollectForm { get; }
 
     /// <summary>当前配置</summary>
     public WecomOptions Options { get; }
 
-    // ─── 构造 ─────────────────────────────────────────────────────────────────
+    #endregion
+    #region 构造
 
     private WecomClient(WecomOptions options, HttpClient httpClient, bool ownsHttpClient, ILogger? logger = null)
     {
@@ -225,7 +226,7 @@ public sealed class WecomClient : IDisposable
         SmartSheet = new SmartSheetService(_http);
         CollectForm = new CollectFormService(_http);
 
-        // ─── 备服务器模式：挂载载荷接收回调，分发 Ticket 并回写 Options ──────────
+        #region 备服务器模式：挂载载荷接收回调，分发 Ticket 并回写 Options
         if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
         {
             _tokenProvider.OnSecretPayloadReceived = (payload, ct) =>
@@ -251,6 +252,7 @@ public sealed class WecomClient : IDisposable
                 return Task.CompletedTask;
             };
         }
+        #endregion
     }
 
     /// <summary>
@@ -336,7 +338,8 @@ public sealed class WecomClient : IDisposable
     public Task<string> GetAccessTokenAsync(CancellationToken ct = default)
         => _tokenProvider.GetTokenAsync(ct);
 
-    // ─── 企业级 jsapi_ticket 管理 ──────────────────────────────────────────
+    #endregion
+    #region 企业级 jsapi_ticket 管理
 
     /// <summary>使企业级 jsapi_ticket 缓存失效</summary>
     public void InvalidateJsApiTicketCache() => _jsApiTicketProvider.InvalidateCache();
@@ -357,7 +360,8 @@ public sealed class WecomClient : IDisposable
     public Task<string> GetJsApiTicketAsync(CancellationToken ct = default)
         => _jsApiTicketProvider.GetTicketAsync(ct);
 
-    // ─── 应用级 jsapi_ticket 管理 ──────────────────────────────────────────
+    #endregion
+    #region 应用级 jsapi_ticket 管理
 
     /// <summary>使应用级 jsapi_ticket 缓存失效</summary>
     public void InvalidateAgentTicketCache() => _agentTicketProvider.InvalidateCache();
@@ -378,7 +382,8 @@ public sealed class WecomClient : IDisposable
     public Task<string> GetAgentTicketAsync(CancellationToken ct = default)
         => _agentTicketProvider.GetTicketAsync(ct);
 
-    // ─── 统一共享密钥（主服务器调用） ─────────────────────────────────────────
+    #endregion
+    #region 统一共享密钥（主服务器调用）
 
     /// <summary>
     /// 获取统一共享密钥载荷（主服务器调用）
@@ -426,7 +431,7 @@ public sealed class WecomClient : IDisposable
     }
 
     /// <summary>
-    /// 释放托管资源（<see cref="IMsgAuditService"/> 及内部 <see cref="HttpClient"/>）。
+    /// 释放托管资源（<see cref="MsgAuditService"/> 及内部 <see cref="HttpClient"/>）。
     /// </summary>
     public void Dispose()
     {
@@ -434,4 +439,5 @@ public sealed class WecomClient : IDisposable
         if (_ownsHttpClient)
             _httpClient.Dispose();
     }
+    #endregion
 }

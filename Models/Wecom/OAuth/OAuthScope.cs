@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.OAuth;
 
-// ─── 授权范围 ──────────────────────────────────────────────────────────────
+#region 授权范围
 
 /// <summary>
 /// 网页授权作用域
@@ -23,3 +23,4 @@ public static class OAuthScope
     public const string PrivateInfo = "snsapi_privateinfo";
 }
 
+#endregion

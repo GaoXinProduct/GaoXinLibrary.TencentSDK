@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号用户管理服务实现</summary>
-public class OfficialUserService : IOfficialUserService
+public class OfficialUserService
 {
     private readonly WechatHttpClient _http;
 
@@ -16,16 +16,29 @@ public class OfficialUserService : IOfficialUserService
         _http = http;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 获取用户基本信息（包括 UnionID 机制）
+    /// </summary>
+    /// <param name="openId">用户 OpenId</param>
+    /// <param name="lang">语言（zh_CN/zh_TW/en），默认 zh_CN</param>
+    /// <param name="ct">取消令牌</param>
     public Task<UserInfoResponse> GetInfoAsync(string openId, string lang = "zh_CN", CancellationToken ct = default)
         => _http.GetAsync<UserInfoResponse>("/cgi-bin/user/info",
             new Dictionary<string, string?> { ["openid"] = openId, ["lang"] = lang }, ct);
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 批量获取用户基本信息
+    /// </summary>
+    /// <param name="request">批量请求参数</param>
+    /// <param name="ct">取消令牌</param>
     public Task<BatchGetUserInfoResponse> BatchGetInfoAsync(BatchGetUserInfoRequest request, CancellationToken ct = default)
         => _http.PostAsync<BatchGetUserInfoResponse>("/cgi-bin/user/info/batchget", request, ct);
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 获取用户列表
+    /// </summary>
+    /// <param name="nextOpenId">第一个拉取的 OpenId（不传则从头开始）</param>
+    /// <param name="ct">取消令牌</param>
     public Task<UserListResponse> GetListAsync(string? nextOpenId = null, CancellationToken ct = default)
     {
         var queryParams = new Dictionary<string, string?>();
@@ -34,7 +47,15 @@ public class OfficialUserService : IOfficialUserService
         return _http.GetAsync<UserListResponse>("/cgi-bin/user/get", queryParams, ct);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 获取全部用户 OpenId 列表（自动分页拉取）
+    /// <para>
+    /// 自动循环调用 <see cref="GetListAsync"/>，直到获取全部关注用户。
+    /// 每次最多拉取 10000 个，适用于关注用户较多的公众号。
+    /// </para>
+    /// </summary>
+    /// <param name="ct">取消令牌</param>
+    /// <returns>所有关注用户的 OpenId 列表</returns>
     public async Task<List<string>> GetAllOpenIdsAsync(CancellationToken ct = default)
     {
         var allOpenIds = new List<string>();
@@ -56,28 +77,45 @@ public class OfficialUserService : IOfficialUserService
         return allOpenIds;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 设置用户备注名
+    /// </summary>
+    /// <param name="openId">用户 OpenId</param>
+    /// <param name="remark">新的备注名</param>
+    /// <param name="ct">取消令牌</param>
     public Task<UpdateRemarkResponse> UpdateRemarkAsync(string openId, string remark, CancellationToken ct = default)
         => _http.PostAsync<UpdateRemarkResponse>("/cgi-bin/user/info/updateremark",
             new UpdateRemarkRequest { OpenId = openId, Remark = remark }, ct);
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 拉黑用户
+    /// </summary>
+    /// <param name="request">拉黑请求参数</param>
+    /// <param name="ct">取消令牌</param>
     public Task<WechatBaseResponse> BatchBlacklistAsync(BatchBlacklistRequest request, CancellationToken ct = default)
         => _http.PostAsync<WechatBaseResponse>("/cgi-bin/tags/members/batchblacklist", request, ct);
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 取消拉黑用户
+    /// </summary>
+    /// <param name="request">取消拉黑请求参数</param>
+    /// <param name="ct">取消令牌</param>
     public Task<WechatBaseResponse> BatchUnblacklistAsync(BatchBlacklistRequest request, CancellationToken ct = default)
         => _http.PostAsync<WechatBaseResponse>("/cgi-bin/tags/members/batchunblacklist", request, ct);
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 获取公众号黑名单列表
+    /// </summary>
+    /// <param name="request">黑名单分页请求参数</param>
+    /// <param name="ct">取消令牌</param>
     public Task<UserListResponse> GetBlacklistAsync(GetBlacklistRequest request, CancellationToken ct = default)
         => _http.PostAsync<UserListResponse>("/cgi-bin/tags/members/getblacklist", request, ct);
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 迁移场景下转换 OpenId
+    /// </summary>
+    /// <param name="request">转换请求参数</param>
+    /// <param name="ct">取消令牌</param>
     public Task<ChangeOpenIdResponse> ChangeOpenIdAsync(ChangeOpenIdRequest request, CancellationToken ct = default)
         => _http.PostAsync<ChangeOpenIdResponse>("/cgi-bin/changeopenid", request, ct);
 }
-
-// ═══════════════════════════════════════════════════════════════════════════
-//  公众号素材管理服务
-

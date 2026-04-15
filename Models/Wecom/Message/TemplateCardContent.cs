@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
-// ─── 模版卡片消息（发送） ──────────────────────────────────────────────────
+#region 模版卡片消息（发送）
 
 /// <summary>
 /// 模版卡片消息内容
@@ -77,3 +77,4 @@ public class TemplateCardContent
     [JsonPropertyName("select_list")] public TemplateCardSelect[]? SelectList { get; set; }
 }
 
+#endregion

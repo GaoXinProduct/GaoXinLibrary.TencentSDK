@@ -1,0 +1,54 @@
+﻿using GaoXinLibrary.TencentSDK.Wecom.Core;
+using GaoXinLibrary.TencentSDK.Wecom.Models.Wedrive;
+
+namespace GaoXinLibrary.TencentSDK.Wecom.Services;
+
+/// <summary>微盘服务实现</summary>
+public class WedriveService
+{
+    private readonly WecomHttpClient _http;
+
+    public WedriveService(WecomHttpClient http) => _http = http;
+
+    /// <summary>新建空间</summary>
+    public async Task<string?> CreateSpaceAsync(CreateSpaceRequest request, CancellationToken ct = default)
+    {
+        var resp = await _http.PostAsync<CreateSpaceResponse>("/cgi-bin/wedrive/space_create", request, ct);
+        return resp.SpaceId;
+    }
+
+    /// <summary>重命名空间</summary>
+    public async Task RenameSpaceAsync(RenameSpaceRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/wedrive/space_rename", request, ct);
+
+    /// <summary>解散空间</summary>
+    public async Task DismissSpaceAsync(SpaceIdRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/wedrive/space_dismiss", request, ct);
+
+    /// <summary>获取空间信息</summary>
+    public async Task<SpaceInfo?> GetSpaceInfoAsync(SpaceIdRequest request, CancellationToken ct = default)
+    {
+        var resp = await _http.PostAsync<GetSpaceInfoResponse>("/cgi-bin/wedrive/space_info", request, ct);
+        return resp.SpaceInfo;
+    }
+
+    /// <summary>获取文件列表</summary>
+    public async Task<GetFileListResponse> GetFileListAsync(GetFileListRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetFileListResponse>("/cgi-bin/wedrive/file_list", request, ct);
+
+    /// <summary>新建文件夹/文档</summary>
+    public async Task<CreateFileResponse> CreateFileAsync(CreateFileRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<CreateFileResponse>("/cgi-bin/wedrive/file_create", request, ct);
+
+    /// <summary>重命名文件</summary>
+    public async Task RenameFileAsync(RenameFileRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/wedrive/file_rename", request, ct);
+
+    /// <summary>删除文件</summary>
+    public async Task DeleteFileAsync(DeleteFileRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/wedrive/file_delete", request, ct);
+
+    /// <summary>移动文件</summary>
+    public async Task MoveFileAsync(MoveFileRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/wedrive/file_move", request, ct);
+}

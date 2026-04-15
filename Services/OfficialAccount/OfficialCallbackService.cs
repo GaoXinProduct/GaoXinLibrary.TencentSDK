@@ -1,4 +1,4 @@
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号消息回调服务实现</summary>
-public class OfficialCallbackService : IOfficialCallbackService
+public class OfficialCallbackService
 {
     private readonly WechatCryptoHelper? _crypto;
     private readonly WechatHttpClient _http;
@@ -25,7 +25,18 @@ public class OfficialCallbackService : IOfficialCallbackService
         }
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 验证回调 URL（GET 请求）— 明文模式
+    /// <para>
+    /// 微信在配置 URL 时会发送 GET 请求进行验证。<br/>
+    /// 开发者通过校验 signature 验证请求来自微信服务器，并原样返回 echostr。
+    /// </para>
+    /// </summary>
+    /// <param name="signature">URL 参数 signature</param>
+    /// <param name="timestamp">URL 参数 timestamp</param>
+    /// <param name="nonce">URL 参数 nonce</param>
+    /// <param name="echoStr">URL 参数 echostr</param>
+    /// <returns>验证通过时返回 echostr（应直接写入 HTTP 响应）</returns>
     public string VerifyUrl(string signature, string timestamp, string nonce, string echoStr)
     {
         if (string.IsNullOrWhiteSpace(_token))
@@ -44,20 +55,41 @@ public class OfficialCallbackService : IOfficialCallbackService
         return echoStr;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 验证回调 URL（GET 请求）— 安全模式/兼容模式
+    /// <para>
+    /// 安全模式下使用 msg_signature 和加密的 echostr 进行验证。
+    /// </para>
+    /// </summary>
+    /// <param name="msgSignature">URL 参数 msg_signature</param>
+    /// <param name="timestamp">URL 参数 timestamp</param>
+    /// <param name="nonce">URL 参数 nonce</param>
+    /// <param name="echoStr">URL 参数 echostr（加密字符串）</param>
+    /// <returns>解密后的 echostr 明文</returns>
     public string VerifyUrlEncrypted(string msgSignature, string timestamp, string nonce, string echoStr)
     {
         EnsureCryptoConfigured();
         return _crypto!.VerifyUrl(msgSignature, timestamp, nonce, echoStr);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 解析明文模式下的回调消息
+    /// </summary>
+    /// <param name="postBody">POST 请求体 XML 字符串（明文）</param>
+    /// <returns>解析后的消息/事件对象</returns>
     public OfficialCallbackMessageBase ParseMessage(string postBody)
     {
         return OfficialCallbackMessageBase.FromXml(postBody);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 解密并解析安全模式/兼容模式下的回调消息
+    /// </summary>
+    /// <param name="msgSignature">URL 参数 msg_signature</param>
+    /// <param name="timestamp">URL 参数 timestamp</param>
+    /// <param name="nonce">URL 参数 nonce</param>
+    /// <param name="postBody">POST 请求体 XML 字符串（加密信封）</param>
+    /// <returns>解析后的消息/事件对象</returns>
     public OfficialCallbackMessageBase DecryptAndParse(string msgSignature, string timestamp, string nonce, string postBody)
     {
         EnsureCryptoConfigured();
@@ -65,7 +97,14 @@ public class OfficialCallbackService : IOfficialCallbackService
         return OfficialCallbackMessageBase.FromXml(decryptedXml);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 加密被动回复消息（安全模式/兼容模式）
+    /// <para>将回复消息的 XML 明文加密并生成完整的回复 XML 信封。</para>
+    /// </summary>
+    /// <param name="replyXml">回复消息的 XML 明文（通过 <see cref="OfficialCallbackReplyBuilder"/> 构建）</param>
+    /// <param name="timestamp">时间戳（可使用当前时间戳）</param>
+    /// <param name="nonce">随机字符串</param>
+    /// <returns>加密后的完整回复 XML（直接写入 HTTP 响应）</returns>
     public string EncryptReply(string replyXml, string? timestamp = null, string? nonce = null)
     {
         EnsureCryptoConfigured();
@@ -74,7 +113,12 @@ public class OfficialCallbackService : IOfficialCallbackService
         return _crypto!.EncryptReply(replyXml, timestamp, nonce);
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// 获取微信服务器 IP 地址列表
+    /// <para>可用于校验回调请求是否来自微信服务器。</para>
+    /// </summary>
+    /// <param name="ct">取消令牌</param>
+    /// <returns>IP 地址列表</returns>
     public async Task<string[]> GetCallbackIpAsync(CancellationToken ct = default)
     {
         var response = await _http.GetAsync<GetCallbackIpResponse>("/cgi-bin/getcallbackip", ct: ct);

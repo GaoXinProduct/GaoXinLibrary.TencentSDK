@@ -41,7 +41,7 @@ public abstract class TencentCryptoHelper
     /// <param name="message">异常消息</param>
     protected static TencentException CreateException(string message) => new(message);
 
-    // ─── 签名校验 ───────────────────────────────────────────────────────
+    #region 签名校验
 
     /// <summary>
     /// 校验消息签名
@@ -75,7 +75,8 @@ public abstract class TencentCryptoHelper
         return HexHelper.ToLowerHex(hash);
     }
 
-    // ─── 解密 ──────────────────────────────────────────────────────────
+    #endregion
+    #region 解密
 
     /// <summary>
     /// 解密回调消息
@@ -118,7 +119,8 @@ public abstract class TencentCryptoHelper
         return Encoding.UTF8.GetString(msgSpan);
     }
 
-    // ─── 加密 ──────────────────────────────────────────────────────────
+    #endregion
+    #region 加密
 
     /// <summary>
     /// 加密被动回复消息
@@ -157,7 +159,8 @@ public abstract class TencentCryptoHelper
         return Convert.ToBase64String(encrypted);
     }
 
-    // ─── 辅助方法 ──────────────────────────────────────────────────────
+    #endregion
+    #region 辅助方法
 
     /// <summary>
     /// 验证 URL 回调（GET 请求）：校验签名并解密返回 echostr 明文
@@ -216,4 +219,5 @@ public abstract class TencentCryptoHelper
             </xml>
             """;
     }
+    #endregion
 }

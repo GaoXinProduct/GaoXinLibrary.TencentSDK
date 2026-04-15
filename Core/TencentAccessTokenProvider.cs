@@ -19,7 +19,7 @@ public abstract class TencentAccessTokenProvider
     private DateTimeOffset _expireAt = DateTimeOffset.MinValue;
     private readonly SemaphoreSlim _lock = new(1, 1);
 
-    // ─── 统一共享密钥（备服务器模式） ────────────────────────────────────────
+    #region 统一共享密钥（备服务器模式）
     private string? _secretShareUrl;
     private byte[]? _secretShareKey;
 
@@ -92,7 +92,8 @@ public abstract class TencentAccessTokenProvider
         }
     }
 
-    // ─── 从腾讯 API 直接获取（主服务器模式） ──────────────────────────────────
+    #endregion
+    #region 从腾讯 API 直接获取（主服务器模式）
 
     private async Task<string> FetchFromTencentApiAsync(CancellationToken ct)
     {
@@ -116,7 +117,8 @@ public abstract class TencentAccessTokenProvider
         return _cachedToken;
     }
 
-    // ─── 从主服务器拉取加密载荷（备服务器模式） ───────────────────────────────
+    #endregion
+    #region 从主服务器拉取加密载荷（备服务器模式）
 
     private async Task<string> FetchFromSharedSecretAsync(CancellationToken ct)
     {
@@ -197,7 +199,8 @@ public abstract class TencentAccessTokenProvider
         _expireAt = DateTimeOffset.UtcNow.AddSeconds(seconds - 60);
     }
 
-    // ─── 私有响应模型 ─────────────────────────────────────────────────────────
+    #endregion
+    #region 私有响应模型
 
     private sealed class AccessTokenResponse
     {
@@ -211,4 +214,5 @@ public abstract class TencentAccessTokenProvider
     {
         [JsonPropertyName("data")] public string? Data { get; set; }
     }
+    #endregion
 }

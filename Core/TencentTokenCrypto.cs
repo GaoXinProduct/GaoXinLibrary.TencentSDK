@@ -47,7 +47,7 @@ public static class TencentTokenCrypto
         return DecryptWithKey(encrypted, DeriveKey(shareSecret));
     }
 
-    // ─── 内部方法（供 TencentAccessTokenProvider 直接使用派生好的 key 字节） ──────
+    #region 内部方法（供 TencentAccessTokenProvider 直接使用派生好的 key 字节）
 
     internal static byte[] DeriveKey(string shareSecret)
         => SHA256.HashData(Encoding.UTF8.GetBytes(shareSecret));
@@ -147,4 +147,5 @@ public static class TencentTokenCrypto
 
         return Encoding.UTF8.GetString(plaintext);
     }
+    #endregion
 }

@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Menu;
 
-// ─── 菜单按钮 ──────────────────────────────────────────────────────────────
+#region 菜单按钮
 
 /// <summary>自定义菜单按钮</summary>
 public class MenuButton
@@ -35,3 +35,4 @@ public class MenuButton
     [JsonPropertyName("sub_button")] public MenuButton[]? SubButton { get; set; }
 }
 
+#endregion

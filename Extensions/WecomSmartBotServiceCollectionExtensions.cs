@@ -23,7 +23,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Extensions;
 ///     options.BotSecret              = "your_bot_secret";     // 可选，启用长连接
 /// });
 /// // 注入：
-/// public class MyService(ISmartRobotService robot) { ... }
+/// public class MyService(SmartRobotService robot) { ... }
 /// public class BotService(ISmartRobotWsClient wsClient) { ... }  // 仅当 BotId+BotSecret 均配置时可注入
 /// </code>
 ///
@@ -33,22 +33,22 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Extensions;
 /// builder.Services.AddWecomSmartBotService("bot2", opt => { opt.BotId = "id2"; opt.BotSecret = "sec2"; ... });
 /// // 注入：
 /// public class MyService(
-///     [FromKeyedServices("bot1")] ISmartRobotService robot1,
-///     [FromKeyedServices("bot2")] ISmartRobotService robot2) { ... }
+///     [FromKeyedServices("bot1")] SmartRobotService robot1,
+///     [FromKeyedServices("bot2")] SmartRobotService robot2) { ... }
 /// </code>
 /// </para>
 /// <para>
 /// 注意：本方法内部会幂等地调用 <see cref="WecomServiceCollectionExtensions.AddWecomService(Microsoft.Extensions.DependencyInjection.IServiceCollection,WecomOptions)"/>，
 /// 无需提前手动调用 <c>AddWecomService</c>。
 /// <list type="bullet">
-///   <item><see cref="ISmartRobotService"/>（API 模式）始终注册。</item>
+///   <item><see cref="SmartRobotService"/>（API 模式）始终注册。</item>
 ///   <item><see cref="ISmartRobotWsClient"/>（WebSocket 长连接）仅当 <see cref="WecomSmartBotOptions.BotId"/> 与 <see cref="WecomSmartBotOptions.BotSecret"/> 均非空时注册。</item>
 /// </list>
 /// </para>
 /// </summary>
 public static class WecomSmartBotServiceCollectionExtensions
 {
-    // ─── AddWecomSmartBotService 无 key（单实例） ──────────────────────────
+    #region AddWecomSmartBotService 无 key（单实例）
 
     /// <summary>
     /// 注册企业微信智能机器人服务（使用委托配置选项，无 key 单实例）
@@ -80,7 +80,7 @@ public static class WecomSmartBotServiceCollectionExtensions
         services.TryAddSingleton(options);
 
         // 智能机器人 API 模式（始终注册）
-        services.TryAddSingleton<ISmartRobotService>(sp =>
+        services.TryAddSingleton<SmartRobotService>(sp =>
             new SmartRobotService(
                 sp.GetRequiredService<WecomClient>().GetInternalHttpClient(),
                 ToWecomOptions(options)));
@@ -94,7 +94,8 @@ public static class WecomSmartBotServiceCollectionExtensions
         return services;
     }
 
-    // ─── AddWecomSmartBotService 带 key（多实例，Keyed Services） ──────────
+    #endregion
+    #region AddWecomSmartBotService 带 key（多实例，Keyed Services）
 
     /// <summary>
     /// 注册企业微信智能机器人服务（带 key，使用委托配置选项）
@@ -132,7 +133,7 @@ public static class WecomSmartBotServiceCollectionExtensions
         services.AddKeyedSingleton(name, options);
 
         // 智能机器人 API 模式（始终注册，Keyed）
-        services.AddKeyedSingleton<ISmartRobotService>(name, (sp, key) =>
+        services.AddKeyedSingleton<SmartRobotService>(name, (sp, key) =>
             new SmartRobotService(
                 sp.GetRequiredKeyedService<WecomClient>(key).GetInternalHttpClient(),
                 ToWecomOptions(options)));
@@ -149,7 +150,8 @@ public static class WecomSmartBotServiceCollectionExtensions
         return services;
     }
 
-    // ─── AddWecomSmartBotService IConfiguration 绑定 ──────────────────────
+    #endregion
+    #region AddWecomSmartBotService IConfiguration 绑定
 
     /// <summary>
     /// 注册企业微信智能机器人服务（从 <see cref="IConfiguration"/> 绑定配置）
@@ -209,4 +211,5 @@ public static class WecomSmartBotServiceCollectionExtensions
         CallbackToken          = o.CallbackToken,
         CallbackEncodingAesKey = o.CallbackEncodingAesKey,
     };
+    #endregion
 }

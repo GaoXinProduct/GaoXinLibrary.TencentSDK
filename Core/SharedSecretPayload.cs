@@ -33,7 +33,7 @@ public sealed class SharedSecretPayload
     [JsonPropertyName("ticket_expires_in")]
     public int TicketExpiresIn { get; set; }
 
-    // ─── 微信专属 ────────────────────────────────────────────────────────────
+    #region 微信专属
 
     /// <summary>应用 ID（微信 AppId）；备服务器可凭此回写 Options</summary>
     [JsonPropertyName("app_id")]
@@ -43,7 +43,8 @@ public sealed class SharedSecretPayload
     [JsonPropertyName("app_secret")]
     public string? AppSecret { get; set; }
 
-    // ─── 企业微信专属 ─────────────────────────────────────────────────────────
+    #endregion
+    #region 企业微信专属
 
     /// <summary>企业 ID（CorpId）；备服务器可凭此回写 Options</summary>
     [JsonPropertyName("corp_id")]
@@ -85,4 +86,5 @@ public sealed class SharedSecretPayload
         public override void Write(Utf8JsonWriter writer, int value, JsonSerializerOptions options)
             => writer.WriteNumberValue(value);
     }
+    #endregion
 }

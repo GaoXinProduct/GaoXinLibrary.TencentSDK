@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Menu;
 
-// ─── 请求模型 ──────────────────────────────────────────────────────────────
+#region 请求模型
 
 /// <summary>创建自定义菜单请求</summary>
 public class CreateMenuRequest
@@ -12,3 +12,4 @@ public class CreateMenuRequest
     [JsonPropertyName("button")] public MenuButton[] Button { get; set; } = [];
 }
 
+#endregion

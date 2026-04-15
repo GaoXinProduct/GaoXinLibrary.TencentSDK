@@ -6,7 +6,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 /// </summary>
 public static class DocToolNames
 {
-    // ─── 文档操作 ────────────────────────────────────────────────
+    #region 文档操作
 
     /// <summary>创建文档/收集表/智能表格</summary>
     public const string CreateDoc = "create_doc";
@@ -17,7 +17,8 @@ public static class DocToolNames
     /// <summary>获取文档基本信息</summary>
     public const string GetDocBaseInfo = "get_doc_base_info";
 
-    // ─── 智能表格 - 记录操作 ─────────────────────────────────────
+    #endregion
+    #region 智能表格 - 记录操作
 
     /// <summary>添加智能表格记录</summary>
     public const string SmartSheetAddRecords = "smartsheet_add_records";
@@ -31,7 +32,8 @@ public static class DocToolNames
     /// <summary>删除智能表格记录</summary>
     public const string SmartSheetDeleteRecords = "smartsheet_delete_records";
 
-    // ─── 智能表格 - 字段操作 ─────────────────────────────────────
+    #endregion
+    #region 智能表格 - 字段操作
 
     /// <summary>添加智能表格字段</summary>
     public const string SmartSheetAddFields = "smartsheet_add_fields";
@@ -44,4 +46,5 @@ public static class DocToolNames
 
     /// <summary>删除智能表格字段</summary>
     public const string SmartSheetDeleteFields = "smartsheet_delete_fields";
+    #endregion
 }

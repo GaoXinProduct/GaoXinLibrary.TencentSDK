@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.OAuth;
 
-// ─── 获取用户登录身份（Web 登录） ─────────────────────────────────────────
+#region 获取用户登录身份（Web 登录）
 
 /// <summary>
 /// 获取用户登录身份响应（GET /cgi-bin/auth/getuserinfo — Web 登录场景）
@@ -32,3 +32,4 @@ public class WebLoginUserInfoResponse : WecomBaseResponse
     [JsonPropertyName("external_userid")] public string? ExternalUserId { get; set; }
 }
 
+#endregion

@@ -44,7 +44,7 @@ public class WechatOptions
     /// </summary>
     public Func<string, CancellationToken, Task>? OnTokenChanged { get; set; }
 
-    // ─── 瞬态故障重试配置 ─────────────────────────────────────────────────────
+    #region 瞬态故障重试配置
 
     /// <summary>
     /// 瞬态故障重试配置（网络抖动、连接超时、5xx 等临时性故障）
@@ -54,4 +54,5 @@ public class WechatOptions
     /// </para>
     /// </summary>
     public TencentRetryOptions? RetryOptions { get; set; } = new();
+    #endregion
 }

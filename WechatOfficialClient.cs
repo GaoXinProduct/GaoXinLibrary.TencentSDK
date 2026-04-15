@@ -28,61 +28,61 @@ public sealed class WechatOfficialClient : IDisposable
     private readonly JsApiTicketProvider _ticketProvider;
 
     /// <summary>OAuth 网页授权</summary>
-    public IOfficialOAuthService OAuth { get; }
+    public OfficialOAuthService OAuth { get; }
 
     /// <summary>自定义菜单</summary>
-    public IOfficialMenuService Menu { get; }
+    public OfficialMenuService Menu { get; }
 
     /// <summary>模板消息</summary>
-    public IOfficialTemplateMessageService TemplateMessage { get; }
+    public OfficialTemplateMessageService TemplateMessage { get; }
 
     /// <summary>用户管理</summary>
-    public IOfficialUserService User { get; }
+    public OfficialUserService User { get; }
 
     /// <summary>服务号二维码</summary>
-    public IOfficialQrCodeService QrCode { get; }
+    public OfficialQrCodeService QrCode { get; }
 
     /// <summary>素材管理</summary>
-    public IOfficialMaterialService Material { get; }
+    public OfficialMaterialService Material { get; }
 
     /// <summary>JS-SDK</summary>
-    public IOfficialJsSdkService JsSdk { get; }
+    public OfficialJsSdkService JsSdk { get; }
 
     /// <summary>用户标签管理</summary>
-    public IOfficialTagService Tag { get; }
+    public OfficialTagService Tag { get; }
 
     /// <summary>草稿管理</summary>
-    public IOfficialDraftService Draft { get; }
+    public OfficialDraftService Draft { get; }
 
     /// <summary>发布能力</summary>
-    public IOfficialPublishService Publish { get; }
+    public OfficialPublishService Publish { get; }
 
     /// <summary>留言管理</summary>
-    public IOfficialCommentService Comment { get; }
+    public OfficialCommentService Comment { get; }
 
     /// <summary>客服消息</summary>
-    public IOfficialCustomMessageService CustomMessage { get; }
+    public OfficialCustomMessageService CustomMessage { get; }
 
     /// <summary>基础消息（群发 / 模板管理）</summary>
-    public IOfficialMessageService Message { get; }
+    public OfficialMessageService Message { get; }
 
     /// <summary>数据统计</summary>
-    public IOfficialDataAnalysisService DataAnalysis { get; }
+    public OfficialDataAnalysisService DataAnalysis { get; }
 
     /// <summary>智能接口（语义理解 / OCR）</summary>
-    public IOfficialAiService Ai { get; }
+    public OfficialAiService Ai { get; }
 
     /// <summary>微信门店</summary>
-    public IOfficialPoiService Poi { get; }
+    public OfficialPoiService Poi { get; }
 
     /// <summary>微信发票（商户开票）</summary>
-    public IOfficialInvoiceService Invoice { get; }
+    public OfficialInvoiceService Invoice { get; }
 
     /// <summary>OpenAPI 管理</summary>
-    public IOfficialOpenApiService OpenApi { get; }
+    public OfficialOpenApiService OpenApi { get; }
 
     /// <summary>消息回调</summary>
-    public IOfficialCallbackService Callback { get; }
+    public OfficialCallbackService Callback { get; }
 
     /// <summary>当前配置</summary>
     public WechatOfficialOptions Options { get; }
@@ -118,7 +118,7 @@ public sealed class WechatOfficialClient : IDisposable
         OpenApi = new OfficialOpenApiService(http, options);
         Callback = new OfficialCallbackService(http, options);
 
-        // ─── 备服务器模式：挂载载荷接收回调，分发 Ticket 并回写 Options ──────────
+        #region 备服务器模式：挂载载荷接收回调，分发 Ticket 并回写 Options
         if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
         {
             _tokenProvider.OnSecretPayloadReceived = (payload, ct) =>
@@ -137,6 +137,7 @@ public sealed class WechatOfficialClient : IDisposable
                 return Task.CompletedTask;
             };
         }
+        #endregion
     }
 
     /// <summary>
@@ -178,7 +179,7 @@ public sealed class WechatOfficialClient : IDisposable
     public Task<string> GetAccessTokenAsync(CancellationToken ct = default)
         => _tokenProvider.GetTokenAsync(ct);
 
-    // ─── jsapi_ticket 管理 ─────────────────────────────────────────────────
+    #region jsapi_ticket 管理
 
     /// <summary>使 jsapi_ticket 缓存失效（下次 GetTicketAsync 时自动重新获取）</summary>
     public void InvalidateTicketCache() => _ticketProvider.InvalidateCache();
@@ -199,7 +200,8 @@ public sealed class WechatOfficialClient : IDisposable
     public Task<string> GetTicketAsync(CancellationToken ct = default)
         => _ticketProvider.GetTicketAsync(ct);
 
-    // ─── 统一共享密钥（主服务器调用） ─────────────────────────────────────────
+    #endregion
+    #region 统一共享密钥（主服务器调用）
 
     /// <summary>
     /// 获取统一共享密钥载荷（主服务器调用）
@@ -260,4 +262,5 @@ public sealed class WechatOfficialClient : IDisposable
         if (_ownsHttpClient)
             _httpClient.Dispose();
     }
+    #endregion
 }

@@ -40,4 +40,16 @@ public class LivingService
     /// <summary>获取成员直播ID列表</summary>
     public async Task<GetUserLivingIdResponse> GetUserLivingIdAsync(GetUserLivingIdRequest request, CancellationToken ct = default)
         => await _http.PostAsync<GetUserLivingIdResponse>("/cgi-bin/living/get_user_all_livingid", request, ct);
+
+    /// <summary>修改预约直播</summary>
+    public async Task ModifyLivingAsync(ModifyLivingRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<ModifyLivingResponse>("/cgi-bin/living/modify", request, ct);
+
+    /// <summary>获取直播观看明细</summary>
+    public async Task<GetLivingWatchDetailResponse> GetLivingWatchDetailAsync(GetLivingWatchDetailRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetLivingWatchDetailResponse>("/cgi-bin/living/get_watch_stat", request, ct);
+
+    /// <summary>获取跳转小程序商城的直播观众信息</summary>
+    public async Task<GetLivingJumpInfoResponse> GetLivingJumpInfoAsync(GetLivingJumpInfoRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetLivingJumpInfoResponse>("/cgi-bin/living/get_jump_info", request, ct);
 }

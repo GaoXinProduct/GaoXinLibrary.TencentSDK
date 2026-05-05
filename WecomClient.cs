@@ -112,6 +112,12 @@ public sealed class WecomClient : IDisposable
     /// <summary>客户联系</summary>
     public ExternalContactService ExternalContact { get; }
 
+    /// <summary>客户朋友圈</summary>
+    public CustomerMomentsService CustomerMoments { get; }
+
+    /// <summary>获客助手</summary>
+    public VisitorAssistantService VisitorAssistant { get; }
+
     /// <summary>企业支付</summary>
     public CorpPayService CorpPay { get; }
 
@@ -153,6 +159,9 @@ public sealed class WecomClient : IDisposable
 
     /// <summary>收集表</summary>
     public CollectFormService CollectForm { get; }
+
+    /// <summary>家校沟通</summary>
+    public HomeSchoolService HomeSchool { get; }
 
     /// <summary>应用消息回调（URL 验证 / 消息解密 / 加密回复）</summary>
     /// <remarks>仅当 <see cref="WecomOptions.CallbackToken"/> 与 <see cref="WecomOptions.CallbackEncodingAesKey"/> 均已配置时非 <c>null</c>。</remarks>
@@ -215,6 +224,8 @@ public sealed class WecomClient : IDisposable
         AccountId = new AccountIdService(_http);
         IpRange = new IpRangeService(_http);
         ExternalContact = new ExternalContactService(_http);
+        CustomerMoments = new CustomerMomentsService(_http);
+        VisitorAssistant = new VisitorAssistantService(_http);
         CorpPay = new CorpPayService(_http);
         Email = new EmailService(_http);
         Document = new DocumentService(_http);
@@ -229,6 +240,7 @@ public sealed class WecomClient : IDisposable
         Invoice = new InvoiceService(_http);
         SmartSheet = new SmartSheetService(_http);
         CollectForm = new CollectFormService(_http);
+        HomeSchool = new HomeSchoolService(_http);
         Callback = (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
                     !string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
             ? new CallbackService(_http, options)

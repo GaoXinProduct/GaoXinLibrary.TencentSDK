@@ -158,7 +158,7 @@ public class CheckinService
     {
         var resp = await _http.PostAsync<AddCheckinOptionResponse>(
             "/cgi-bin/checkin/addcheckinoption", request, ct);
-        return resp.Id;
+        return resp.GroupId;
     }
 
     /// <summary>修改打卡规则</summary>

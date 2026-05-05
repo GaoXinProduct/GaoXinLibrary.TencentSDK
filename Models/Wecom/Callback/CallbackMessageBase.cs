@@ -154,6 +154,15 @@ public class CallbackMessageBase
             "open_approval_change" => ParseApprovalChangeEvent(root),
             "batch_job_result" => ParseBatchJobEvent(root),
             "change_contact" => ParseChangeContactEvent(root),
+            "delete_calendar" => ParseDeleteCalendarEvent(root),
+            "modify_calendar" => ParseModifyCalendarEvent(root),
+            "modify_schedule" => ParseModifyScheduleEvent(root),
+            "delete_schedule" => ParseDeleteScheduleEvent(root),
+            "schedule_receipt" => ParseScheduleReceiptEvent(root),
+            "living_state_changed" => ParseLivingStateChangeEvent(root),
+            "meeting_changed" => ParseMeetingChangeEvent(root),
+            "wedrive_file_changed" => ParseWedriveFileChangeEvent(root),
+            "doc_changed" => ParseDocumentChangeEvent(root),
             _ => FillEvent<CallbackEventBase>(root)
         };
     }
@@ -452,6 +461,92 @@ public class CallbackMessageBase
             CommentId = c.Element("CommentId")?.Value ?? string.Empty
         }).ToArray();
 
+        return evt;
+    }
+
+    #endregion
+    #region 解析日历回调事件
+
+    private static DeleteCalendarEvent ParseDeleteCalendarEvent(XElement root)
+    {
+        var evt = FillEvent<DeleteCalendarEvent>(root);
+        evt.CalId = root.Element("CalId")?.Value ?? string.Empty;
+        return evt;
+    }
+
+    private static ModifyCalendarEvent ParseModifyCalendarEvent(XElement root)
+    {
+        var evt = FillEvent<ModifyCalendarEvent>(root);
+        evt.CalId = root.Element("CalId")?.Value ?? string.Empty;
+        return evt;
+    }
+
+    private static ModifyScheduleEvent ParseModifyScheduleEvent(XElement root)
+    {
+        var evt = FillEvent<ModifyScheduleEvent>(root);
+        evt.ScheduleId = root.Element("ScheduleId")?.Value ?? string.Empty;
+        evt.CalId = root.Element("CalId")?.Value ?? string.Empty;
+        return evt;
+    }
+
+    private static DeleteScheduleEvent ParseDeleteScheduleEvent(XElement root)
+    {
+        var evt = FillEvent<DeleteScheduleEvent>(root);
+        evt.ScheduleId = root.Element("ScheduleId")?.Value ?? string.Empty;
+        evt.CalId = root.Element("CalId")?.Value ?? string.Empty;
+        return evt;
+    }
+
+    private static ScheduleReceiptEvent ParseScheduleReceiptEvent(XElement root)
+    {
+        var evt = FillEvent<ScheduleReceiptEvent>(root);
+        evt.ScheduleId = root.Element("ScheduleId")?.Value ?? string.Empty;
+        evt.CalId = root.Element("CalId")?.Value ?? string.Empty;
+        evt.ReceiptStatus = GetInt(root, "ReceiptStatus");
+        evt.UserId = root.Element("UserId")?.Value ?? string.Empty;
+        return evt;
+    }
+
+    private static LivingStateChangeEvent ParseLivingStateChangeEvent(XElement root)
+    {
+        var evt = FillEvent<LivingStateChangeEvent>(root);
+        evt.LivingUuid = root.Element("LivingUuid")?.Value ?? string.Empty;
+        evt.EventName = root.Element("EventName")?.Value ?? string.Empty;
+        evt.StartTime = GetLong(root, "StartTime");
+        evt.EndTime = GetLong(root, "EndTime");
+        evt.Subject = root.Element("Subject")?.Value;
+        evt.AnchorUserId = root.Element("AnchorUserId")?.Value;
+        return evt;
+    }
+
+    private static MeetingChangeEvent ParseMeetingChangeEvent(XElement root)
+    {
+        var evt = FillEvent<MeetingChangeEvent>(root);
+        evt.MeetingId = root.Element("MeetingId")?.Value ?? string.Empty;
+        evt.ChangeType = root.Element("ChangeType")?.Value ?? string.Empty;
+        evt.Subject = root.Element("Subject")?.Value;
+        evt.StartTime = GetLong(root, "StartTime");
+        evt.EndTime = GetLong(root, "EndTime");
+        return evt;
+    }
+
+    private static WedriveFileChangeEvent ParseWedriveFileChangeEvent(XElement root)
+    {
+        var evt = FillEvent<WedriveFileChangeEvent>(root);
+        evt.ChangeType = root.Element("ChangeType")?.Value ?? string.Empty;
+        evt.FileId = root.Element("FileId")?.Value ?? string.Empty;
+        evt.SpaceId = root.Element("SpaceId")?.Value ?? string.Empty;
+        evt.FileName = root.Element("FileName")?.Value;
+        return evt;
+    }
+
+    private static DocumentChangeEvent ParseDocumentChangeEvent(XElement root)
+    {
+        var evt = FillEvent<DocumentChangeEvent>(root);
+        evt.ChangeType = root.Element("ChangeType")?.Value ?? string.Empty;
+        evt.DocId = root.Element("DocId")?.Value ?? string.Empty;
+        evt.Title = root.Element("Title")?.Value;
+        evt.Creator = root.Element("Creator")?.Value;
         return evt;
     }
 

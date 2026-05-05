@@ -1,6 +1,7 @@
 using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
+using GaoXinLibrary.TencentSDK.Wecom.Models.Approval.Workflow;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
@@ -179,5 +180,41 @@ public class ApprovalService
         await _http.PostAsync<WecomBaseResponse>(
             "/cgi-bin/oa/approval/update_template", request, ct);
     }
+    #endregion
+    #region 审批模板管理（新版工作台引擎）
+
+    /// <summary>创建审批模板（新版工作台引擎）</summary>
+    /// <param name="request">创建请求</param>
+    /// <param name="ct">取消令牌</param>
+    /// <returns>模板 id</returns>
+    public async Task<string> CreateWorkflowTemplateAsync(CreateWorkflowRequest request, CancellationToken ct = default)
+    {
+        var resp = await _http.PostAsync<CreateWorkflowResponse>(
+            "/cgi-bin/oa/approval/create_workflow_template", request, ct);
+        return resp.TemplateId ?? string.Empty;
+    }
+
+    /// <summary>更新审批模板（新版工作台引擎）</summary>
+    /// <param name="request">更新请求</param>
+    /// <param name="ct">取消令牌</param>
+    /// <returns>更新时间</returns>
+    public async Task<long> UpdateWorkflowTemplateAsync(UpdateWorkflowRequest request, CancellationToken ct = default)
+    {
+        var resp = await _http.PostAsync<UpdateWorkflowResponse>(
+            "/cgi-bin/oa/approval/update_workflow_template", request, ct);
+        return resp.UpdateTime;
+    }
+
+    /// <summary>获取审批模板详情（新版工作台引擎）</summary>
+    /// <param name="templateId">模板 id</param>
+    /// <param name="ct">取消令牌</param>
+    /// <returns>模板详情</returns>
+    public async Task<GetWorkflowDetailResponse> GetWorkflowTemplateDetailAsync(string templateId, CancellationToken ct = default)
+    {
+        return await _http.PostAsync<GetWorkflowDetailResponse>(
+            "/cgi-bin/oa/approval/get_workflow_template_detail",
+            new GetWorkflowDetailRequest { TemplateId = templateId }, ct);
+    }
+
     #endregion
 }

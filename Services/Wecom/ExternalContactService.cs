@@ -52,4 +52,52 @@ public class ExternalContactService
     /// <summary>发送新客户欢迎语</summary>
     public async Task SendWelcomeMsgAsync(SendWelcomeMsgRequest request, CancellationToken ct = default)
         => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/send_welcome_msg", request, ct);
+
+    /// <summary>转换 tmp_external_userid 为 external_userid</summary>
+    public async Task<ConvertTmpExternalUserIdResponse> ConvertTmpExternalUserIdAsync(ConvertTmpExternalUserIdRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<ConvertTmpExternalUserIdResponse>("/cgi-bin/idconvert/convert_tmp_external_userid", request, ct);
+
+    /// <summary>获取企业标签库</summary>
+    public async Task<GetCorpTagListResponse> GetCorpTagListAsync(GetCorpTagListRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetCorpTagListResponse>("/cgi-bin/externalcontact/get_corp_tag_list", request, ct);
+
+    /// <summary>添加企业客户标签</summary>
+    public async Task<AddCorpTagResponse> AddCorpTagAsync(AddCorpTagRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<AddCorpTagResponse>("/cgi-bin/externalcontact/add_corp_tag", request, ct);
+
+    /// <summary>编辑企业客户标签</summary>
+    public async Task<WecomBaseResponse> UpdateCorpTagAsync(UpdateCorpTagRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/edit_corp_tag", request, ct);
+
+    /// <summary>删除企业客户标签</summary>
+    public async Task<WecomBaseResponse> DeleteCorpTagAsync(DeleteCorpTagRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/del_corp_tag", request, ct);
+
+    /// <summary>分配在职成员的客户给其他成员</summary>
+    public async Task<TransferCustomerResponse> TransferCustomerAsync(TransferCustomerRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<TransferCustomerResponse>("/cgi-bin/externalcontact/transfer_customer", request, ct);
+
+    /// <summary>查询客户接替状态（在职）</summary>
+    public async Task<GetTransferCustomerResultResponse> GetTransferCustomerResultAsync(GetTransferCustomerResultRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetTransferCustomerResultResponse>("/cgi-bin/externalcontact/transfer_result", request, ct);
+
+    /// <summary>分配在职成员的客户群给其他成员</summary>
+    public async Task<TransferGroupChatResponse> TransferGroupChatAsync(TransferGroupChatRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<TransferGroupChatResponse>("/cgi-bin/externalcontact/groupchat/onjob_transfer", request, ct);
+
+    /// <summary>查询客户群接替状态</summary>
+    public async Task<GetTransferGroupChatResultResponse> GetTransferGroupChatResultAsync(GetTransferGroupChatResultRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetTransferGroupChatResultResponse>("/cgi-bin/externalcontact/groupchat/transfer_result", request, ct);
+
+    /// <summary>分配离职成员的客户给其他成员</summary>
+    public async Task<DemotionTransferCustomerResponse> DemotionTransferCustomerAsync(DemotionTransferCustomerRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<DemotionTransferCustomerResponse>("/cgi-bin/externalcontact/resigned/transfer_customer", request, ct);
+
+    /// <summary>查询离职客户接替状态</summary>
+    public async Task<GetDemotionTransferResultResponse> GetDemotionTransferResultAsync(GetDemotionTransferResultRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetDemotionTransferResultResponse>("/cgi-bin/externalcontact/resigned/transfer_result", request, ct);
+
+    /// <summary>将客户群的 opengid 转换为 chat_id</summary>
+    public async Task<GetGroupChatByExternalUserIdResponse> GetGroupChatByExternalUserIdAsync(GetGroupChatByExternalUserIdRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetGroupChatByExternalUserIdResponse>("/cgi-bin/externalcontact/opengid_to_chatid", request, ct);
 }

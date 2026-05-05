@@ -7,6 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 public class AddCheckinOptionResponse : WecomBaseResponse
 {
     /// <summary>新增打卡规则 id</summary>
-    [JsonPropertyName("id")] public int Id { get; set; }
+    [JsonPropertyName("group_id")]
+    public int GroupId { get; set; }
 }
 

@@ -445,30 +445,34 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 | `MsgAudit` | `MsgAuditService` | 会话内容存档 |
 | `JsSdk` | `JsSdkService` | 企业微信 H5 / JS-SDK（企业级与应用级 ticket） |
 | `Checkin` | `CheckinService` | 打卡 |
-| `Approval` | `ApprovalService` | 审批 |
+| `Approval` | `ApprovalService` | 审批（流程引擎：创建/更新/获取审批模板） |
 | `Export` | `ExportService` | 异步导出 |
 | `AsyncImport` | `AsyncImportService` | 异步导入 |
 | `SecondVerify` | `SecondVerifyService` | 二次验证 |
-| `Security` | `SecurityService` | 安全管理 |
+| `Security` | `SecurityService` | 安全管理（截屏/录屏管理配置） |
 | `AdvancedAccount` | `AdvancedAccountService` | 高级功能账号管理 |
 | `OperationLog` | `OperationLogService` | 操作日志 |
 | `AccountId` | `AccountIdService` | 账号 ID 管理 |
 | `IpRange` | `IpRangeService` | IP 段查询 |
-| `ExternalContact` | `ExternalContactService` | 客户联系 |
-| `CorpPay` | `CorpPayService` | 企业支付 |
-| `Email` | `EmailService` | 邮件 |
-| `Document` | `DocumentService` | 文档 |
-| `Calendar` | `CalendarService` | 日程 |
-| `Meeting` | `MeetingService` | 会议 |
-| `Wedrive` | `WedriveService` | 微盘 |
-| `Living` | `LivingService` | 直播 |
+| `ExternalContact` | `ExternalContactService` | 客户联系（标签增删改查、在职/离职继承、客户群openid转换） |
+| `CustomerMoments` | `CustomerMomentsService` | 客户朋友圈（完整 CRUD、规则组管理） |
+| `VisitorAssistant` | `VisitorAssistantService` | 获客助手（链接管理、客户信息、额度统计） |
+| `CorpPay` | `CorpPayService` | 企业支付（红包、向员工付款收款、对外收款、小程序支付） |
+| `Email` | `EmailService` | 邮件（应用邮箱账号管理、邮件群组、公共邮箱） |
+| `Document` | `DocumentService` | 文档（文档/智能表格/收集表完整管理） |
+| `SmartSheet` | `SmartSheetService` | 智能表格（子表/视图/字段/记录/编组） |
+| `CollectForm` | `CollectFormService` | 收集表 |
+| `Calendar` | `CalendarService` | 日程（参与者管理、日程列表/详情/取消） |
+| `Meeting` | `MeetingService` | 会议（基础统计、预约会议高级管理、会中控制、Webinar、Rooms、布局背景、录制、PSTN） |
+| `Wedrive` | `WedriveService` | 微盘（文件管理、空间成员、安全设置） |
+| `Living` | `LivingService` | 直播（修改/取消直播、观看明细、跳转小程序商城） |
+| `HomeSchool` | `HomeSchoolService` | 家校沟通（学生/家长/部门管理、学校通知、关注模式、班级群、健康上报、上课直播、班级收款） |
+| `DataIntelligence` | `DataIntelligenceService` | 数据与智能专区（SDK程序、同步/异步调用、回调事件、调试模式） |
 | `Dial` | `DialService` | 公费电话 |
 | `Report` | `ReportService` | 汇报 |
 | `Hr` | `HrService` | 人事助手 |
 | `MeetingRoom` | `MeetingRoomService` | 会议室 |
 | `Invoice` | `InvoiceService` | 电子发票 |
-| `SmartSheet` | `SmartSheetService` | 智能表格 |
-| `CollectForm` | `CollectFormService` | 收集表 |
 | `Callback` | `CallbackService?` | 应用消息回调（URL 验证 / 消息解密 / 加密回复）；未配置 `CallbackToken` + `CallbackEncodingAesKey` 时为 `null` |
 
 > 群机器人

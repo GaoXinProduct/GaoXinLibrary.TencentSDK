@@ -18,4 +18,7 @@ public class MiniProgramLinkService
     /// <summary>生成 Short Link（POST /wxa/genwxashortlink）</summary>
     public Task<GenerateShortLinkResponse> GenerateShortLinkAsync(GenerateShortLinkRequest request, CancellationToken ct = default)
         => _http.PostAsync<GenerateShortLinkResponse>("/wxa/genwxashortlink", request, ct);
+    /// <summary>查询scheme码（POST /wxa/queryscheme）</summary>
+    public Task<QuerySchemeResponse> QuerySchemeAsync(QuerySchemeRequest request, CancellationToken ct = default)
+        => _http.PostAsync<QuerySchemeResponse>("/wxa/queryscheme", request, ct);
 }

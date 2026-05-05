@@ -63,6 +63,21 @@ public sealed class WechatMiniProgramClient : IDisposable
     /// <summary>OpenAPI 管理</summary>
     public MiniProgramOpenApiService OpenApi { get; }
 
+    /// <summary>交易管理服务</summary>
+    public MiniProgramTradeService Trade { get; }
+
+    /// <summary>即时配送服务</summary>
+    public MiniProgramDeliveryService Delivery { get; }
+
+    /// <summary>交易保障服务</summary>
+    public MiniProgramTransactionGuaranteeService TransactionGuarantee { get; }
+
+    /// <summary>动态消息服务</summary>
+    public MiniProgramDynamicMessageService DynamicMessage { get; }
+
+    /// <summary>云开发服务</summary>
+    public MiniProgramCloudBaseService CloudBase { get; }
+
     /// <summary>当前配置</summary>
     public WechatMiniProgramOptions Options { get; }
 
@@ -87,6 +102,11 @@ public sealed class WechatMiniProgramClient : IDisposable
         Device = new MiniProgramDeviceService(http);
         CustomMessage = new MiniProgramCustomMessageService(http);
         OpenApi = new MiniProgramOpenApiService(http, options);
+        Trade = new MiniProgramTradeService(http);
+        Delivery = new MiniProgramDeliveryService(http);
+        TransactionGuarantee = new MiniProgramTransactionGuaranteeService(http);
+        DynamicMessage = new MiniProgramDynamicMessageService(http);
+        CloudBase = new MiniProgramCloudBaseService(http);
     }
 
     /// <summary>

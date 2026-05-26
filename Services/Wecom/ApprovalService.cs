@@ -190,7 +190,7 @@ public sealed class ApprovalService
     public async Task<string> CreateWorkflowTemplateAsync(CreateWorkflowRequest request, CancellationToken ct = default)
     {
         var resp = await _http.PostAsync<CreateWorkflowResponse>(
-            "/cgi-bin/oa/approval/create_workflow_template", request, ct);
+            "/cgi-bin/oa/approval/create_workflow_template", request, ct).ConfigureAwait(false);
         return resp.TemplateId ?? string.Empty;
     }
 
@@ -201,7 +201,7 @@ public sealed class ApprovalService
     public async Task<long> UpdateWorkflowTemplateAsync(UpdateWorkflowRequest request, CancellationToken ct = default)
     {
         var resp = await _http.PostAsync<UpdateWorkflowResponse>(
-            "/cgi-bin/oa/approval/update_workflow_template", request, ct);
+            "/cgi-bin/oa/approval/update_workflow_template", request, ct).ConfigureAwait(false);
         return resp.UpdateTime;
     }
 
@@ -213,7 +213,7 @@ public sealed class ApprovalService
     {
         return await _http.PostAsync<GetWorkflowDetailResponse>(
             "/cgi-bin/oa/approval/get_workflow_template_detail",
-            new GetWorkflowDetailRequest { TemplateId = templateId }, ct);
+            new GetWorkflowDetailRequest { TemplateId = templateId }, ct).ConfigureAwait(false);
     }
 
     #endregion

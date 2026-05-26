@@ -1,8 +1,5 @@
 // Global usings for GaoXinLibrary.TencentSDK
-global using System.Buffers;
-global using System.Collections.ObjectModel;
 global using System.Net.Http.Headers;
-global using System.Runtime.CompilerServices;
 global using System.Security.Cryptography;
 global using System.Text;
 global using System.Text.Encodings.Web;

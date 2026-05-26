@@ -65,36 +65,36 @@ public sealed class CalendarService
     /// <summary>更新重复日程</summary>
     public async Task<string?> UpdateRecurringScheduleAsync(UpdateScheduleRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<UpdateScheduleResponse>("/cgi-bin/oa/schedule/update", request, ct);
+        var resp = await _http.PostAsync<UpdateScheduleResponse>("/cgi-bin/oa/schedule/update", request, ct).ConfigureAwait(false);
         return resp.ScheduleId;
     }
 
     /// <summary>新增日程参与者</summary>
     public async Task<string?> AddScheduleAttendeesAsync(AddScheduleAttendeesRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<AddScheduleAttendeesResponse>("/cgi-bin/oa/schedule/add_attendees", request, ct);
+        var resp = await _http.PostAsync<AddScheduleAttendeesResponse>("/cgi-bin/oa/schedule/add_attendees", request, ct).ConfigureAwait(false);
         return resp.ScheduleId;
     }
 
     /// <summary>删除日程参与者</summary>
     public async Task DeleteScheduleAttendeesAsync(DeleteScheduleAttendeesRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/oa/schedule/del_attendees", request, ct);
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/oa/schedule/del_attendees", request, ct).ConfigureAwait(false);
 
     /// <summary>获取日历下的日程列表</summary>
     public async Task<ScheduleInfo[]> GetScheduleListAsync(GetScheduleListRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetScheduleListResponse>("/cgi-bin/oa/schedule/get_by_calendar", request, ct);
+        var resp = await _http.PostAsync<GetScheduleListResponse>("/cgi-bin/oa/schedule/get_by_calendar", request, ct).ConfigureAwait(false);
         return resp.ScheduleList ?? [];
     }
 
     /// <summary>获取日程详情</summary>
     public async Task<ScheduleInfo[]> GetScheduleDetailAsync(GetScheduleDetailRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetScheduleDetailResponse>("/cgi-bin/oa/schedule/get", request, ct);
+        var resp = await _http.PostAsync<GetScheduleDetailResponse>("/cgi-bin/oa/schedule/get", request, ct).ConfigureAwait(false);
         return resp.ScheduleList ?? [];
     }
 
     /// <summary>取消重复日程</summary>
     public async Task CancelRecurringScheduleAsync(CancelScheduleRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/oa/schedule/del", request, ct);
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/oa/schedule/del", request, ct).ConfigureAwait(false);
 }

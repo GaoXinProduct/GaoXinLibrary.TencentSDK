@@ -327,4 +327,20 @@ public sealed class ExternalContactService
         => await _http.PostAsync<GetGroupChatStatisticResponse>("/cgi-bin/externalcontact/groupchat/statistic", request, ct).ConfigureAwait(false);
 
     #endregion
+
+    #region 已服务外部联系人
+
+    /// <summary>获取已服务的外部联系人</summary>
+    public async Task<GetContactListResponse> GetContactListAsync(GetContactListRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetContactListResponse>("/cgi-bin/externalcontact/contact_list", request, ct).ConfigureAwait(false);
+
+    #endregion
+
+    #region 获客客户群
+
+    /// <summary>获取获客链接添加的客户群信息</summary>
+    public async Task<GetAcquisitionChatInfoResponse> GetAcquisitionChatInfoAsync(GetAcquisitionChatInfoRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetAcquisitionChatInfoResponse>("/cgi-bin/externalcontact/customer_acquisition/get_chat_info", request, ct).ConfigureAwait(false);
+
+    #endregion
 }

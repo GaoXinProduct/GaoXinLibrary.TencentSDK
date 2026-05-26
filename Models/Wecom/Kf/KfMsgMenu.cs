@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>菜单消息内容</summary>
-public class KfMsgMenu
+public sealed class KfMsgMenu
 {
     /// <summary>菜单头部内容</summary>
     [JsonPropertyName("head_content")] public string? HeadContent { get; set; }

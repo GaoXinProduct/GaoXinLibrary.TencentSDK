@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -8,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 获取 JS-SDK ticket 响应（GET /cgi-bin/ticket/getticket）
 /// </summary>
-public class GetJsApiTicketResponse : WechatBaseResponse
+public sealed class GetJsApiTicketResponse : WechatBaseResponse
 {
     /// <summary>js_ticket</summary>
     [JsonPropertyName("ticket")] public string? Ticket { get; set; }

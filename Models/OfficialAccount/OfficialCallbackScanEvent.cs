@@ -7,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// 扫描带参数二维码事件（用户已关注时）
 /// <para>Event = SCAN</para>
 /// </summary>
-public class OfficialCallbackScanEvent : OfficialCallbackEventBase
+public sealed class OfficialCallbackScanEvent : OfficialCallbackEventBase
 {
     /// <summary>事件 KEY（二维码的参数值）</summary>
     public string EventKey { get; set; } = string.Empty;

@@ -1,8 +1,5 @@
-using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Services;
-using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace GaoXinLibrary.TencentSDK.Wechat;
 
@@ -219,7 +216,7 @@ public sealed class WechatOfficialClient : IDisposable
         if (string.IsNullOrWhiteSpace(Options.ShareSecret))
             throw new InvalidOperationException("获取统一共享密钥需配置 WechatOfficialOptions.ShareSecret");
 
-        var payload = await _tokenProvider.BuildBasePayloadAsync(ct);
+        var payload = await _tokenProvider.BuildBasePayloadAsync(ct).ConfigureAwait(false);
 
         payload.AppId = Options.AppId;
         payload.AppSecret = Options.AppSecret;
@@ -227,7 +224,7 @@ public sealed class WechatOfficialClient : IDisposable
         // jsapi_ticket（可选，未缓存时不阻塞）
         try
         {
-            payload.JsApiTicket = await _ticketProvider.GetTicketAsync(ct);
+            payload.JsApiTicket = await _ticketProvider.GetTicketAsync(ct).ConfigureAwait(false);
             payload.TicketExpiresIn = _ticketProvider.GetRemainingSeconds();
         }
         catch { /* 主服务器尚未获取过 jsapi_ticket 时忽略 */ }

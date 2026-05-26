@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -8,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 获取用户 encryptKey 请求（POST /wxa/business/getuserencryptkey）
 /// </summary>
-public class GetUserEncryptKeyRequest
+public sealed class GetUserEncryptKeyRequest
 {
     /// <summary>用户 OpenId</summary>
     [JsonPropertyName("openid")] public required string OpenId { get; set; }

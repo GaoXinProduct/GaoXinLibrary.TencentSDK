@@ -5,7 +5,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>打卡服务实现</summary>
-public class CheckinService
+public sealed class CheckinService
 {
     private readonly WecomHttpClient _http;
 
@@ -21,7 +21,7 @@ public class CheckinService
     {
         var resp = await _http.PostAsync<GetCorpCheckinOptionResponse>(
             "/cgi-bin/checkin/getcorpcheckinoption",
-            EmptyRequest.Instance, ct);
+            EmptyRequest.Instance, ct).ConfigureAwait(false);
         return resp.Group ?? [];
     }
 
@@ -34,7 +34,7 @@ public class CheckinService
     {
         var resp = await _http.PostAsync<GetCheckinOptionResponse>(
             "/cgi-bin/checkin/getcheckinoption",
-            new GetCheckinOptionRequest { DateTime = dateTime, UserIdList = userIdList }, ct);
+            new GetCheckinOptionRequest { DateTime = dateTime, UserIdList = userIdList }, ct).ConfigureAwait(false);
         return resp.Info ?? [];
     }
 
@@ -55,7 +55,7 @@ public class CheckinService
                 StartTime = startTime,
                 EndTime = endTime,
                 UserIdList = userIdList
-            }, ct);
+            }, ct).ConfigureAwait(false);
         return resp.CheckinData ?? [];
     }
 
@@ -69,7 +69,7 @@ public class CheckinService
     {
         var resp = await _http.PostAsync<GetCheckinDayDataResponse>(
             "/cgi-bin/checkin/getcheckin_daydata",
-            new GetCheckinDayDataRequest { StartTime = startTime, EndTime = endTime, UserIdList = userIdList }, ct);
+            new GetCheckinDayDataRequest { StartTime = startTime, EndTime = endTime, UserIdList = userIdList }, ct).ConfigureAwait(false);
         return resp.Datas ?? [];
     }
 
@@ -83,7 +83,7 @@ public class CheckinService
     {
         var resp = await _http.PostAsync<GetCheckinMonthDataResponse>(
             "/cgi-bin/checkin/getcheckin_monthdata",
-            new GetCheckinMonthDataRequest { StartTime = startTime, EndTime = endTime, UserIdList = userIdList }, ct);
+            new GetCheckinMonthDataRequest { StartTime = startTime, EndTime = endTime, UserIdList = userIdList }, ct).ConfigureAwait(false);
         return resp.Datas ?? [];
     }
 
@@ -97,7 +97,7 @@ public class CheckinService
     {
         var resp = await _http.PostAsync<GetCheckinScheduleListResponse>(
             "/cgi-bin/checkin/getcheckinschedulist",
-            new GetCheckinScheduleListRequest { StartTime = startTime, EndTime = endTime, UserIdList = userIdList }, ct);
+            new GetCheckinScheduleListRequest { StartTime = startTime, EndTime = endTime, UserIdList = userIdList }, ct).ConfigureAwait(false);
         return resp.ScheduleList ?? [];
     }
 
@@ -107,7 +107,7 @@ public class CheckinService
     public async Task SetCheckinScheduleListAsync(SetCheckinScheduleListRequest request, CancellationToken ct = default)
     {
         await _http.PostAsync<WecomBaseResponse>(
-            "/cgi-bin/checkin/setcheckinschedulist", request, ct);
+            "/cgi-bin/checkin/setcheckinschedulist", request, ct).ConfigureAwait(false);
     }
 
     /// <summary>录入打卡人员人脸信息</summary>
@@ -118,7 +118,7 @@ public class CheckinService
     {
         await _http.PostAsync<WecomBaseResponse>(
             "/cgi-bin/checkin/addcheckinuserface",
-            new AddCheckinUserFaceRequest { UserId = userId, UserFace = userFace }, ct);
+            new AddCheckinUserFaceRequest { UserId = userId, UserFace = userFace }, ct).ConfigureAwait(false);
     }
 
     /// <summary>为打卡人员补卡</summary>
@@ -127,7 +127,7 @@ public class CheckinService
     public async Task PunchCorrectionAsync(PunchCorrectionRequest request, CancellationToken ct = default)
     {
         await _http.PostAsync<WecomBaseResponse>(
-            "/cgi-bin/checkin/punch_correction", request, ct);
+            "/cgi-bin/checkin/punch_correction", request, ct).ConfigureAwait(false);
     }
 
     /// <summary>添加打卡记录</summary>
@@ -136,7 +136,7 @@ public class CheckinService
     public async Task AddCheckinDataAsync(AddCheckinDataRequest request, CancellationToken ct = default)
     {
         await _http.PostAsync<WecomBaseResponse>(
-            "/cgi-bin/checkin/addcheckindata", request, ct);
+            "/cgi-bin/checkin/addcheckindata", request, ct).ConfigureAwait(false);
     }
 
     /// <summary>获取设备打卡数据</summary>
@@ -146,7 +146,7 @@ public class CheckinService
     public async Task<DeviceCheckinDataItem[]> GetCheckinDeviceDataAsync(GetCheckinDeviceDataRequest request, CancellationToken ct = default)
     {
         var resp = await _http.PostAsync<GetCheckinDeviceDataResponse>(
-            "/cgi-bin/checkin/getcheckin_device_data", request, ct);
+            "/cgi-bin/checkin/getcheckin_device_data", request, ct).ConfigureAwait(false);
         return resp.CheckinData ?? [];
     }
 
@@ -157,8 +157,8 @@ public class CheckinService
     public async Task<int> AddCheckinOptionAsync(AddCheckinOptionRequest request, CancellationToken ct = default)
     {
         var resp = await _http.PostAsync<AddCheckinOptionResponse>(
-            "/cgi-bin/checkin/addcheckinoption", request, ct);
-        return resp.GroupId;
+            "/cgi-bin/checkin/addcheckinoption", request, ct).ConfigureAwait(false);
+        return resp.Id;
     }
 
     /// <summary>修改打卡规则</summary>
@@ -167,7 +167,7 @@ public class CheckinService
     public async Task UpdateCheckinOptionAsync(UpdateCheckinOptionRequest request, CancellationToken ct = default)
     {
         await _http.PostAsync<WecomBaseResponse>(
-            "/cgi-bin/checkin/updatecheckinoption", request, ct);
+            "/cgi-bin/checkin/updatecheckinoption", request, ct).ConfigureAwait(false);
     }
 
     /// <summary>清空打卡规则（删除指定规则下所有人员）</summary>
@@ -177,6 +177,6 @@ public class CheckinService
     {
         await _http.PostAsync<WecomBaseResponse>(
             "/cgi-bin/checkin/clearcheckinoption",
-            new ClearCheckinOptionRequest { GroupId = groupId }, ct);
+            new ClearCheckinOptionRequest { GroupId = groupId }, ct).ConfigureAwait(false);
     }
 }

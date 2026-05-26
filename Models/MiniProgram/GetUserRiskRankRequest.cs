@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -8,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 获取用户安全等级请求（POST /wxa/getuserriskrank）
 /// </summary>
-public class GetUserRiskRankRequest
+public sealed class GetUserRiskRankRequest
 {
     /// <summary>小程序 AppId</summary>
     [JsonPropertyName("appid")] public required string AppId { get; set; }

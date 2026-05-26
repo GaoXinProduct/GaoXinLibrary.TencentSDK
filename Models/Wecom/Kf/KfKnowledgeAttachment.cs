@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>知识库附件</summary>
-public class KfKnowledgeAttachment
+public sealed class KfKnowledgeAttachment
 {
     /// <summary>附件类型</summary>
     [JsonPropertyName("msgtype")] public string? MsgType { get; set; }

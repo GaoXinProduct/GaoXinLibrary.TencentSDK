@@ -1,4 +1,3 @@
-using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Core;
@@ -10,7 +9,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Core;
 /// 可通过 <see cref="OnTicketChanged"/> 在 Ticket 刷新时获得通知（携带新 Ticket）。
 /// </para>
 /// </summary>
-public class JsApiTicketProvider
+public sealed class JsApiTicketProvider
 {
     private readonly WechatHttpClient _http;
     private string _cachedTicket = string.Empty;
@@ -39,14 +38,14 @@ public class JsApiTicketProvider
         if (DateTimeOffset.UtcNow < _expireAt)
             return _cachedTicket;
 
-        await _lock.WaitAsync(ct);
+        await _lock.WaitAsync(ct).ConfigureAwait(false);
         try
         {
             if (DateTimeOffset.UtcNow < _expireAt)
                 return _cachedTicket;
 
             var response = await _http.GetAsync<GetJsApiTicketResponse>("/cgi-bin/ticket/getticket",
-                new Dictionary<string, string?> { ["type"] = "jsapi" }, ct);
+                new Dictionary<string, string?> { ["type"] = "jsapi" }, ct).ConfigureAwait(false);
 
             var newTicket = response.Ticket ?? throw new TencentException("jsapi_ticket 为空");
             var expiresInSeconds = response.ExpiresIn;
@@ -55,7 +54,7 @@ public class JsApiTicketProvider
             _expireAt = DateTimeOffset.UtcNow.AddSeconds(expiresInSeconds - 60);
 
             if (OnTicketChanged is not null)
-                await OnTicketChanged(newTicket, ct);
+                await OnTicketChanged(newTicket, ct).ConfigureAwait(false);
 
             return _cachedTicket;
         }
@@ -77,7 +76,7 @@ public class JsApiTicketProvider
     public async Task<string> RefreshTicketAsync(CancellationToken ct = default)
     {
         InvalidateCache();
-        return await GetTicketAsync(ct);
+        return await GetTicketAsync(ct).ConfigureAwait(false);
     }
 
     /// <summary>

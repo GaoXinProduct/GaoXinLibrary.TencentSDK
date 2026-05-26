@@ -4,7 +4,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 /// 附件消息中的操作项
 /// <para>参考文档：<see href="https://developer.work.weixin.qq.com/document/path/100719"/></para>
 /// </summary>
-public class CallbackAttachmentAction
+public sealed class CallbackAttachmentAction
 {
     /// <summary>操作名称</summary>
     public string Name { get; set; } = string.Empty;

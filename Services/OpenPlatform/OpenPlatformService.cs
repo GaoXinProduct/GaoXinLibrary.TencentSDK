@@ -5,7 +5,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OpenPlatform;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>微信开放平台网站应用登录服务实现</summary>
-public class OpenPlatformService
+public sealed class OpenPlatformService
 {
     private readonly WechatHttpClient _http;
     private readonly string _appId;

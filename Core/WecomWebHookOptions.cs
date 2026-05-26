@@ -7,7 +7,7 @@
 /// 仅包含群机器人 Webhook Key，与 <see cref="WecomOptions"/> 完全解耦。
 /// </para>
 /// </summary>
-public class WecomWebHookOptions
+public sealed class WecomWebHookOptions
 {
     /// <summary>
     /// 群机器人 Webhook Key

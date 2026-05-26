@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
@@ -7,7 +6,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.GroupChat;
 #region 群聊信息
 
 /// <summary>群聊信息</summary>
-public class GroupChatInfo
+public sealed class GroupChatInfo
 {
     /// <summary>群聊唯一标识，由企业微信分配</summary>
     [JsonPropertyName("chatid")] public string ChatId { get; set; } = string.Empty;

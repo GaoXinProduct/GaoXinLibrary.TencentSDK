@@ -1,8 +1,7 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>删除群发响应</summary>
-public class MassDeleteResponse : WechatBaseResponse { }
+public sealed class MassDeleteResponse : WechatBaseResponse { }
 

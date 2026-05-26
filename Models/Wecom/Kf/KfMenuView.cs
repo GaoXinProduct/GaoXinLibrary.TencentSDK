@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>菜单-链接</summary>
-public class KfMenuView
+public sealed class KfMenuView
 {
     /// <summary>链接 URL</summary>
     [JsonPropertyName("url")] public string? Url { get; set; }

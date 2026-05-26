@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.ExternalContact;
 
 /// <summary>修改客户备注请求</summary>
-public class UpdateRemarkRequest
+public sealed class UpdateRemarkRequest
 {
     /// <summary>企业成员 userid</summary>
     [JsonPropertyName("userid")]

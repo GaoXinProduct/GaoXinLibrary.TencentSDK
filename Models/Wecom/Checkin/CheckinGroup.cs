@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
 /// <summary>打卡规则</summary>
-public class CheckinGroup
+public sealed class CheckinGroup
 {
     /// <summary>打卡规则类型，1：固定时间上下班；2：按班次上下班；3：自由上下班</summary>
     [JsonPropertyName("grouptype")] public int GroupType { get; set; }

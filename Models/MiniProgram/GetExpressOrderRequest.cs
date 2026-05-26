@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 查询运单请求（POST /cgi-bin/express/business/order/get）
 /// </summary>
-public class GetExpressOrderRequest
+public sealed class GetExpressOrderRequest
 {
     /// <summary>订单 ID</summary>
     [JsonPropertyName("order_id")] public required string OrderId { get; set; }

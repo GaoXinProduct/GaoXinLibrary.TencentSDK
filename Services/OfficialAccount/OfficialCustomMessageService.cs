@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号客服消息服务实现</summary>
-public class OfficialCustomMessageService
+public sealed class OfficialCustomMessageService
 {
     private readonly WechatHttpClient _http;
     public OfficialCustomMessageService(WechatHttpClient http) => _http = http;

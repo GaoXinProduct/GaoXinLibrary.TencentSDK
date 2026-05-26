@@ -1,13 +1,11 @@
 using System.Xml.Linq;
-using System.Text.Json.Serialization;
-using GaoXinLibrary.TencentSDK.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>企业微信回调 POST 请求体（加密 XML 信封）</summary>
-public class CallbackEncryptedEnvelope
+public sealed class CallbackEncryptedEnvelope
 {
     /// <summary>企业微信发来的加密消息体</summary>
     public string Encrypt { get; set; } = string.Empty;

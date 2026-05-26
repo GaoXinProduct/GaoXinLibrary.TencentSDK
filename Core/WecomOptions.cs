@@ -1,11 +1,10 @@
-using GaoXinLibrary.TencentSDK.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Core;
 
 /// <summary>
 /// 企业微信客户端配置
 /// </summary>
-public class WecomOptions
+public sealed class WecomOptions
 {
     /// <summary>企业ID（corpid）</summary>
     public string CorpId { get; set; } = string.Empty;

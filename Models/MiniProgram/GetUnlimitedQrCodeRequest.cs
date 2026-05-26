@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -8,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 获取不限制的小程序码请求（POST /wxa/getwxacodeunlimit）
 /// </summary>
-public class GetUnlimitedQrCodeRequest
+public sealed class GetUnlimitedQrCodeRequest
 {
     /// <summary>最大32个可见字符，只支持数字、大小写字母以及部分特殊字符</summary>
     [JsonPropertyName("scene")] public required string Scene { get; set; }

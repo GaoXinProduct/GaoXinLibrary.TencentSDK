@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Security;
 
 /// <summary>设备信息</summary>
-public class DeviceInfo
+public sealed class DeviceInfo
 {
     /// <summary>设备系统 android/ios/windows/mac</summary>
     [JsonPropertyName("os")] public string? Os { get; set; }

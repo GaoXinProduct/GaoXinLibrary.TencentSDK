@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>发送事件响应消息请求（欢迎语等）</summary>
-public class KfSendMsgOnEventRequest
+public sealed class KfSendMsgOnEventRequest
 {
     /// <summary>事件响应消息对应的 code</summary>
     [JsonPropertyName("code")] public string Code { get; set; } = string.Empty;

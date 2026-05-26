@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 查询JS错误详情请求（POST /wxaapi/log/jserr_detail）
 /// </summary>
-public class GetJsErrDetailRequest
+public sealed class GetJsErrDetailRequest
 {
     /// <summary>开始时间戳（Unix 秒）</summary>
     [JsonPropertyName("startTime")]   public long StartTime { get; set; }

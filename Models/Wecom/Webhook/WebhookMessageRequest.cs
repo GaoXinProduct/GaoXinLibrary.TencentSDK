@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Webhook;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Webhook;
 #region 群机器人消息
 
 /// <summary>群机器人消息请求</summary>
-public class WebhookMessageRequest
+public sealed class WebhookMessageRequest
 {
     [JsonPropertyName("msgtype")] public string MsgType { get; set; } = string.Empty;
     [JsonPropertyName("text")] public WebhookTextContent? Text { get; set; }

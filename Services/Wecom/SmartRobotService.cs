@@ -8,7 +8,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>智能机器人服务实现</summary>
-public class SmartRobotService
+public sealed class SmartRobotService
 {
     private readonly WecomCryptoHelper _crypto;
     private readonly WecomHttpClient _http;
@@ -102,7 +102,7 @@ public class SmartRobotService
     /// <returns>发送消息响应（包含 msgid 等信息）</returns>
     public async Task<SendMessageResponse> SendMessageAsync(SendMessageRequest request, CancellationToken ct = default)
     {
-        return await _http.PostAsync<SendMessageResponse>("/cgi-bin/message/send", request, ct);
+        return await _http.PostAsync<SendMessageResponse>("/cgi-bin/message/send", request, ct).ConfigureAwait(false);
     }
 
     #region 智能表格自动化创建的群聊
@@ -115,7 +115,7 @@ public class SmartRobotService
     /// <param name="ct">取消令牌</param>
     public async Task<GetSmartSheetChatListResponse> GetSmartSheetChatListAsync(GetSmartSheetChatListRequest request, CancellationToken ct = default)
     {
-        return await _http.PostAsync<GetSmartSheetChatListResponse>("/cgi-bin/chatdata/list", request, ct);
+        return await _http.PostAsync<GetSmartSheetChatListResponse>("/cgi-bin/chatdata/list", request, ct).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public class SmartRobotService
     public async Task<GetSmartSheetChatResponse> GetSmartSheetChatAsync(string chatId, CancellationToken ct = default)
     {
         return await _http.GetAsync<GetSmartSheetChatResponse>("/cgi-bin/chatdata/get",
-            new Dictionary<string, string?> { ["chatid"] = chatId }, ct);
+            new Dictionary<string, string?> { ["chatid"] = chatId }, ct).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public class SmartRobotService
     /// <param name="ct">取消令牌</param>
     public async Task UpdateSmartSheetChatAsync(UpdateSmartSheetChatRequest request, CancellationToken ct = default)
     {
-        await _http.PostAsync<WecomBaseResponse>("/cgi-bin/chatdata/update", request, ct);
+        await _http.PostAsync<WecomBaseResponse>("/cgi-bin/chatdata/update", request, ct).ConfigureAwait(false);
     }
 
     private void EnsureCryptoConfigured()

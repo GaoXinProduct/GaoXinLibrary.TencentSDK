@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>客服客户信息</summary>
-public class KfCustomer
+public sealed class KfCustomer
 {
     /// <summary>微信客户的 external_userid</summary>
     [JsonPropertyName("external_userid")] public string ExternalUserId { get; set; } = string.Empty;

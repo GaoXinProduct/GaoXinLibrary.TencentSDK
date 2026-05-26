@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Core;
 
@@ -75,16 +73,16 @@ public abstract class TencentAccessTokenProvider
         if (DateTimeOffset.UtcNow < _expireAt)
             return _cachedToken;
 
-        await _lock.WaitAsync(ct);
+        await _lock.WaitAsync(ct).ConfigureAwait(false);
         try
         {
             if (DateTimeOffset.UtcNow < _expireAt)
                 return _cachedToken;
 
             if (_secretShareUrl is not null && _secretShareKey is not null)
-                return await FetchFromSharedSecretAsync(ct);
+                return await FetchFromSharedSecretAsync(ct).ConfigureAwait(false);
 
-            return await FetchFromTencentApiAsync(ct);
+            return await FetchFromTencentApiAsync(ct).ConfigureAwait(false);
         }
         finally
         {
@@ -98,7 +96,7 @@ public abstract class TencentAccessTokenProvider
     private async Task<string> FetchFromTencentApiAsync(CancellationToken ct)
     {
         var url = BuildTokenUrl();
-        var response = await _httpClient.GetStringAsync(url, ct);
+        var response = await _httpClient.GetStringAsync(url, ct).ConfigureAwait(false);
         var result = JsonSerializer.Deserialize<AccessTokenResponse>(response)
                      ?? throw new TencentException("获取 access_token 返回为空");
 
@@ -112,7 +110,7 @@ public abstract class TencentAccessTokenProvider
         _expireAt = DateTimeOffset.UtcNow.AddSeconds(expiresInSeconds - 60);
 
         if (OnTokenChanged is not null)
-            await OnTokenChanged(newToken, ct);
+            await OnTokenChanged(newToken, ct).ConfigureAwait(false);
 
         return _cachedToken;
     }
@@ -122,7 +120,7 @@ public abstract class TencentAccessTokenProvider
 
     private async Task<string> FetchFromSharedSecretAsync(CancellationToken ct)
     {
-        var json = await _httpClient.GetStringAsync(_secretShareUrl!, ct);
+        var json = await _httpClient.GetStringAsync(_secretShareUrl!, ct).ConfigureAwait(false);
         var wrapper = JsonSerializer.Deserialize<SharedSecretWrapper>(json)
                       ?? throw new TencentException("统一共享密钥接口返回为空");
 
@@ -140,10 +138,10 @@ public abstract class TencentAccessTokenProvider
         _expireAt = DateTimeOffset.UtcNow.AddSeconds(Math.Max(payload.TokenExpiresIn - 60, 1));
 
         if (OnTokenChanged is not null)
-            await OnTokenChanged(_cachedToken, ct);
+            await OnTokenChanged(_cachedToken, ct).ConfigureAwait(false);
 
         if (OnSecretPayloadReceived is not null)
-            await OnSecretPayloadReceived(payload, ct);
+            await OnSecretPayloadReceived(payload, ct).ConfigureAwait(false);
 
         return _cachedToken;
     }
@@ -158,7 +156,7 @@ public abstract class TencentAccessTokenProvider
     /// <returns>已填充 Token 的 <see cref="SharedSecretPayload"/>（Ticket 字段由调用方填充）</returns>
     protected internal async Task<SharedSecretPayload> BuildBasePayloadAsync(CancellationToken ct)
     {
-        var token = await GetTokenAsync(ct);
+        var token = await GetTokenAsync(ct).ConfigureAwait(false);
         var remainingSeconds = Math.Max(0, (int)(_expireAt - DateTimeOffset.UtcNow).TotalSeconds);
         return new SharedSecretPayload
         {
@@ -183,7 +181,7 @@ public abstract class TencentAccessTokenProvider
     public async Task<string> RefreshTokenAsync(CancellationToken ct = default)
     {
         InvalidateCache();
-        return await GetTokenAsync(ct);
+        return await GetTokenAsync(ct).ConfigureAwait(false);
     }
 
     /// <summary>

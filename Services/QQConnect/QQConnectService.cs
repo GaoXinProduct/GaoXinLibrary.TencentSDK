@@ -6,7 +6,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.QQConnect;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>QQ 互联登录服务实现</summary>
-public class QQConnectService
+public sealed class QQConnectService
 {
     private readonly HttpClient _httpClient;
     private readonly string _appId;
@@ -52,7 +52,7 @@ public class QQConnectService
     public async Task<QQAccessTokenResponse> GetAccessTokenAsync(string code, string redirectUri, CancellationToken ct = default)
     {
         var url = $"{_baseUrl}/oauth2.0/token?grant_type=authorization_code&client_id={Uri.EscapeDataString(_appId)}&client_secret={Uri.EscapeDataString(_appSecret)}&code={Uri.EscapeDataString(code)}&redirect_uri={Uri.EscapeDataString(redirectUri)}&fmt=json&need_openid=1";
-        return await GetQQResponseAsync<QQAccessTokenResponse>(url, ct);
+        return await GetQQResponseAsync<QQAccessTokenResponse>(url, ct).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -63,7 +63,7 @@ public class QQConnectService
     public async Task<QQRefreshTokenResponse> RefreshTokenAsync(string refreshToken, CancellationToken ct = default)
     {
         var url = $"{_baseUrl}/oauth2.0/token?grant_type=refresh_token&client_id={Uri.EscapeDataString(_appId)}&client_secret={Uri.EscapeDataString(_appSecret)}&refresh_token={Uri.EscapeDataString(refreshToken)}&fmt=json";
-        return await GetQQResponseAsync<QQRefreshTokenResponse>(url, ct);
+        return await GetQQResponseAsync<QQRefreshTokenResponse>(url, ct).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ public class QQConnectService
     public async Task<QQOpenIdResponse> GetOpenIdAsync(string accessToken, CancellationToken ct = default)
     {
         var url = $"{_baseUrl}/oauth2.0/me?access_token={Uri.EscapeDataString(accessToken)}&fmt=json";
-        return await GetQQResponseAsync<QQOpenIdResponse>(url, ct);
+        return await GetQQResponseAsync<QQOpenIdResponse>(url, ct).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public class QQConnectService
     public async Task<QQUserInfoResponse> GetUserInfoAsync(string accessToken, string openId, CancellationToken ct = default)
     {
         var url = $"{_baseUrl}/user/get_user_info?access_token={Uri.EscapeDataString(accessToken)}&oauth_consumer_key={Uri.EscapeDataString(_appId)}&openid={Uri.EscapeDataString(openId)}";
-        var json = await _httpClient.GetStringAsync(url, ct);
+        var json = await _httpClient.GetStringAsync(url, ct).ConfigureAwait(false);
         var result = JsonSerializer.Deserialize<QQUserInfoResponse>(json, JsonOptions)
                      ?? throw new TencentException("QQ API 响应反序列化失败");
 
@@ -98,7 +98,7 @@ public class QQConnectService
 
     private async Task<T> GetQQResponseAsync<T>(string url, CancellationToken ct) where T : QQBaseResponse
     {
-        var json = await _httpClient.GetStringAsync(url, ct);
+        var json = await _httpClient.GetStringAsync(url, ct).ConfigureAwait(false);
         var result = JsonSerializer.Deserialize<T>(json, JsonOptions)
                      ?? throw new TencentException("QQ API 响应反序列化失败");
 

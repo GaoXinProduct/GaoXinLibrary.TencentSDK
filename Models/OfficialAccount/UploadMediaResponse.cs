@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -8,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 上传临时素材响应（POST /cgi-bin/media/upload）
 /// </summary>
-public class UploadMediaResponse : WechatBaseResponse
+public sealed class UploadMediaResponse : WechatBaseResponse
 {
     /// <summary>媒体文件类型（image/voice/video/thumb）</summary>
     [JsonPropertyName("type")] public string? Type { get; set; }

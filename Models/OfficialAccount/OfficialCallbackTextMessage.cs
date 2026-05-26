@@ -6,7 +6,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>文本消息</summary>
-public class OfficialCallbackTextMessage : OfficialCallbackMessageBase
+public sealed class OfficialCallbackTextMessage : OfficialCallbackMessageBase
 {
     /// <summary>消息 ID（64位整型）</summary>
     public long MsgId { get; set; }

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>获取「客户数据」统计请求（企业汇总/接待人员明细通用）</summary>
-public class KfStatisticRequest
+public sealed class KfStatisticRequest
 {
     /// <summary>客服账号 id（非必填，不填则查所有账号）</summary>
     [JsonPropertyName("open_kfid")] public string? OpenKfId { get; set; }

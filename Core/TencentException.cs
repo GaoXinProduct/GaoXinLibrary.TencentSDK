@@ -3,7 +3,7 @@ namespace GaoXinLibrary.TencentSDK.Core;
 /// <summary>
 /// 腾讯平台 API 调用异常
 /// </summary>
-public class TencentException : Exception
+public sealed class TencentException : Exception
 {
     /// <summary>平台错误码（errcode）</summary>
     public int ErrCode { get; }

@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 
 /// <summary>日期范围值</summary>
-public class ApplyDateRangeValue
+public sealed class ApplyDateRangeValue
 {
     /// <summary>日期类型：day / halfday / hour</summary>
     [JsonPropertyName("type")] public string? Type { get; set; }

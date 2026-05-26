@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 获取已设置二维码规则请求
 /// </summary>
-public class QrcodeJumpGetRequest
+public sealed class QrcodeJumpGetRequest
 {
     /// <summary>小程序 AppId（服务号场景）</summary>
     [JsonPropertyName("appid")] public string? AppId { get; set; }

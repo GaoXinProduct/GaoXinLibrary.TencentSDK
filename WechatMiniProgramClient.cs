@@ -1,6 +1,5 @@
 ﻿using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Services;
-using Microsoft.Extensions.Logging;
 
 namespace GaoXinLibrary.TencentSDK.Wechat;
 
@@ -14,7 +13,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat;
 ///     AppId     = "your_appid",
 ///     AppSecret = "your_appsecret"
 /// });
-/// var session = await client.Auth.Code2SessionAsync("js_code_from_wx_login");
+/// var session = await client.Auth.Code2SessionAsync("js_code_from_wx_login").ConfigureAwait(false);
 /// </code>
 /// </para>
 /// </summary>

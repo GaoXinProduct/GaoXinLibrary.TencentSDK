@@ -19,7 +19,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 ///
 /// <b>注入（MVC Controller）：</b>
 /// <code>
-/// public class MyController(IQQConnectClientFactory qqFactory) : ControllerBase
+/// public sealed class MyController(IQQConnectClientFactory qqFactory) : ControllerBase
 /// {
 ///     private readonly QQConnectClient _qq1 = qqFactory.CreateClient("qq1");
 ///     private readonly QQConnectClient _qq2 = qqFactory.CreateClient("qq2");

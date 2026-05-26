@@ -1,5 +1,4 @@
 using System.Xml.Linq;
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
@@ -9,7 +8,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 /// <para>智能机器人接收到的附件/混合消息</para>
 /// <para>参考文档：<see href="https://developer.work.weixin.qq.com/document/path/100719"/></para>
 /// </summary>
-public class CallbackAttachmentMessage : CallbackMessageBase
+public sealed class CallbackAttachmentMessage : CallbackMessageBase
 {
     /// <summary>消息 ID</summary>
     public long MsgId { get; set; }

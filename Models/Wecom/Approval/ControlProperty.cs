@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 
 /// <summary>控件属性</summary>
-public class ControlProperty
+public sealed class ControlProperty
 {
     /// <summary>控件类型：Text, Textarea, Number, Money, Date, Selector, Contact, Tips, File, Table, Location, RelatedApproval, Formula, DateRange, Vacation, Attendance, PhoneNumber, BankAccount</summary>
     [JsonPropertyName("control")] public string? Control { get; set; }

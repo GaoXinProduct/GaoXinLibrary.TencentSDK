@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>小程序码服务实现</summary>
-public class MiniProgramQrCodeService
+public sealed class MiniProgramQrCodeService
 {
     private readonly WechatHttpClient _http;
 

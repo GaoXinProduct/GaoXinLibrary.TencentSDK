@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号 OpenAPI 管理服务实现</summary>
-public class OfficialOpenApiService
+public sealed class OfficialOpenApiService
 {
     private readonly WechatHttpClient _http;
     private readonly WechatOptions _options;

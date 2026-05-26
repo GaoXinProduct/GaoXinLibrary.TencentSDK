@@ -1,5 +1,4 @@
 using System.Xml.Linq;
-using GaoXinLibrary.TencentSDK.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 

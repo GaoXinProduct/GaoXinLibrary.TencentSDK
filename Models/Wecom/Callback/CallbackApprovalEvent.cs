@@ -8,7 +8,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 /// 参考文档：<see href="https://developer.work.weixin.qq.com/document/path/91815"/>
 /// </para>
 /// </summary>
-public class CallbackApprovalEvent : CallbackEventBase
+public sealed class CallbackApprovalEvent : CallbackEventBase
 {
     /// <summary>审批单号</summary>
     public string SpNo { get; set; } = string.Empty;

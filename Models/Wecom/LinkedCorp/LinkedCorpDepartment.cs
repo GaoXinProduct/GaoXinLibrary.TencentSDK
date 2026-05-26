@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.LinkedCorp;
 
 /// <summary>互联企业部门信息</summary>
-public class LinkedCorpDepartment
+public sealed class LinkedCorpDepartment
 {
     /// <summary>部门 id，由 CorpId/DepartmentId 拼接</summary>
     [JsonPropertyName("department_id")] public string DepartmentId { get; set; } = string.Empty;

@@ -7,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// 群发消息发送结果事件
 /// <para>Event = MASSSENDJOBFINISH</para>
 /// </summary>
-public class OfficialCallbackMassSendJobFinishEvent : OfficialCallbackEventBase
+public sealed class OfficialCallbackMassSendJobFinishEvent : OfficialCallbackEventBase
 {
     /// <summary>群发消息 ID</summary>
     public long MsgID { get; set; }

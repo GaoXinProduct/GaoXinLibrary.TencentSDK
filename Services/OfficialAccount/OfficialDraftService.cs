@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号草稿管理服务实现</summary>
-public class OfficialDraftService
+public sealed class OfficialDraftService
 {
     private readonly WechatHttpClient _http;
     public OfficialDraftService(WechatHttpClient http) => _http = http;

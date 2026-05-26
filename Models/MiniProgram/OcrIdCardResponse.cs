@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>身份证 OCR 响应（POST /cv/ocr/idcard）</summary>
-public class OcrIdCardResponse : WechatBaseResponse
+public sealed class OcrIdCardResponse : WechatBaseResponse
 {
     /// <summary>正面/反面（Front / Back）</summary>
     [JsonPropertyName("type")] public string? Type { get; set; }

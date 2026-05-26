@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>查询实时日志响应</summary>
-public class RealtimeLogSearchResponse : WechatBaseResponse
+public sealed class RealtimeLogSearchResponse : WechatBaseResponse
 {
     /// <summary>日志总条数</summary>
     [JsonPropertyName("total")]    public int Total { get; set; }
@@ -13,7 +12,7 @@ public class RealtimeLogSearchResponse : WechatBaseResponse
 }
 
 /// <summary>实时日志单条</summary>
-public class RealtimeLogItem
+public sealed class RealtimeLogItem
 {
     [JsonPropertyName("timestamp")]  public long Timestamp { get; set; }
     [JsonPropertyName("traceId")]    public string? TraceId { get; set; }

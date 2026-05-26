@@ -1,11 +1,10 @@
-using GaoXinLibrary.TencentSDK.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Core;
 
 /// <summary>
 /// 微信 Access Token 获取与缓存管理
 /// </summary>
-public class AccessTokenProvider : TencentAccessTokenProvider
+public sealed class AccessTokenProvider : TencentAccessTokenProvider
 {
     private readonly WechatOptions _options;
 

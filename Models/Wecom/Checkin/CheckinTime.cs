@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
 /// <summary>上下班打卡时间</summary>
-public class CheckinTime
+public sealed class CheckinTime
 {
     /// <summary>上班时间，距离当天 0 点的秒数</summary>
     [JsonPropertyName("work_sec")] public int WorkSec { get; set; }

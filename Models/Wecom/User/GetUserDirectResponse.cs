@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.User;
@@ -13,7 +12,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.User;
 /// <see href="https://developer.work.weixin.qq.com/document/path/95833">获取访问用户敏感信息</see>。
 /// </para>
 /// </summary>
-public class GetUserDirectResponse : WecomBaseResponse
+public sealed class GetUserDirectResponse : WecomBaseResponse
 {
     [JsonPropertyName("userid")] public string? UserId { get; set; }
     [JsonPropertyName("name")] public string? Name { get; set; }

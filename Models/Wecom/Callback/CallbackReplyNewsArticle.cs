@@ -1,11 +1,10 @@
 using System.Xml.Linq;
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
 /// <summary>被动回复图文消息中的文章项</summary>
-public class CallbackReplyNewsArticle
+public sealed class CallbackReplyNewsArticle
 {
     /// <summary>图文消息标题</summary>
     public string Title { get; set; } = string.Empty;

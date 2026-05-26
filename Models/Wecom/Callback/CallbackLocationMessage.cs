@@ -1,11 +1,10 @@
 using System.Xml.Linq;
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
 /// <summary>位置消息</summary>
-public class CallbackLocationMessage : CallbackMessageBase
+public sealed class CallbackLocationMessage : CallbackMessageBase
 {
     /// <summary>消息 ID</summary>
     public long MsgId { get; set; }

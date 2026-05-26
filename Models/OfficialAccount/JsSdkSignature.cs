@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>JS-SDK 签名结果</summary>
-public class JsSdkSignature
+public sealed class JsSdkSignature
 {
     /// <summary>AppId</summary>
     public required string AppId { get; set; }

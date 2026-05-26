@@ -5,7 +5,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>应用群聊会话管理服务实现</summary>
-public class GroupChatService
+public sealed class GroupChatService
 {
     private readonly WecomHttpClient _http;
 
@@ -14,19 +14,19 @@ public class GroupChatService
     /// <summary>创建群聊会话</summary>
     public async Task<GroupChatInfo> CreateGroupChatAsync(CreateGroupChatRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<CreateGroupChatResponse>("/cgi-bin/appchat/create", request, ct);
+        var resp = await _http.PostAsync<CreateGroupChatResponse>("/cgi-bin/appchat/create", request, ct).ConfigureAwait(false);
         return resp.ChatInfo ?? new GroupChatInfo();
     }
 
     /// <summary>修改群聊会话（改名、换群主、增删成员）</summary>
     public async Task UpdateGroupChatAsync(UpdateGroupChatRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/appchat/update", request, ct);
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/appchat/update", request, ct).ConfigureAwait(false);
 
     /// <summary>获取群聊会话信息</summary>
     public async Task<GroupChatInfo> GetGroupChatAsync(string chatId, CancellationToken ct = default)
     {
         var resp = await _http.GetAsync<GetGroupChatResponse>("/cgi-bin/appchat/get",
-            new() { ["chatid"] = chatId }, ct);
+            new() { ["chatid"] = chatId }, ct).ConfigureAwait(false);
         return resp.ChatInfo ?? new GroupChatInfo();
     }
 
@@ -68,5 +68,5 @@ public class GroupChatService
 
     /// <summary>发送自定义消息到群聊</summary>
     public async Task SendAsync(SendGroupChatMessageRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/appchat/send", request, ct);
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/appchat/send", request, ct).ConfigureAwait(false);
 }

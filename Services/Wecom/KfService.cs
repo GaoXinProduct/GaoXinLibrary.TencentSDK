@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>微信客服服务实现</summary>
-public class KfService
+public sealed class KfService
 {
     private readonly WecomHttpClient _http;
 
@@ -21,7 +21,7 @@ public class KfService
     {
         var resp = await _http.PostAsync<KfAccountAddResponse>(
             "/cgi-bin/kf/account/add",
-            new KfAccountAddRequest { Name = name, MediaId = mediaId }, ct);
+            new KfAccountAddRequest { Name = name, MediaId = mediaId }, ct).ConfigureAwait(false);
         return resp.OpenKfId;
     }
 
@@ -32,7 +32,7 @@ public class KfService
     {
         await _http.PostAsync<WecomBaseResponse>(
             "/cgi-bin/kf/account/del",
-            new KfAccountDelRequest { OpenKfId = openKfId }, ct);
+            new KfAccountDelRequest { OpenKfId = openKfId }, ct).ConfigureAwait(false);
     }
 
     /// <summary>修改客服账号</summary>
@@ -41,7 +41,7 @@ public class KfService
     public async Task UpdateAccountAsync(KfAccountUpdateRequest request, CancellationToken ct = default)
     {
         await _http.PostAsync<WecomBaseResponse>(
-            "/cgi-bin/kf/account/update", request, ct);
+            "/cgi-bin/kf/account/update", request, ct).ConfigureAwait(false);
     }
 
     /// <summary>获取客服账号列表</summary>
@@ -53,7 +53,7 @@ public class KfService
     {
         var resp = await _http.PostAsync<KfAccountListResponse>(
             "/cgi-bin/kf/account/list",
-            new KfAccountListRequest { Offset = offset, Limit = limit }, ct);
+            new KfAccountListRequest { Offset = offset, Limit = limit }, ct).ConfigureAwait(false);
         return resp.AccountList ?? [];
     }
 
@@ -66,7 +66,7 @@ public class KfService
     {
         var resp = await _http.PostAsync<KfAddContactWayResponse>(
             "/cgi-bin/kf/add_contact_way",
-            new KfAddContactWayRequest { OpenKfId = openKfId, Scene = scene }, ct);
+            new KfAddContactWayRequest { OpenKfId = openKfId, Scene = scene }, ct).ConfigureAwait(false);
         return resp.Url;
     }
 
@@ -80,7 +80,7 @@ public class KfService
     public async Task<KfServicerResult[]> AddServicerAsync(KfServicerAddRequest request, CancellationToken ct = default)
     {
         var resp = await _http.PostAsync<KfServicerResponse>(
-            "/cgi-bin/kf/servicer/add", request, ct);
+            "/cgi-bin/kf/servicer/add", request, ct).ConfigureAwait(false);
         return resp.ResultList ?? [];
     }
 
@@ -91,7 +91,7 @@ public class KfService
     public async Task<KfServicerResult[]> DeleteServicerAsync(KfServicerDelRequest request, CancellationToken ct = default)
     {
         var resp = await _http.PostAsync<KfServicerResponse>(
-            "/cgi-bin/kf/servicer/del", request, ct);
+            "/cgi-bin/kf/servicer/del", request, ct).ConfigureAwait(false);
         return resp.ResultList ?? [];
     }
 
@@ -103,7 +103,7 @@ public class KfService
     {
         var resp = await _http.GetAsync<KfServicerListResponse>(
             "/cgi-bin/kf/servicer/list",
-            new Dictionary<string, string?> { ["open_kfid"] = openKfId }, ct);
+            new Dictionary<string, string?> { ["open_kfid"] = openKfId }, ct).ConfigureAwait(false);
         return resp.ServicerList ?? [];
     }
 
@@ -119,7 +119,7 @@ public class KfService
     {
         return await _http.PostAsync<KfServiceStateGetResponse>(
             "/cgi-bin/kf/service_state/get",
-            new KfServiceStateGetRequest { OpenKfId = openKfId, ExternalUserId = externalUserId }, ct);
+            new KfServiceStateGetRequest { OpenKfId = openKfId, ExternalUserId = externalUserId }, ct).ConfigureAwait(false);
     }
 
     /// <summary>变更会话状态</summary>
@@ -129,7 +129,7 @@ public class KfService
     public async Task<KfServiceStateTransResponse> TransServiceStateAsync(KfServiceStateTransRequest request, CancellationToken ct = default)
     {
         return await _http.PostAsync<KfServiceStateTransResponse>(
-            "/cgi-bin/kf/service_state/trans", request, ct);
+            "/cgi-bin/kf/service_state/trans", request, ct).ConfigureAwait(false);
     }
 
     #endregion
@@ -142,7 +142,7 @@ public class KfService
     public async Task<KfSyncMsgResponse> SyncMsgAsync(KfSyncMsgRequest request, CancellationToken ct = default)
     {
         return await _http.PostAsync<KfSyncMsgResponse>(
-            "/cgi-bin/kf/sync_msg", request, ct);
+            "/cgi-bin/kf/sync_msg", request, ct).ConfigureAwait(false);
     }
 
     /// <summary>发送消息</summary>
@@ -152,7 +152,7 @@ public class KfService
     public async Task<KfSendMsgResponse> SendMsgAsync(KfSendMsgRequest request, CancellationToken ct = default)
     {
         return await _http.PostAsync<KfSendMsgResponse>(
-            "/cgi-bin/kf/send_msg", request, ct);
+            "/cgi-bin/kf/send_msg", request, ct).ConfigureAwait(false);
     }
 
     #endregion
@@ -166,7 +166,7 @@ public class KfService
     {
         var resp = await _http.PostAsync<KfCustomerBatchGetResponse>(
             "/cgi-bin/kf/customer/batchget",
-            new KfCustomerBatchGetRequest { ExternalUserIdList = externalUserIds }, ct);
+            new KfCustomerBatchGetRequest { ExternalUserIdList = externalUserIds }, ct).ConfigureAwait(false);
         return resp.CustomerList ?? [];
     }
 
@@ -180,7 +180,7 @@ public class KfService
     public async Task<KfCorpStatisticResponse> GetCorpStatisticAsync(KfStatisticRequest request, CancellationToken ct = default)
     {
         return await _http.PostAsync<KfCorpStatisticResponse>(
-            "/cgi-bin/kf/get_corp_statistic", request, ct);
+            "/cgi-bin/kf/get_corp_statistic", request, ct).ConfigureAwait(false);
     }
 
     /// <summary>获取「客户数据」接待人员明细数据</summary>
@@ -190,7 +190,7 @@ public class KfService
     public async Task<KfServicerStatisticResponse> GetServicerStatisticAsync(KfStatisticRequest request, CancellationToken ct = default)
     {
         return await _http.PostAsync<KfServicerStatisticResponse>(
-            "/cgi-bin/kf/get_servicer_statistic", request, ct);
+            "/cgi-bin/kf/get_servicer_statistic", request, ct).ConfigureAwait(false);
     }
 
     #endregion
@@ -203,7 +203,7 @@ public class KfService
     public async Task<KfSendMsgOnEventResponse> SendMsgOnEventAsync(KfSendMsgOnEventRequest request, CancellationToken ct = default)
     {
         return await _http.PostAsync<KfSendMsgOnEventResponse>(
-            "/cgi-bin/kf/send_msg_on_event", request, ct);
+            "/cgi-bin/kf/send_msg_on_event", request, ct).ConfigureAwait(false);
     }
 
     #endregion
@@ -217,7 +217,7 @@ public class KfService
     {
         return await _http.PostAsync<KfUpgradeServiceConfigResponse>(
             "/cgi-bin/kf/customer/get_upgrade_service_config",
-            new KfUpgradeServiceConfigRequest { OpenKfId = openKfId }, ct);
+            new KfUpgradeServiceConfigRequest { OpenKfId = openKfId }, ct).ConfigureAwait(false);
     }
 
     /// <summary>为客户升级为专员或客户群服务</summary>
@@ -226,7 +226,7 @@ public class KfService
     public async Task UpgradeServiceAsync(KfCustomerUpgradeServiceRequest request, CancellationToken ct = default)
     {
         await _http.PostAsync<WecomBaseResponse>(
-            "/cgi-bin/kf/customer/upgrade_service", request, ct);
+            "/cgi-bin/kf/customer/upgrade_service", request, ct).ConfigureAwait(false);
     }
 
     /// <summary>为客户取消升级服务</summary>
@@ -235,7 +235,7 @@ public class KfService
     public async Task CancelUpgradeServiceAsync(KfCustomerCancelUpgradeServiceRequest request, CancellationToken ct = default)
     {
         await _http.PostAsync<WecomBaseResponse>(
-            "/cgi-bin/kf/customer/cancel_upgrade_service", request, ct);
+            "/cgi-bin/kf/customer/cancel_upgrade_service", request, ct).ConfigureAwait(false);
     }
 
     #endregion
@@ -249,7 +249,7 @@ public class KfService
     {
         var resp = await _http.PostAsync<KfKnowledgeAddGroupResponse>(
             "/cgi-bin/kf/knowledge/add_group",
-            new KfKnowledgeAddGroupRequest { Name = name }, ct);
+            new KfKnowledgeAddGroupRequest { Name = name }, ct).ConfigureAwait(false);
         return resp.GroupId ?? string.Empty;
     }
 
@@ -260,7 +260,7 @@ public class KfService
     {
         await _http.PostAsync<WecomBaseResponse>(
             "/cgi-bin/kf/knowledge/del_group",
-            new KfKnowledgeDelGroupRequest { GroupId = groupId }, ct);
+            new KfKnowledgeDelGroupRequest { GroupId = groupId }, ct).ConfigureAwait(false);
     }
 
     /// <summary>修改知识库分组</summary>
@@ -271,7 +271,7 @@ public class KfService
     {
         await _http.PostAsync<WecomBaseResponse>(
             "/cgi-bin/kf/knowledge/mod_group",
-            new KfKnowledgeModGroupRequest { GroupId = groupId, Name = name }, ct);
+            new KfKnowledgeModGroupRequest { GroupId = groupId, Name = name }, ct).ConfigureAwait(false);
     }
 
     /// <summary>获取知识库分组列表</summary>
@@ -281,7 +281,7 @@ public class KfService
     public async Task<KfKnowledgeListGroupResponse> ListKnowledgeGroupsAsync(KfKnowledgeListGroupRequest request, CancellationToken ct = default)
     {
         return await _http.PostAsync<KfKnowledgeListGroupResponse>(
-            "/cgi-bin/kf/knowledge/list_group", request, ct);
+            "/cgi-bin/kf/knowledge/list_group", request, ct).ConfigureAwait(false);
     }
 
     #endregion
@@ -294,7 +294,7 @@ public class KfService
     public async Task<string> AddKnowledgeIntentAsync(KfKnowledgeAddIntentRequest request, CancellationToken ct = default)
     {
         var resp = await _http.PostAsync<KfKnowledgeAddIntentResponse>(
-            "/cgi-bin/kf/knowledge/add_intent", request, ct);
+            "/cgi-bin/kf/knowledge/add_intent", request, ct).ConfigureAwait(false);
         return resp.IntentId ?? string.Empty;
     }
 
@@ -305,7 +305,7 @@ public class KfService
     {
         await _http.PostAsync<WecomBaseResponse>(
             "/cgi-bin/kf/knowledge/del_intent",
-            new KfKnowledgeDelIntentRequest { IntentId = intentId }, ct);
+            new KfKnowledgeDelIntentRequest { IntentId = intentId }, ct).ConfigureAwait(false);
     }
 
     /// <summary>修改知识库问答</summary>
@@ -314,7 +314,7 @@ public class KfService
     public async Task UpdateKnowledgeIntentAsync(KfKnowledgeModIntentRequest request, CancellationToken ct = default)
     {
         await _http.PostAsync<WecomBaseResponse>(
-            "/cgi-bin/kf/knowledge/mod_intent", request, ct);
+            "/cgi-bin/kf/knowledge/mod_intent", request, ct).ConfigureAwait(false);
     }
 
     /// <summary>获取知识库问答列表</summary>
@@ -324,7 +324,7 @@ public class KfService
     public async Task<KfKnowledgeListIntentResponse> ListKnowledgeIntentsAsync(KfKnowledgeListIntentRequest request, CancellationToken ct = default)
     {
         return await _http.PostAsync<KfKnowledgeListIntentResponse>(
-            "/cgi-bin/kf/knowledge/list_intent", request, ct);
+            "/cgi-bin/kf/knowledge/list_intent", request, ct).ConfigureAwait(false);
     }
     #endregion
 }

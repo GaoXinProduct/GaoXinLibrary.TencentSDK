@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Menu;
 
 /// <summary>工作台关键数据项</summary>
-public class WorkbenchKeyDataItem
+public sealed class WorkbenchKeyDataItem
 {
     /// <summary>关键数据名称</summary>
     [JsonPropertyName("key")] public string Key { get; set; } = string.Empty;

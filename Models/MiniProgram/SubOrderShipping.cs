@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>子订单发货信息</summary>
-public class SubOrderShipping
+public sealed class SubOrderShipping
 {
     /// <summary>子订单标识</summary>
     [JsonPropertyName("order_key")] public required ShippingOrderKey OrderKey { get; set; }

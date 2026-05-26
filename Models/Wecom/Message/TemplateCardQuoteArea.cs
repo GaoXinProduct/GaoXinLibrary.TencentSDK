@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 /// <summary>引用文献样式</summary>
-public class TemplateCardQuoteArea
+public sealed class TemplateCardQuoteArea
 {
     /// <summary>引用文献样式区域点击事件类型：0=不可点击, 1=跳转url, 2=跳转小程序</summary>
     [JsonPropertyName("type")] public int? Type { get; set; }

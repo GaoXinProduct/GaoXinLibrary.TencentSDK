@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 /// 获取智能表格自动化创建的群聊列表请求
 /// <para>参考文档：<see href="https://developer.work.weixin.qq.com/document/path/100989"/></para>
 /// </summary>
-public class GetSmartSheetChatListRequest
+public sealed class GetSmartSheetChatListRequest
 {
     /// <summary>智能表格 docid</summary>
     [JsonPropertyName("docid")] public string DocId { get; set; } = string.Empty;

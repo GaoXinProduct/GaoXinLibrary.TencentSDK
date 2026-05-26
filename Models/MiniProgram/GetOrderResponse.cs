@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 查询订单发货状态响应
 /// </summary>
-public class GetOrderResponse : WechatBaseResponse
+public sealed class GetOrderResponse : WechatBaseResponse
 {
     /// <summary>微信订单号</summary>
     [JsonPropertyName("transaction_id")] public string? TransactionId { get; set; }

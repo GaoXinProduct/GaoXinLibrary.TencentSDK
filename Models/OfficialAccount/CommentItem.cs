@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>评论项</summary>
-public class CommentItem
+public sealed class CommentItem
 {
     [JsonPropertyName("user_comment_id")] public long UserCommentId { get; set; }
     [JsonPropertyName("openid")] public string? OpenId { get; set; }

@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>变更会话状态请求</summary>
-public class KfServiceStateTransRequest
+public sealed class KfServiceStateTransRequest
 {
     /// <summary>客服账号 id</summary>
     [JsonPropertyName("open_kfid")] public string OpenKfId { get; set; } = string.Empty;

@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Meeting;
 
 /// <summary>创建会议请求</summary>
-public class CreateMeetingRequest
+public sealed class CreateMeetingRequest
 {
     /// <summary>会议标题</summary>
     [JsonPropertyName("title")]

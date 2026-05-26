@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.AsyncImport;
 
 /// <summary>异步导入结果项</summary>
-public class AsyncImportResultItem
+public sealed class AsyncImportResultItem
 {
     /// <summary>成员UserID/部门ID</summary>
     [JsonPropertyName("userid")] public string? UserId { get; set; }

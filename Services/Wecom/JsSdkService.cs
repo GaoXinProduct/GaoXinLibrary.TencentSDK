@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.JsSdk;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>企业微信 H5 / JS-SDK 服务实现</summary>
-public class JsSdkService
+public sealed class JsSdkService
 {
     private readonly WecomTicketProvider _jsApiTicketProvider;
     private readonly WecomTicketProvider _agentTicketProvider;

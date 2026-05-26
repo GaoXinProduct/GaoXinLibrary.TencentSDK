@@ -7,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// 模板消息发送结果事件
 /// <para>Event = TEMPLATESENDJOBFINISH</para>
 /// </summary>
-public class OfficialCallbackTemplateSendJobFinishEvent : OfficialCallbackEventBase
+public sealed class OfficialCallbackTemplateSendJobFinishEvent : OfficialCallbackEventBase
 {
     /// <summary>模板消息 ID</summary>
     public long MsgID { get; set; }

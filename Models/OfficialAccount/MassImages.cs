@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>群发图片列表</summary>
-public class MassImages
+public sealed class MassImages
 {
     [JsonPropertyName("media_ids")] public required List<string> MediaIds { get; set; }
     [JsonPropertyName("recommend")] public string? Recommend { get; set; }

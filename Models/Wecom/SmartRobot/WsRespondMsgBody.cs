@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 
@@ -7,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 /// aibot_respond_msg 回复消息体（支持流式消息）
 /// <para>参考文档：<see href="https://developer.work.weixin.qq.com/document/path/101463"/></para>
 /// </summary>
-public class WsRespondMsgBody
+public sealed class WsRespondMsgBody
 {
     /// <summary>消息类型（stream / markdown / template_card / file / image / voice / video）</summary>
     [JsonPropertyName("msgtype")] public string MsgType { get; set; } = string.Empty;

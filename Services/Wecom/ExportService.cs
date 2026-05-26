@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Export;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>异步导出接口服务实现</summary>
-public class ExportService
+public sealed class ExportService
 {
     private readonly WecomHttpClient _http;
 
@@ -22,7 +22,7 @@ public class ExportService
     {
         var resp = await _http.PostAsync<ExportJobResponse>(
             "/cgi-bin/export/simple_user",
-            new ExportRequest { EncodingAesKey = encodingAesKey, BlockSize = blockSize }, ct);
+            new ExportRequest { EncodingAesKey = encodingAesKey, BlockSize = blockSize }, ct).ConfigureAwait(false);
         return resp.JobId;
     }
 
@@ -38,7 +38,7 @@ public class ExportService
     {
         var resp = await _http.PostAsync<ExportJobResponse>(
             "/cgi-bin/export/user",
-            new ExportRequest { EncodingAesKey = encodingAesKey, BlockSize = blockSize }, ct);
+            new ExportRequest { EncodingAesKey = encodingAesKey, BlockSize = blockSize }, ct).ConfigureAwait(false);
         return resp.JobId;
     }
 
@@ -54,7 +54,7 @@ public class ExportService
     {
         var resp = await _http.PostAsync<ExportJobResponse>(
             "/cgi-bin/export/department",
-            new ExportRequest { EncodingAesKey = encodingAesKey, BlockSize = blockSize }, ct);
+            new ExportRequest { EncodingAesKey = encodingAesKey, BlockSize = blockSize }, ct).ConfigureAwait(false);
         return resp.JobId;
     }
 
@@ -71,7 +71,7 @@ public class ExportService
     {
         var resp = await _http.PostAsync<ExportJobResponse>(
             "/cgi-bin/export/taguser",
-            new ExportTagUserRequest { TagId = tagId, EncodingAesKey = encodingAesKey, BlockSize = blockSize }, ct);
+            new ExportTagUserRequest { TagId = tagId, EncodingAesKey = encodingAesKey, BlockSize = blockSize }, ct).ConfigureAwait(false);
         return resp.JobId;
     }
 
@@ -86,6 +86,6 @@ public class ExportService
     {
         return await _http.PostAsync<GetExportResultResponse>(
             "/cgi-bin/export/get_result",
-            new GetExportResultRequest { JobId = jobId }, ct);
+            new GetExportResultRequest { JobId = jobId }, ct).ConfigureAwait(false);
     }
 }

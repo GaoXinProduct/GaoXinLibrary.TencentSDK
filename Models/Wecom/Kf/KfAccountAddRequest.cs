@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>添加客服账号请求</summary>
-public class KfAccountAddRequest
+public sealed class KfAccountAddRequest
 {
     /// <summary>客服名称，不超过16个字符</summary>
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;

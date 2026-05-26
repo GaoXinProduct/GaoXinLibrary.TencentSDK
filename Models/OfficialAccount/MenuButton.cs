@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>菜单按钮</summary>
-public class MenuButton
+public sealed class MenuButton
 {
     /// <summary>菜单标题，不超过 16 字节（子菜单不超过 60 字节）</summary>
     [JsonPropertyName("name")] public required string Name { get; set; }

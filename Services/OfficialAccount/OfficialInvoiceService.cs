@@ -8,7 +8,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 /// <summary>
 /// 公众号微信发票（商户开票）服务实现
 /// </summary>
-public class OfficialInvoiceService
+public sealed class OfficialInvoiceService
 {
     private readonly WechatHttpClient _http;
 
@@ -102,9 +102,9 @@ public class OfficialInvoiceService
     public async Task<InvoicePlatformSetPdfResponse> UploadPlatformPdfAsync(Stream fileStream, string fileName, CancellationToken ct = default)
     {
         using var ms = new MemoryStream();
-        await fileStream.CopyToAsync(ms, ct);
+        await fileStream.CopyToAsync(ms, ct).ConfigureAwait(false);
         using var form = BuildPdfForm(fileName, ms.ToArray());
-        return await _http.PostRawFormAsync<InvoicePlatformSetPdfResponse>("/card/invoice/platform/setpdf", form, null, ct);
+        return await _http.PostRawFormAsync<InvoicePlatformSetPdfResponse>("/card/invoice/platform/setpdf", form, null, ct).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -113,7 +113,7 @@ public class OfficialInvoiceService
     public async Task<InvoicePlatformSetPdfResponse> UploadPlatformPdfAsync(ReadOnlyMemory<byte> fileBytes, string fileName, CancellationToken ct = default)
     {
         using var form = BuildPdfForm(fileName, fileBytes);
-        return await _http.PostRawFormAsync<InvoicePlatformSetPdfResponse>("/card/invoice/platform/setpdf", form, null, ct);
+        return await _http.PostRawFormAsync<InvoicePlatformSetPdfResponse>("/card/invoice/platform/setpdf", form, null, ct).ConfigureAwait(false);
     }
 
     /// <summary>

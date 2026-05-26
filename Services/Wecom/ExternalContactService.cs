@@ -1,10 +1,10 @@
-﻿using GaoXinLibrary.TencentSDK.Wecom.Core;
+using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Models.ExternalContact;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>客户联系服务实现</summary>
-public class ExternalContactService
+public sealed class ExternalContactService
 {
     private readonly WecomHttpClient _http;
 
@@ -53,51 +53,110 @@ public class ExternalContactService
     public async Task SendWelcomeMsgAsync(SendWelcomeMsgRequest request, CancellationToken ct = default)
         => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/send_welcome_msg", request, ct);
 
-    /// <summary>转换 tmp_external_userid 为 external_userid</summary>
-    public async Task<ConvertTmpExternalUserIdResponse> ConvertTmpExternalUserIdAsync(ConvertTmpExternalUserIdRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<ConvertTmpExternalUserIdResponse>("/cgi-bin/idconvert/convert_tmp_external_userid", request, ct);
+    #region 客户朋友圈
 
-    /// <summary>获取企业标签库</summary>
-    public async Task<GetCorpTagListResponse> GetCorpTagListAsync(GetCorpTagListRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<GetCorpTagListResponse>("/cgi-bin/externalcontact/get_corp_tag_list", request, ct);
+    /// <summary>创建发表朋友圈任务</summary>
+    public async Task<AddMomentTaskResponse> AddMomentTaskAsync(AddMomentTaskRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<AddMomentTaskResponse>("/cgi-bin/externalcontact/add_moment_task", request, ct);
 
-    /// <summary>添加企业客户标签</summary>
-    public async Task<AddCorpTagResponse> AddCorpTagAsync(AddCorpTagRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<AddCorpTagResponse>("/cgi-bin/externalcontact/add_corp_tag", request, ct);
+    /// <summary>取消发表朋友圈任务</summary>
+    public async Task CancelMomentTaskAsync(CancelMomentTaskRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/cancel_moment_task", request, ct);
 
-    /// <summary>编辑企业客户标签</summary>
-    public async Task<WecomBaseResponse> UpdateCorpTagAsync(UpdateCorpTagRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/edit_corp_tag", request, ct);
+    /// <summary>获取朋友圈列表</summary>
+    public async Task<GetMomentListResponse> GetMomentListAsync(GetMomentListRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetMomentListResponse>("/cgi-bin/externalcontact/get_moment_list", request, ct);
 
-    /// <summary>删除企业客户标签</summary>
-    public async Task<WecomBaseResponse> DeleteCorpTagAsync(DeleteCorpTagRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/del_corp_tag", request, ct);
+    /// <summary>获取朋友圈任务详情</summary>
+    public async Task<GetMomentTaskResponse> GetMomentTaskAsync(GetMomentTaskRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetMomentTaskResponse>("/cgi-bin/externalcontact/get_moment_task", request, ct);
 
-    /// <summary>分配在职成员的客户给其他成员</summary>
-    public async Task<TransferCustomerResponse> TransferCustomerAsync(TransferCustomerRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<TransferCustomerResponse>("/cgi-bin/externalcontact/transfer_customer", request, ct);
+    /// <summary>获取朋友圈客户列表</summary>
+    public async Task<GetMomentCustomerListResponse> GetMomentCustomerListAsync(GetMomentCustomerListRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetMomentCustomerListResponse>("/cgi-bin/externalcontact/get_moment_customer_list", request, ct);
 
-    /// <summary>查询客户接替状态（在职）</summary>
-    public async Task<GetTransferCustomerResultResponse> GetTransferCustomerResultAsync(GetTransferCustomerResultRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<GetTransferCustomerResultResponse>("/cgi-bin/externalcontact/transfer_result", request, ct);
+    /// <summary>获取朋友圈发送结果</summary>
+    public async Task<GetMomentSendResultResponse> GetMomentSendResultAsync(GetMomentSendResultRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetMomentSendResultResponse>("/cgi-bin/externalcontact/get_moment_send_result", request, ct);
 
-    /// <summary>分配在职成员的客户群给其他成员</summary>
-    public async Task<TransferGroupChatResponse> TransferGroupChatAsync(TransferGroupChatRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<TransferGroupChatResponse>("/cgi-bin/externalcontact/groupchat/onjob_transfer", request, ct);
+    #endregion
 
-    /// <summary>查询客户群接替状态</summary>
-    public async Task<GetTransferGroupChatResultResponse> GetTransferGroupChatResultAsync(GetTransferGroupChatResultRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<GetTransferGroupChatResultResponse>("/cgi-bin/externalcontact/groupchat/transfer_result", request, ct);
+    #region 获客助手
 
-    /// <summary>分配离职成员的客户给其他成员</summary>
-    public async Task<DemotionTransferCustomerResponse> DemotionTransferCustomerAsync(DemotionTransferCustomerRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<DemotionTransferCustomerResponse>("/cgi-bin/externalcontact/resigned/transfer_customer", request, ct);
+    /// <summary>创建获客链接</summary>
+    public async Task<CreateAcquisitionLinkResponse> CreateAcquisitionLinkAsync(CreateAcquisitionLinkRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<CreateAcquisitionLinkResponse>("/cgi-bin/externalcontact/customer_acquisition/create_link", request, ct);
 
-    /// <summary>查询离职客户接替状态</summary>
-    public async Task<GetDemotionTransferResultResponse> GetDemotionTransferResultAsync(GetDemotionTransferResultRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<GetDemotionTransferResultResponse>("/cgi-bin/externalcontact/resigned/transfer_result", request, ct);
+    /// <summary>获取获客链接详情</summary>
+    public async Task<GetAcquisitionLinkResponse> GetAcquisitionLinkAsync(GetAcquisitionLinkRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetAcquisitionLinkResponse>("/cgi-bin/externalcontact/customer_acquisition/get", request, ct);
 
-    /// <summary>将客户群的 opengid 转换为 chat_id</summary>
-    public async Task<GetGroupChatByExternalUserIdResponse> GetGroupChatByExternalUserIdAsync(GetGroupChatByExternalUserIdRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<GetGroupChatByExternalUserIdResponse>("/cgi-bin/externalcontact/opengid_to_chatid", request, ct);
+    /// <summary>获取获客链接列表</summary>
+    public async Task<ListAcquisitionLinkResponse> ListAcquisitionLinksAsync(ListAcquisitionLinkRequest? request = null, CancellationToken ct = default)
+        => await _http.PostAsync<ListAcquisitionLinkResponse>("/cgi-bin/externalcontact/customer_acquisition/list", request ?? new(), ct);
+
+    /// <summary>更新获客链接</summary>
+    public async Task UpdateAcquisitionLinkAsync(UpdateAcquisitionLinkRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/customer_acquisition/update_link", request, ct);
+
+    /// <summary>删除获客链接</summary>
+    public async Task DeleteAcquisitionLinkAsync(DeleteAcquisitionLinkRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/customer_acquisition/delete_link", request, ct);
+
+    /// <summary>获取获客链接添加的客户</summary>
+    public async Task<GetAcquisitionCustomerResponse> GetAcquisitionCustomerAsync(GetAcquisitionCustomerRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetAcquisitionCustomerResponse>("/cgi-bin/externalcontact/customer_acquisition/customer", request, ct);
+
+    #endregion
+
+    #region 商品图册
+
+    /// <summary>添加商品图册</summary>
+    public async Task<AddProductAlbumResponse> AddProductAlbumAsync(AddProductAlbumRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<AddProductAlbumResponse>("/cgi-bin/externalcontact/add_product_album", request, ct);
+
+    /// <summary>获取商品图册列表</summary>
+    public async Task<GetProductAlbumListResponse> GetProductAlbumListAsync(GetProductAlbumListRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetProductAlbumListResponse>("/cgi-bin/externalcontact/product_album/list", request, ct);
+
+    /// <summary>获取商品图册详情</summary>
+    public async Task<ProductAlbumInfo?> GetProductAlbumAsync(GetProductAlbumRequest request, CancellationToken ct = default)
+    {
+        var resp = await _http.PostAsync<GetProductAlbumResponse>("/cgi-bin/externalcontact/product_album/get", request, ct);
+        return resp.Product;
+    }
+
+    /// <summary>更新商品图册</summary>
+    public async Task UpdateProductAlbumAsync(UpdateProductAlbumRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/product_album/update", request, ct);
+
+    /// <summary>删除商品图册</summary>
+    public async Task DeleteProductAlbumAsync(DeleteProductAlbumRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/product_album/delete", request, ct);
+
+    #endregion
+
+    #region 聊天敏感词
+
+    /// <summary>创建聊天敏感词规则</summary>
+    public async Task<AddInterceptRuleResponse> CreateWordRuleAsync(AddInterceptRuleRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<AddInterceptRuleResponse>("/cgi-bin/externalcontact/add_intercept_rule", request, ct);
+
+    /// <summary>获取敏感词规则列表</summary>
+    public async Task<GetInterceptRuleListResponse> GetWordRuleListAsync(CancellationToken ct = default)
+        => await _http.PostAsync<GetInterceptRuleListResponse>("/cgi-bin/externalcontact/get_intercept_rule_list", new { }, ct);
+
+    /// <summary>获取敏感词规则详情</summary>
+    public async Task<GetWordRuleResponse> GetWordRuleAsync(GetWordRuleRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<GetWordRuleResponse>("/cgi-bin/externalcontact/get_intercept_rule", request, ct);
+
+    /// <summary>更新聊天敏感词规则</summary>
+    public async Task UpdateWordRuleAsync(UpdateInterceptRuleRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/update_intercept_rule", request, ct);
+
+    /// <summary>删除聊天敏感词规则</summary>
+    public async Task DeleteWordRuleAsync(DeleteInterceptRuleRequest request, CancellationToken ct = default)
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/del_intercept_rule", request, ct);
+
+    #endregion
 }

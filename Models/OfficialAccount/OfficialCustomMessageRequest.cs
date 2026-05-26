@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -11,7 +10,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// 不同消息类型需要填写不同字段，如文本消息设置 Text 属性，图片消息设置 Image 属性等。
 /// </para>
 /// </summary>
-public class OfficialCustomMessageRequest
+public sealed class OfficialCustomMessageRequest
 {
     [JsonPropertyName("touser")] public required string ToUser { get; set; }
     [JsonPropertyName("msgtype")] public required string MsgType { get; set; }

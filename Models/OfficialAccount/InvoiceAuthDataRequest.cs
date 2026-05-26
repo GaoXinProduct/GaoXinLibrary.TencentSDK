@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 查询发票授权信息请求
 /// </summary>
-public class InvoiceAuthDataRequest
+public sealed class InvoiceAuthDataRequest
 {
     /// <summary>订单 order_id</summary>
     [JsonPropertyName("order_id")] public required string OrderId { get; set; }

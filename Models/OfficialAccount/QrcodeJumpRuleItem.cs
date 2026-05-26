@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 二维码跳转规则项
 /// </summary>
-public class QrcodeJumpRuleItem
+public sealed class QrcodeJumpRuleItem
 {
     /// <summary>二维码规则前缀</summary>
     [JsonPropertyName("prefix")] public string? Prefix { get; set; }

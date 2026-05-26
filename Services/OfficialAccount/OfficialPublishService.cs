@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号发布能力服务实现</summary>
-public class OfficialPublishService
+public sealed class OfficialPublishService
 {
     private readonly WechatHttpClient _http;
     public OfficialPublishService(WechatHttpClient http) => _http = http;

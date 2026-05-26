@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>草稿文章</summary>
-public class DraftArticle
+public sealed class DraftArticle
 {
     /// <summary>标题</summary>
     [JsonPropertyName("title")] public required string Title { get; set; }

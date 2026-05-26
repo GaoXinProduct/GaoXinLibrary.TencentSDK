@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.ExternalContact;
 
 /// <summary>跟进人标签</summary>
-public class FollowUserTag
+public sealed class FollowUserTag
 {
     /// <summary>标签的分组名称</summary>
     [JsonPropertyName("group_name")] public string? GroupName { get; set; }

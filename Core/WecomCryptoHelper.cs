@@ -1,4 +1,3 @@
-using GaoXinLibrary.TencentSDK.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Core;
 

@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Meeting;
 
 /// <summary>修改会议请求</summary>
-public class UpdateMeetingRequest
+public sealed class UpdateMeetingRequest
 {
     /// <summary>会议 ID</summary>
     [JsonPropertyName("meetingid")]

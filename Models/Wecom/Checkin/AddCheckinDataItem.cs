@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
 /// <summary>添加打卡记录项</summary>
-public class AddCheckinDataItem
+public sealed class AddCheckinDataItem
 {
     /// <summary>用户 userid</summary>
     [JsonPropertyName("userid")] public string UserId { get; set; } = string.Empty;

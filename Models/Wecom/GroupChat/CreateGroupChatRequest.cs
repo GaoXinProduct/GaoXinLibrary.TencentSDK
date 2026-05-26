@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
@@ -7,7 +6,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.GroupChat;
 #region 请求模型
 
 /// <summary>创建群聊会话请求</summary>
-public class CreateGroupChatRequest
+public sealed class CreateGroupChatRequest
 {
     /// <summary>群聊名称（最多50个utf8字符，超过将截断）</summary>
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;

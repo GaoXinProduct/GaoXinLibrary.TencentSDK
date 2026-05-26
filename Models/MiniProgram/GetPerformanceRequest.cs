@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 获取性能数据请求（POST /wxaapi/log/get_performance）
 /// </summary>
-public class GetPerformanceRequest
+public sealed class GetPerformanceRequest
 {
     /// <summary>耗时类型数组，如 [1001]（启动总耗时）</summary>
     [JsonPropertyName("cost_type")] public int[] CostType { get; set; } = [];

@@ -19,7 +19,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 ///
 /// <b>注入（MVC Controller）：</b>
 /// <code>
-/// public class MyController(IWecomClientFactory wecomFactory) : ControllerBase
+/// public sealed class MyController(IWecomClientFactory wecomFactory) : ControllerBase
 /// {
 ///     private readonly WecomClient _agent1 = wecomFactory.CreateClient("agent1");
 ///     private readonly WecomClient _agent2 = wecomFactory.CreateClient("agent2");

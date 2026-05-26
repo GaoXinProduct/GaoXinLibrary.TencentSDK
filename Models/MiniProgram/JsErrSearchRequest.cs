@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -8,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 查询错误列表请求（POST /wxaapi/log/jserr_list）
 /// </summary>
-public class JsErrSearchRequest
+public sealed class JsErrSearchRequest
 {
     /// <summary>错误信息关键词（可选）</summary>
     [JsonPropertyName("errmsgKeyword")] public string? ErrMsgKeyword { get; set; }

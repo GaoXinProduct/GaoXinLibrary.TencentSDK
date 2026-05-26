@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Menu;
 
 /// <summary>工作台功能按钮</summary>
-public class WorkbenchButton
+public sealed class WorkbenchButton
 {
     /// <summary>按钮文字</summary>
     [JsonPropertyName("text")] public string Text { get; set; } = string.Empty;

@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.ExternalContact;
 
 /// <summary>客户群列表项</summary>
-public class GroupChatItem
+public sealed class GroupChatItem
 {
     /// <summary>客户群ID</summary>
     [JsonPropertyName("chat_id")] public string? ChatId { get; set; }

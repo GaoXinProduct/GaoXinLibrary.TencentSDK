@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartSheet;
 
 /// <summary>添加记录请求</summary>
-public class AddRecordsRequest
+public sealed class AddRecordsRequest
 {
     /// <summary>文档 ID</summary>
     [JsonPropertyName("docid")]

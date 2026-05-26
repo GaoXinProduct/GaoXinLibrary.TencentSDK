@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号微信门店服务实现</summary>
-public class OfficialPoiService
+public sealed class OfficialPoiService
 {
     private readonly WechatHttpClient _http;
     public OfficialPoiService(WechatHttpClient http) => _http = http;

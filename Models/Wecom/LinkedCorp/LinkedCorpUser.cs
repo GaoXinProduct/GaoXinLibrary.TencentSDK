@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.LinkedCorp;
 
 /// <summary>互联企业成员信息</summary>
-public class LinkedCorpUser
+public sealed class LinkedCorpUser
 {
     /// <summary>成员 UserId</summary>
     [JsonPropertyName("userid")] public string UserId { get; set; } = string.Empty;

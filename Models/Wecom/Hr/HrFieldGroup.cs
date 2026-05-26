@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Hr;
 
 /// <summary>花名册字段分组</summary>
-public class HrFieldGroup
+public sealed class HrFieldGroup
 {
     /// <summary>分组id</summary>
     [JsonPropertyName("group_id")] public int GroupId { get; set; }

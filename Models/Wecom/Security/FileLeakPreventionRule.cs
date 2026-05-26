@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Security;
 
 /// <summary>文件防泄漏规则</summary>
-public class FileLeakPreventionRule
+public sealed class FileLeakPreventionRule
 {
     /// <summary>规则id</summary>
     [JsonPropertyName("rule_id")] public int RuleId { get; set; }

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -11,7 +10,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// 商户在小程序内调起微信支付后，需要在发货后通过此接口上传发货信息。
 /// </para>
 /// </summary>
-public class UploadShippingInfoRequest
+public sealed class UploadShippingInfoRequest
 {
     /// <summary>订单（需要上传物流信息的订单）</summary>
     [JsonPropertyName("order_key")] public required ShippingOrderKey OrderKey { get; set; }

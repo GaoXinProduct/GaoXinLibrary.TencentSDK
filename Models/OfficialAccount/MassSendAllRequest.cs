@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>群发消息请求 — 根据标签发送（POST /cgi-bin/message/mass/sendall）</summary>
-public class MassSendAllRequest
+public sealed class MassSendAllRequest
 {
     [JsonPropertyName("filter")] public required MassFilter Filter { get; set; }
     [JsonPropertyName("msgtype")] public required string MsgType { get; set; }

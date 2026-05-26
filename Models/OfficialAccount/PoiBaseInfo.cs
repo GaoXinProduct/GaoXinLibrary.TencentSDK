@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>门店基本信息</summary>
-public class PoiBaseInfo
+public sealed class PoiBaseInfo
 {
     [JsonPropertyName("sid")] public string? Sid { get; set; }
     [JsonPropertyName("business_name")] public required string BusinessName { get; set; }

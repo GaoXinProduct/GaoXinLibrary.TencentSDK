@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.User;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.User;
 #region 请求模型
 
 /// <summary>创建成员请求</summary>
-public class CreateUserRequest
+public sealed class CreateUserRequest
 {
     [JsonPropertyName("userid")] public string UserId { get; set; } = string.Empty;
     [JsonPropertyName("name")] public string Name { get; set; } = string.Empty;

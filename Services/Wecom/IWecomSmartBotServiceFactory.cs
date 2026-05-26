@@ -18,7 +18,7 @@
 ///
 /// <b>注入（MVC Controller）：</b>
 /// <code>
-/// public class MyController(IWecomSmartBotServiceFactory botFactory) : ControllerBase
+/// public sealed class MyController(IWecomSmartBotServiceFactory botFactory) : ControllerBase
 /// {
 ///     private readonly SmartRobotService _robot1 = botFactory.CreateClient("bot1");
 ///     private readonly ISmartRobotWsClient _ws1   = botFactory.CreateWsClient("bot1");

@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartSheet;
 
 /// <summary>获取记录列表响应</summary>
-public class GetRecordsResponse : WecomBaseResponse
+public sealed class GetRecordsResponse : WecomBaseResponse
 {
     /// <summary>记录列表</summary>
     [JsonPropertyName("records")] public SheetRecord[]? Records { get; set; }

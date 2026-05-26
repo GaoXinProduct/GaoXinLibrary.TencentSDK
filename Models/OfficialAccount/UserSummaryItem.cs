@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>用户增减数据项</summary>
-public class UserSummaryItem
+public sealed class UserSummaryItem
 {
     [JsonPropertyName("ref_date")] public string? RefDate { get; set; }
     [JsonPropertyName("user_source")] public int UserSource { get; set; }

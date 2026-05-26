@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>位置消息内容</summary>
-public class KfMsgLocation
+public sealed class KfMsgLocation
 {
     /// <summary>纬度</summary>
     [JsonPropertyName("latitude")] public double Latitude { get; set; }

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 获取已设置二维码规则响应
 /// </summary>
-public class QrcodeJumpGetResponse : WechatBaseResponse
+public sealed class QrcodeJumpGetResponse : WechatBaseResponse
 {
     /// <summary>规则详情列表</summary>
     [JsonPropertyName("rule_list")] public List<QrcodeJumpRuleItem>? RuleList { get; set; }

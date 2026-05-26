@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 /// <summary>左图右文样式</summary>
-public class TemplateCardImageTextArea
+public sealed class TemplateCardImageTextArea
 {
     /// <summary>左图右文样式区域点击事件类型：0=不可点击, 1=跳转url, 2=跳转小程序</summary>
     [JsonPropertyName("type")] public int? Type { get; set; }

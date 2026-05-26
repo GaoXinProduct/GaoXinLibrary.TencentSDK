@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
 /// <summary>日报基础信息</summary>
-public class CheckinDayBaseInfo
+public sealed class CheckinDayBaseInfo
 {
     /// <summary>日期（当天 0 点的 Unix 时间戳）</summary>
     [JsonPropertyName("date")] public long? Date { get; set; }

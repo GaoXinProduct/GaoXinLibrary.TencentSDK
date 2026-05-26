@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>获取运单轨迹响应</summary>
-public class GetExpressPathResponse : WechatBaseResponse
+public sealed class GetExpressPathResponse : WechatBaseResponse
 {
     /// <summary>用户 OpenId</summary>
     [JsonPropertyName("openid")] public string? OpenId { get; set; }

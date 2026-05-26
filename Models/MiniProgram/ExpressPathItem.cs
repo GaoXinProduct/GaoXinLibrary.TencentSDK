@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>轨迹节点</summary>
-public class ExpressPathItem
+public sealed class ExpressPathItem
 {
     /// <summary>轨迹节点时间戳</summary>
     [JsonPropertyName("action_time")] public long ActionTime { get; set; }

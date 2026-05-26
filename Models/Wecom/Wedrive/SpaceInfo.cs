@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Wedrive;
 
 /// <summary>空间信息</summary>
-public class SpaceInfo
+public sealed class SpaceInfo
 {
     /// <summary>空间ID</summary>
     [JsonPropertyName("spaceid")] public string? SpaceId { get; set; }

@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 
 /// <summary>假勤值（出差/外出/加班/请假）</summary>
-public class ApplyAttendanceValue
+public sealed class ApplyAttendanceValue
 {
     /// <summary>假勤组件时间选择范围</summary>
     [JsonPropertyName("date_range")] public ApplyDateRangeValue? DateRange { get; set; }

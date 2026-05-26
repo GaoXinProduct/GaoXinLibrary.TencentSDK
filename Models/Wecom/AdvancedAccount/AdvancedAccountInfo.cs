@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.AdvancedAccount;
 
 /// <summary>高级功能账号信息</summary>
-public class AdvancedAccountInfo
+public sealed class AdvancedAccountInfo
 {
     /// <summary>成员userid</summary>
     [JsonPropertyName("userid")] public string? UserId { get; set; }

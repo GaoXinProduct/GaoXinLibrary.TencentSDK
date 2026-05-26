@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Report;
 
 /// <summary>汇报信息</summary>
-public class ReportInfo
+public sealed class ReportInfo
 {
     /// <summary>汇报单号</summary>
     [JsonPropertyName("sp_no")] public string? SpNo { get; set; }

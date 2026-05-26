@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>更新审批模板请求</summary>
-public class UpdateTemplateRequest
+public sealed class UpdateTemplateRequest
 {
     /// <summary>模板 id</summary>
     [JsonPropertyName("template_id")] public string TemplateId { get; set; } = string.Empty;

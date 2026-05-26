@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.OAuth;
@@ -8,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.OAuth;
 /// <summary>
 /// 获取访问用户身份响应（GET /cgi-bin/auth/getuserinfo）
 /// </summary>
-public class OAuthUserInfoResponse : WecomBaseResponse
+public sealed class OAuthUserInfoResponse : WecomBaseResponse
 {
     /// <summary>
     /// 成员 UserID；若需要获取用户详情信息，可在获取用户信息后再使用此字段

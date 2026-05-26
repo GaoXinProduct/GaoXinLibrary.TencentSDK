@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartSheet;
 
 /// <summary>修改子表属性项</summary>
-public class UpdateSheetProperty
+public sealed class UpdateSheetProperty
 {
     /// <summary>子表 ID</summary>
     [JsonPropertyName("sheet_id")]

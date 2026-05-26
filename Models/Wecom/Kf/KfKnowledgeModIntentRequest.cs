@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>修改知识库问答请求</summary>
-public class KfKnowledgeModIntentRequest
+public sealed class KfKnowledgeModIntentRequest
 {
     /// <summary>问答 id</summary>
     [JsonPropertyName("intent_id")] public string IntentId { get; set; } = string.Empty;

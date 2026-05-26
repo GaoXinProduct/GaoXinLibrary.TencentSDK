@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Document;
 
 /// <summary>创建文档请求</summary>
-public class CreateDocRequest
+public sealed class CreateDocRequest
 {
     /// <summary>文档名称</summary>
     [JsonPropertyName("doc_name")]

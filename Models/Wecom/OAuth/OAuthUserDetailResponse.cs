@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.OAuth;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.OAuth;
 /// <summary>
 /// 获取用户敏感信息响应（POST /cgi-bin/auth/getuserdetail）
 /// </summary>
-public class OAuthUserDetailResponse : WecomBaseResponse
+public sealed class OAuthUserDetailResponse : WecomBaseResponse
 {
     /// <summary>企业 CorpId</summary>
     [JsonPropertyName("corpid")] public string? CorpId { get; set; }

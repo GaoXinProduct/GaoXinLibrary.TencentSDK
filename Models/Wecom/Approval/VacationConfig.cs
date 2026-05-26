@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 
 /// <summary>假期配置</summary>
-public class VacationConfig
+public sealed class VacationConfig
 {
     /// <summary>假期 id</summary>
     [JsonPropertyName("id")] public int Id { get; set; }

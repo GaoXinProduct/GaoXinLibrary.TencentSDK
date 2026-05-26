@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>查看指定文章的评论数据请求（POST /cgi-bin/comment/list）</summary>
-public class ListCommentRequest
+public sealed class ListCommentRequest
 {
     [JsonPropertyName("msg_data_id")] public required long MsgDataId { get; set; }
     [JsonPropertyName("index")] public int Index { get; set; }

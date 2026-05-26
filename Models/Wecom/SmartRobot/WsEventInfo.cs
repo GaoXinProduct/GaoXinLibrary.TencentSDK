@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 
@@ -9,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 /// 支持的事件类型：enter_chat / template_card_event / feedback_event / disconnected_event
 /// </para>
 /// </summary>
-public class WsEventInfo
+public sealed class WsEventInfo
 {
     /// <summary>事件类型（enter_chat / template_card_event / feedback_event / disconnected_event）</summary>
     [JsonPropertyName("eventtype")] public string EventType { get; set; } = string.Empty;

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// OpenId 转换结果项
 /// </summary>
-public class ChangeOpenIdResultItem
+public sealed class ChangeOpenIdResultItem
 {
     /// <summary>旧 OpenId</summary>
     [JsonPropertyName("ori_openid")] public string? OriOpenId { get; set; }

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OpenPlatform;
@@ -9,7 +8,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OpenPlatform;
 /// 通过 code 获取 access_token 响应
 /// （GET /sns/oauth2/access_token）
 /// </summary>
-public class OpenAccessTokenResponse : WechatBaseResponse
+public sealed class OpenAccessTokenResponse : WechatBaseResponse
 {
     /// <summary>接口调用凭证</summary>
     [JsonPropertyName("access_token")] public string? AccessToken { get; set; }

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>为打卡人员排班请求</summary>
-public class SetCheckinScheduleListRequest
+public sealed class SetCheckinScheduleListRequest
 {
     /// <summary>规则 id</summary>
     [JsonPropertyName("groupid")] public int GroupId { get; set; }

@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.MsgAudit;
 
 /// <summary>解密后的消息明文</summary>
-public class DecryptedChatMessage
+public sealed class DecryptedChatMessage
 {
     /// <summary>消息 id</summary>
     [JsonPropertyName("msgid")] public string? MsgId { get; set; }

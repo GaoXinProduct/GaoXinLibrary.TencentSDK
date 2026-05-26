@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>小程序 OpenAPI 管理服务实现</summary>
-public class MiniProgramOpenApiService
+public sealed class MiniProgramOpenApiService
 {
     private readonly WechatHttpClient _http;
     private readonly string _appId;

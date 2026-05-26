@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>获取会话状态请求</summary>
-public class KfServiceStateGetRequest
+public sealed class KfServiceStateGetRequest
 {
     /// <summary>客服账号 id</summary>
     [JsonPropertyName("open_kfid")] public string OpenKfId { get; set; } = string.Empty;

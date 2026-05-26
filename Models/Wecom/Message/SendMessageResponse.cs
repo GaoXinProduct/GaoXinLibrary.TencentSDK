@@ -1,11 +1,10 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 #region 响应模型
 
-public class SendMessageResponse : WecomBaseResponse
+public sealed class SendMessageResponse : WecomBaseResponse
 {
     [JsonPropertyName("invaliduser")] public string? InvalidUser { get; set; }
     [JsonPropertyName("invalidparty")] public string? InvalidParty { get; set; }

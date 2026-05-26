@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
@@ -9,7 +8,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 /// 模版卡片消息内容
 /// <para>card_type 可选值：text_notice / news_notice / button_interaction / vote_interaction / multiple_interaction</para>
 /// </summary>
-public class TemplateCardContent
+public sealed class TemplateCardContent
 {
     /// <summary>模版卡片类型：text_notice / news_notice / button_interaction / vote_interaction / multiple_interaction</summary>
     [JsonPropertyName("card_type")] public string CardType { get; set; } = string.Empty;

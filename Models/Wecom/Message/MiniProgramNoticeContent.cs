@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
-public class MiniProgramNoticeContent
+public sealed class MiniProgramNoticeContent
 {
     [JsonPropertyName("appid")] public string AppId { get; set; } = string.Empty;
     [JsonPropertyName("page")] public string? Page { get; set; }

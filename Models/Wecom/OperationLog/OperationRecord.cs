@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.OperationLog;
 
 /// <summary>操作记录</summary>
-public class OperationRecord
+public sealed class OperationRecord
 {
     /// <summary>操作人userid</summary>
     [JsonPropertyName("userid")] public string? UserId { get; set; }

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 #region 更新模版卡片消息
 
 /// <summary>更新模版卡片消息请求</summary>
-public class UpdateTemplateCardRequest
+public sealed class UpdateTemplateCardRequest
 {
     /// <summary>应用 agentid</summary>
     [JsonPropertyName("agentid")] public int AgentId { get; set; }

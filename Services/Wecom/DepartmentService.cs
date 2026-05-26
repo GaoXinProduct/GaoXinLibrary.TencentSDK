@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Department;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
-public class DepartmentService
+public sealed class DepartmentService
 {
     private readonly WecomHttpClient _http;
 
@@ -18,7 +18,7 @@ public class DepartmentService
     /// <returns>新创建的部门 ID</returns>
     public async Task<int> CreateDepartmentAsync(CreateDepartmentRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<CreateDepartmentResponse>("/cgi-bin/department/create", request, ct);
+        var resp = await _http.PostAsync<CreateDepartmentResponse>("/cgi-bin/department/create", request, ct).ConfigureAwait(false);
         return resp.Id;
     }
 
@@ -29,7 +29,7 @@ public class DepartmentService
     /// <param name="request">部门更新请求，id 字段为必填</param>
     /// <param name="ct">取消令牌</param>
     public async Task UpdateDepartmentAsync(UpdateDepartmentRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/department/update", request, ct);
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/department/update", request, ct).ConfigureAwait(false);
 
     /// <summary>
     /// 删除部门（部门下不能有成员或子部门）
@@ -39,7 +39,7 @@ public class DepartmentService
     /// <param name="ct">取消令牌</param>
     public async Task DeleteDepartmentAsync(int id, CancellationToken ct = default)
         => await _http.GetAsync<WecomBaseResponse>("/cgi-bin/department/delete",
-            new() { ["id"] = id.ToString() }, ct);
+            new() { ["id"] = id.ToString() }, ct).ConfigureAwait(false);
 
     /// <summary>
     /// 获取部门列表
@@ -52,7 +52,7 @@ public class DepartmentService
     {
         var query = new Dictionary<string, string?>();
         if (id.HasValue) query["id"] = id.Value.ToString();
-        var resp = await _http.GetAsync<GetDepartmentListResponse>("/cgi-bin/department/list", query, ct);
+        var resp = await _http.GetAsync<GetDepartmentListResponse>("/cgi-bin/department/list", query, ct).ConfigureAwait(false);
         return resp.Department ?? [];
     }
 
@@ -66,7 +66,7 @@ public class DepartmentService
     public async Task<SubDeptInfo[]> GetSubDepartmentIdsAsync(int id, CancellationToken ct = default)
     {
         var resp = await _http.GetAsync<GetSubDeptIdListResponse>("/cgi-bin/department/simplelist",
-            new() { ["id"] = id.ToString() }, ct);
+            new() { ["id"] = id.ToString() }, ct).ConfigureAwait(false);
         return resp.DepartmentIds ?? [];
     }
 
@@ -80,7 +80,7 @@ public class DepartmentService
     public async Task<DepartmentInfo> GetDepartmentAsync(int id, CancellationToken ct = default)
     {
         var resp = await _http.GetAsync<GetDepartmentResponse>("/cgi-bin/department/get",
-            new() { ["id"] = id.ToString() }, ct);
+            new() { ["id"] = id.ToString() }, ct).ConfigureAwait(false);
         return resp.Department ?? new DepartmentInfo { Id = id };
     }
 }

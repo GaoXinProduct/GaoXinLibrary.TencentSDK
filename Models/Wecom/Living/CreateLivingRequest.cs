@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Living;
 
 /// <summary>创建预约直播请求</summary>
-public class CreateLivingRequest
+public sealed class CreateLivingRequest
 {
     /// <summary>主播的 userid</summary>
     [JsonPropertyName("anchor_userid")]

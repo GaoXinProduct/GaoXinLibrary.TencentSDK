@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -8,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 发送客服消息请求（POST /cgi-bin/message/custom/send）
 /// </summary>
-public class SendCustomMessageRequest
+public sealed class SendCustomMessageRequest
 {
     /// <summary>接收者 OpenId</summary>
     [JsonPropertyName("touser")] public required string ToUser { get; set; }

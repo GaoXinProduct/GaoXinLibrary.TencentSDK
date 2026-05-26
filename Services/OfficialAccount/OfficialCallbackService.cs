@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号消息回调服务实现</summary>
-public class OfficialCallbackService
+public sealed class OfficialCallbackService
 {
     private readonly WechatCryptoHelper? _crypto;
     private readonly WechatHttpClient _http;
@@ -121,7 +121,7 @@ public class OfficialCallbackService
     /// <returns>IP 地址列表</returns>
     public async Task<string[]> GetCallbackIpAsync(CancellationToken ct = default)
     {
-        var response = await _http.GetAsync<GetCallbackIpResponse>("/cgi-bin/getcallbackip", ct: ct);
+        var response = await _http.GetAsync<GetCallbackIpResponse>("/cgi-bin/getcallbackip", ct: ct).ConfigureAwait(false);
         return response.IpList ?? [];
     }
 

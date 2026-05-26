@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
 /// <summary>加班打卡规则</summary>
-public class OtCheckInfo
+public sealed class OtCheckInfo
 {
     /// <summary>工作日加班开始时间（秒）</summary>
     [JsonPropertyName("ot_workingday_time_start")] public int? OtWorkingdayTimeStart { get; set; }

@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Core;
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>地理位置消息</summary>
-public class OfficialCallbackLocationMessage : OfficialCallbackMessageBase
+public sealed class OfficialCallbackLocationMessage : OfficialCallbackMessageBase
 {
     /// <summary>消息 ID</summary>
     public long MsgId { get; set; }

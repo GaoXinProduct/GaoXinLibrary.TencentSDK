@@ -1,6 +1,5 @@
 ﻿using GaoXinLibrary.TencentSDK.Wechat.Core;
 using GaoXinLibrary.TencentSDK.Wechat.Services;
-using Microsoft.Extensions.Logging;
 
 namespace GaoXinLibrary.TencentSDK.Wechat;
 

@@ -16,7 +16,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 /// </code>
 /// </para>
 /// </summary>
-public class ApplyEventBuilder
+public sealed class ApplyEventBuilder
 {
     private readonly ApplyEventRequest _request = new();
     private readonly List<ApplyContent> _contents = [];

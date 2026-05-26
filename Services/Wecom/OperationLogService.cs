@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.OperationLog;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>操作日志服务实现</summary>
-public class OperationLogService
+public sealed class OperationLogService
 {
     private readonly WecomHttpClient _http;
 
@@ -12,9 +12,9 @@ public class OperationLogService
 
     /// <summary>获取成员操作记录</summary>
     public async Task<GetOperationLogResponse> GetUserOperationRecordAsync(GetOperationLogRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<GetOperationLogResponse>("/cgi-bin/security/get_user_oper_record", request, ct);
+        => await _http.PostAsync<GetOperationLogResponse>("/cgi-bin/security/get_user_oper_record", request, ct).ConfigureAwait(false);
 
     /// <summary>获取管理端操作日志</summary>
     public async Task<GetOperationLogResponse> GetAdminOperationRecordAsync(GetOperationLogRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<GetOperationLogResponse>("/cgi-bin/security/get_admin_oper_record", request, ct);
+        => await _http.PostAsync<GetOperationLogResponse>("/cgi-bin/security/get_admin_oper_record", request, ct).ConfigureAwait(false);
 }

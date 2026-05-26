@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 音视频内容安全异步检测请求（POST /wxa/media_check_async）
 /// </summary>
-public class MediaCheckAsyncRequest
+public sealed class MediaCheckAsyncRequest
 {
     /// <summary>要检测的图片或音频的 URL（支持图片/音频）</summary>
     [JsonPropertyName("media_url")] public required string MediaUrl { get; set; }

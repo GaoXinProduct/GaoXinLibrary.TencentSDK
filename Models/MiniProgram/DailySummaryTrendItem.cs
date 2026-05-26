@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>概况趋势项</summary>
-public class DailySummaryTrendItem
+public sealed class DailySummaryTrendItem
 {
     /// <summary>日期（yyyyMMdd）</summary>
     [JsonPropertyName("ref_date")] public string? RefDate { get; set; }

@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>模板消息跳小程序</summary>
-public class TemplateMiniProgram
+public sealed class TemplateMiniProgram
 {
     /// <summary>小程序 AppId</summary>
     [JsonPropertyName("appid")] public required string AppId { get; set; }

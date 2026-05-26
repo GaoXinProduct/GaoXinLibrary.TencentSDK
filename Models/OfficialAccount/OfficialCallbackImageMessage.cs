@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Core;
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>图片消息</summary>
-public class OfficialCallbackImageMessage : OfficialCallbackMessageBase
+public sealed class OfficialCallbackImageMessage : OfficialCallbackMessageBase
 {
     /// <summary>消息 ID</summary>
     public long MsgId { get; set; }

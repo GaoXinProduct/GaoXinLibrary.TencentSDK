@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Living;
 
 /// <summary>修改预约直播请求</summary>
-public class UpdateLivingRequest
+public sealed class UpdateLivingRequest
 {
     /// <summary>直播 ID</summary>
     [JsonPropertyName("livingid")]

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>语义理解请求（POST /semantic/semproxy/search）</summary>
-public class SemanticSearchRequest
+public sealed class SemanticSearchRequest
 {
     [JsonPropertyName("query")] public required string Query { get; set; }
     [JsonPropertyName("city")] public required string City { get; set; }

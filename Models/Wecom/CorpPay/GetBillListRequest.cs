@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.CorpPay;
 
 /// <summary>获取账单列表请求（按时间范围）</summary>
-public class GetBillListRequest
+public sealed class GetBillListRequest
 {
     /// <summary>起始时间（Unix 时间戳，秒）</summary>
     [JsonPropertyName("begin_time")]

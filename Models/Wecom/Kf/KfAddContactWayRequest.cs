@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>获取客服账号链接请求</summary>
-public class KfAddContactWayRequest
+public sealed class KfAddContactWayRequest
 {
     /// <summary>客服账号 id</summary>
     [JsonPropertyName("open_kfid")] public string OpenKfId { get; set; } = string.Empty;

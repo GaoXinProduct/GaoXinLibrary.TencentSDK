@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>接收消息请求（同步消息）</summary>
-public class KfSyncMsgRequest
+public sealed class KfSyncMsgRequest
 {
     /// <summary>上一次调用时返回的 next_cursor，首次调用可不填</summary>
     [JsonPropertyName("cursor")] public string? Cursor { get; set; }

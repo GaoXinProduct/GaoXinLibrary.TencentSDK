@@ -5,7 +5,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Calendar.Expansion;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>日程服务实现</summary>
-public class CalendarService
+public sealed class CalendarService
 {
     private readonly WecomHttpClient _http;
 
@@ -14,51 +14,51 @@ public class CalendarService
     /// <summary>创建日历</summary>
     public async Task<string?> CreateCalendarAsync(CreateCalendarRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<CreateCalendarResponse>("/cgi-bin/oa/calendar/add", request, ct);
+        var resp = await _http.PostAsync<CreateCalendarResponse>("/cgi-bin/oa/calendar/add", request, ct).ConfigureAwait(false);
         return resp.CalId;
     }
 
     /// <summary>更新日历</summary>
     public async Task UpdateCalendarAsync(UpdateCalendarRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/oa/calendar/update", request, ct);
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/oa/calendar/update", request, ct).ConfigureAwait(false);
 
     /// <summary>获取日历详情</summary>
     public async Task<CalendarInfo[]> GetCalendarAsync(GetCalendarRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetCalendarResponse>("/cgi-bin/oa/calendar/get", request, ct);
+        var resp = await _http.PostAsync<GetCalendarResponse>("/cgi-bin/oa/calendar/get", request, ct).ConfigureAwait(false);
         return resp.CalendarList ?? [];
     }
 
     /// <summary>删除日历</summary>
     public async Task DeleteCalendarAsync(DeleteCalendarRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/oa/calendar/del", request, ct);
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/oa/calendar/del", request, ct).ConfigureAwait(false);
 
     /// <summary>创建日程</summary>
     public async Task<string?> CreateScheduleAsync(CreateScheduleRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<CreateScheduleResponse>("/cgi-bin/oa/schedule/add", request, ct);
+        var resp = await _http.PostAsync<CreateScheduleResponse>("/cgi-bin/oa/schedule/add", request, ct).ConfigureAwait(false);
         return resp.ScheduleId;
     }
 
     /// <summary>更新日程</summary>
     public async Task UpdateScheduleAsync(UpdateScheduleRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/oa/schedule/update", request, ct);
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/oa/schedule/update", request, ct).ConfigureAwait(false);
 
     /// <summary>获取日程详情</summary>
     public async Task<ScheduleInfo[]> GetScheduleAsync(GetScheduleRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetScheduleResponse>("/cgi-bin/oa/schedule/get", request, ct);
+        var resp = await _http.PostAsync<GetScheduleResponse>("/cgi-bin/oa/schedule/get", request, ct).ConfigureAwait(false);
         return resp.ScheduleList ?? [];
     }
 
     /// <summary>取消日程</summary>
     public async Task CancelScheduleAsync(CancelScheduleRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/oa/schedule/del", request, ct);
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/oa/schedule/del", request, ct).ConfigureAwait(false);
 
     /// <summary>获取日历下的日程列表</summary>
     public async Task<ScheduleInfo[]> GetScheduleByCalendarAsync(GetScheduleByCalendarRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetScheduleResponse>("/cgi-bin/oa/schedule/get_by_calendar", request, ct);
+        var resp = await _http.PostAsync<GetScheduleResponse>("/cgi-bin/oa/schedule/get_by_calendar", request, ct).ConfigureAwait(false);
         return resp.ScheduleList ?? [];
     }
 

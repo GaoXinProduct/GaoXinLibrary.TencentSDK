@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 
 /// <summary>审批控件值</summary>
-public class ApplyContentValue
+public sealed class ApplyContentValue
 {
     /// <summary>Text / Textarea 控件值</summary>
     [JsonPropertyName("text")] public string? Text { get; set; }

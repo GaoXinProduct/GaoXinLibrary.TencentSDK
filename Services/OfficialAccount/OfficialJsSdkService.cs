@@ -6,7 +6,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号 JS-SDK 服务实现</summary>
-public class OfficialJsSdkService
+public sealed class OfficialJsSdkService
 {
     private readonly JsApiTicketProvider _ticketProvider;
     private readonly WechatOptions _options;

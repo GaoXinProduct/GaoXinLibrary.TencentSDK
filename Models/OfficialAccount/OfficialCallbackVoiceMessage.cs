@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Core;
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>语音消息</summary>
-public class OfficialCallbackVoiceMessage : OfficialCallbackMessageBase
+public sealed class OfficialCallbackVoiceMessage : OfficialCallbackMessageBase
 {
     /// <summary>消息 ID</summary>
     public long MsgId { get; set; }

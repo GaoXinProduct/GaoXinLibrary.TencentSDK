@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>图文统计数据项</summary>
-public class UserReadItem
+public sealed class UserReadItem
 {
     [JsonPropertyName("ref_date")] public string? RefDate { get; set; }
     [JsonPropertyName("int_page_read_user")] public int IntPageReadUser { get; set; }

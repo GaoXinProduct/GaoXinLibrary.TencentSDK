@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 /// 修改智能表格自动化创建的群聊会话请求
 /// <para>参考文档：<see href="https://developer.work.weixin.qq.com/document/path/101029"/></para>
 /// </summary>
-public class UpdateSmartSheetChatRequest
+public sealed class UpdateSmartSheetChatRequest
 {
     /// <summary>群聊唯一标识</summary>
     [JsonPropertyName("chatid")] public string ChatId { get; set; } = string.Empty;

@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>小程序发货信息管理服务实现</summary>
-public class MiniProgramShippingService
+public sealed class MiniProgramShippingService
 {
     private readonly WechatHttpClient _http;
 

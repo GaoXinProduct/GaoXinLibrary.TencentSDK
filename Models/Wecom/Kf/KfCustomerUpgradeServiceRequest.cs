@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>为客户升级为专员或客户群服务请求</summary>
-public class KfCustomerUpgradeServiceRequest
+public sealed class KfCustomerUpgradeServiceRequest
 {
     /// <summary>客服账号 id</summary>
     [JsonPropertyName("open_kfid")] public string OpenKfId { get; set; } = string.Empty;

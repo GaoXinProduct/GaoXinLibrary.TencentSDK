@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>菜单项</summary>
-public class KfMsgMenuItem
+public sealed class KfMsgMenuItem
 {
     /// <summary>菜单项类型：click / view / miniprogram</summary>
     [JsonPropertyName("type")] public string Type { get; set; } = string.Empty;

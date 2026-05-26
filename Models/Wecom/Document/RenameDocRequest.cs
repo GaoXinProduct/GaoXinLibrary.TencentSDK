@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Document;
 
 /// <summary>重命名文档请求</summary>
-public class RenameDocRequest
+public sealed class RenameDocRequest
 {
     /// <summary>文档 ID</summary>
     [JsonPropertyName("docid")]

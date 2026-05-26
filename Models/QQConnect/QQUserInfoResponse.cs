@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.QQConnect;
 
@@ -10,7 +9,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.QQConnect;
 /// 对应接口：GET https://graph.qq.com/user/get_user_info
 /// </para>
 /// </summary>
-public class QQUserInfoResponse : QQOpenApiBaseResponse
+public sealed class QQUserInfoResponse : QQOpenApiBaseResponse
 {
     /// <summary>用户昵称</summary>
     [JsonPropertyName("nickname")] public string? Nickname { get; set; }

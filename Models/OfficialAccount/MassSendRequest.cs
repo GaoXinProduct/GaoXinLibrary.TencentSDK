@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>群发消息请求 — 根据 OpenId 列表发送（POST /cgi-bin/message/mass/send）</summary>
-public class MassSendRequest
+public sealed class MassSendRequest
 {
     [JsonPropertyName("touser")] public required List<string> ToUser { get; set; }
     [JsonPropertyName("msgtype")] public required string MsgType { get; set; }

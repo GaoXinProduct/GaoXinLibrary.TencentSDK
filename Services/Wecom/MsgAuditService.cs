@@ -6,7 +6,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.MsgAudit;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>会话内容存档服务实现</summary>
-public class MsgAuditService
+public sealed class MsgAuditService
 {
     private readonly WecomHttpClient _http;
     private readonly string _privateKey;
@@ -36,7 +36,7 @@ public class MsgAuditService
     {
         var resp = await _http.PostAsync<GetPermitUserListResponse>(
             "/cgi-bin/msgaudit/get_permit_user_list",
-            new GetPermitUserListRequest { Type = type }, ct);
+            new GetPermitUserListRequest { Type = type }, ct).ConfigureAwait(false);
         return resp.Ids ?? [];
     }
 
@@ -50,7 +50,7 @@ public class MsgAuditService
     {
         var resp = await _http.PostAsync<CheckAgreeResponse>(
             "/cgi-bin/msgaudit/check_single_agree",
-            new CheckAgreeRequest { Info = info }, ct);
+            new CheckAgreeRequest { Info = info }, ct).ConfigureAwait(false);
         return resp.AgreeInfoList ?? [];
     }
 
@@ -64,7 +64,7 @@ public class MsgAuditService
     {
         var resp = await _http.PostAsync<CheckRoomAgreeResponse>(
             "/cgi-bin/msgaudit/check_room_agree",
-            new CheckRoomAgreeRequest { RoomId = roomId }, ct);
+            new CheckRoomAgreeRequest { RoomId = roomId }, ct).ConfigureAwait(false);
         return resp.AgreeInfoList ?? [];
     }
 
@@ -78,7 +78,7 @@ public class MsgAuditService
     {
         return await _http.PostAsync<MsgAuditGroupChatGetResponse>(
             "/cgi-bin/msgaudit/groupchat/get",
-            new MsgAuditGroupChatGetRequest { RoomId = roomId }, ct);
+            new MsgAuditGroupChatGetRequest { RoomId = roomId }, ct).ConfigureAwait(false);
     }
 
     #endregion

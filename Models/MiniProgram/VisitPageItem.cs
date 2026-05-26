@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>页面访问数据</summary>
-public class VisitPageItem
+public sealed class VisitPageItem
 {
     /// <summary>页面路径</summary>
     [JsonPropertyName("page_path")] public string? PagePath { get; set; }

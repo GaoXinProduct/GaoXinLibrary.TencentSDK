@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Calendar;
 
 /// <summary>日程参与者</summary>
-public class ScheduleAttendee
+public sealed class ScheduleAttendee
 {
     /// <summary>参与者userid</summary>
     [JsonPropertyName("userid")] public string? UserId { get; set; }

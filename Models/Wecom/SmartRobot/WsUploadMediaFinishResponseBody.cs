@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 
 /// <summary>上传完成响应体</summary>
-public class WsUploadMediaFinishResponseBody
+public sealed class WsUploadMediaFinishResponseBody
 {
     /// <summary>文件类型</summary>
     [JsonPropertyName("type")] public string Type { get; set; } = string.Empty;

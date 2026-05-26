@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 设置用户备注名请求（POST /cgi-bin/user/info/updateremark）
 /// </summary>
-public class UpdateRemarkRequest
+public sealed class UpdateRemarkRequest
 {
     /// <summary>用户 OpenId</summary>
     [JsonPropertyName("openid")] public required string OpenId { get; set; }

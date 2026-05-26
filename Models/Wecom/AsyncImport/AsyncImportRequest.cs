@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.AsyncImport;
 
 /// <summary>异步导入请求基类</summary>
-public class AsyncImportRequest
+public sealed class AsyncImportRequest
 {
     /// <summary>上传的csv文件的media_id</summary>
     [JsonPropertyName("media_id")] public string MediaId { get; set; } = string.Empty;

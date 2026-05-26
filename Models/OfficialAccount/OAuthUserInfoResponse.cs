@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 拉取用户信息响应（GET /sns/userinfo）
 /// </summary>
-public class OAuthUserInfoResponse : WechatBaseResponse
+public sealed class OAuthUserInfoResponse : WechatBaseResponse
 {
     /// <summary>用户唯一标识</summary>
     [JsonPropertyName("openid")] public string? OpenId { get; set; }

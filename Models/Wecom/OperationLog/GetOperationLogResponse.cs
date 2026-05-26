@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.OperationLog;
 
 /// <summary>获取操作日志响应</summary>
-public class GetOperationLogResponse : WecomBaseResponse
+public sealed class GetOperationLogResponse : WecomBaseResponse
 {
     /// <summary>是否还有更多</summary>
     [JsonPropertyName("has_more")] public bool HasMore { get; set; }

@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
-public class MessageService
+public sealed class MessageService
 {
     private readonly WecomHttpClient _http;
     private readonly int _defaultAgentId;
@@ -18,7 +18,7 @@ public class MessageService
     public async Task<SendMessageResponse> SendAsync(SendMessageRequest request, CancellationToken ct = default)
     {
         if (request.AgentId == 0) request.AgentId = _defaultAgentId;
-        return await _http.PostAsync<SendMessageResponse>("/cgi-bin/message/send", request, ct);
+        return await _http.PostAsync<SendMessageResponse>("/cgi-bin/message/send", request, ct).ConfigureAwait(false);
     }
 
     /// <summary>发送文本消息</summary>
@@ -67,11 +67,11 @@ public class MessageService
 
     /// <summary>更新模版卡片消息</summary>
     public async Task UpdateTemplateCardAsync(UpdateTemplateCardRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/message/update_template_card", request, ct);
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/message/update_template_card", request, ct).ConfigureAwait(false);
 
     /// <summary>撤回应用消息</summary>
     public async Task RecallMessageAsync(RecallMessageRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<RecallMessageResponse>("/cgi-bin/message/recall", request, ct);
+        => await _http.PostAsync<RecallMessageResponse>("/cgi-bin/message/recall", request, ct).ConfigureAwait(false);
 
     private SendMessageRequest BuildBase(string msgType, string? toUser, string? toParty, string? toTag, int agentId) => new()
     {

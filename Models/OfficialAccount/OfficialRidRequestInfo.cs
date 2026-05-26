@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>rid 对应的请求信息</summary>
-public class OfficialRidRequestInfo
+public sealed class OfficialRidRequestInfo
 {
     [JsonPropertyName("invoke_time")] public long InvokeTime { get; set; }
     [JsonPropertyName("cost_in_ms")] public int CostInMs { get; set; }

@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 /// <summary>二级标题+文本列表项</summary>
-public class TemplateCardHorizontalContent
+public sealed class TemplateCardHorizontalContent
 {
     /// <summary>链接类型：0=普通文本, 1=跳转url, 2=下载附件, 3=@员工</summary>
     [JsonPropertyName("type")] public int? Type { get; set; }

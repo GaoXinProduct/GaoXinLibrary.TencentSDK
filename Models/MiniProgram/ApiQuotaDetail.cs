@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>接口调用额度详情</summary>
-public class ApiQuotaDetail
+public sealed class ApiQuotaDetail
 {
     /// <summary>当天该账号可调用该接口的次数</summary>
     [JsonPropertyName("daily_limit")] public long DailyLimit { get; set; }

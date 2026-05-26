@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 发票详情信息
 /// </summary>
-public class InvoiceDetailInfo
+public sealed class InvoiceDetailInfo
 {
     /// <summary>发票详情内容</summary>
     [JsonPropertyName("detail")] public string? Detail { get; set; }

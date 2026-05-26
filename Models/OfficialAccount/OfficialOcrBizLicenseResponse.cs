@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>OCR — 营业执照识别响应</summary>
-public class OfficialOcrBizLicenseResponse : WechatBaseResponse
+public sealed class OfficialOcrBizLicenseResponse : WechatBaseResponse
 {
     [JsonPropertyName("reg_num")] public string? RegNum { get; set; }
     [JsonPropertyName("serial")] public string? Serial { get; set; }

@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>图文群发每日数据项</summary>
-public class ArticleSummaryItem
+public sealed class ArticleSummaryItem
 {
     [JsonPropertyName("ref_date")] public string? RefDate { get; set; }
     [JsonPropertyName("msgid")] public string? MsgId { get; set; }

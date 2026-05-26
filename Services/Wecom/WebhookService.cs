@@ -10,7 +10,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 /// <summary>
 /// 群机器人（Webhook）消息推送服务实现
 /// </summary>
-public class WebhookService
+public sealed class WebhookService
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -45,10 +45,10 @@ public class WebhookService
         var content = new ByteArrayContent(bytes);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json") { CharSet = "utf-8" };
 
-        var response = await _http.PostAsync(_sendUrl, content, ct);
+        var response = await _http.PostAsync(_sendUrl, content, ct).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
 
-        var json = await response.Content.ReadAsStringAsync(ct);
+        var json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
         var result = JsonSerializer.Deserialize<WecomBaseResponse>(json, JsonOptions)
                      ?? throw new TencentException("群机器人响应反序列化失败");
 

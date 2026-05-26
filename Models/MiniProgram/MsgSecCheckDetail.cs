@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>内容安全检测详情</summary>
-public class MsgSecCheckDetail
+public sealed class MsgSecCheckDetail
 {
     /// <summary>策略类型</summary>
     [JsonPropertyName("strategy")] public string? Strategy { get; set; }

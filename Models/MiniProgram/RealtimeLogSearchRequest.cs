@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 查询实时日志请求（GET /wxaapi/userlog/userlog_search）
 /// </summary>
-public class RealtimeLogSearchRequest
+public sealed class RealtimeLogSearchRequest
 {
     /// <summary>日期（格式 YYYYMMDD，必填）</summary>
     [JsonPropertyName("date")]       public string? Date { get; set; }

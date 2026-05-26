@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>获取配置的专员与客户群响应</summary>
-public class KfUpgradeServiceConfigResponse : WecomBaseResponse
+public sealed class KfUpgradeServiceConfigResponse : WecomBaseResponse
 {
     /// <summary>专员服务配置</summary>
     [JsonPropertyName("member_range")] public KfUpgradeMemberRange? MemberRange { get; set; }

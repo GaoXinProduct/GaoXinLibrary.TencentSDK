@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.CollectForm;
 
 /// <summary>收集表答案</summary>
-public class CollectAnswer
+public sealed class CollectAnswer
 {
     /// <summary>提交者userid</summary>
     [JsonPropertyName("userid")] public string? UserId { get; set; }

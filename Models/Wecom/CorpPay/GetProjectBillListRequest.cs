@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.CorpPay;
 
 /// <summary>获取账单列表请求（按项目）</summary>
-public class GetProjectBillListRequest
+public sealed class GetProjectBillListRequest
 {
     /// <summary>项目 ID</summary>
     [JsonPropertyName("projectid")]

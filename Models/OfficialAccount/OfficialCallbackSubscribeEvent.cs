@@ -10,7 +10,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// 若用户扫描带参数二维码关注，EventKey 和 Ticket 将有值。
 /// </para>
 /// </summary>
-public class OfficialCallbackSubscribeEvent : OfficialCallbackEventBase
+public sealed class OfficialCallbackSubscribeEvent : OfficialCallbackEventBase
 {
     /// <summary>事件 KEY（扫描带参数二维码关注时：qrscene_为前缀，后面为二维码的参数值）</summary>
     public string? EventKey { get; set; }

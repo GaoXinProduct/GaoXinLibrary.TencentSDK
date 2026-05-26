@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 查询订单发货状态请求（POST /wxa/sec/order/get_order）
 /// </summary>
-public class GetOrderRequest
+public sealed class GetOrderRequest
 {
     /// <summary>
     /// 原支付交易对应的微信订单号

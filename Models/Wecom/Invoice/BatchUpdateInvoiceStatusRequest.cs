@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Invoice;
 
 /// <summary>批量更新发票状态请求</summary>
-public class BatchUpdateInvoiceStatusRequest
+public sealed class BatchUpdateInvoiceStatusRequest
 {
     /// <summary>用户 openid</summary>
     [JsonPropertyName("openid")]

@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.MeetingRoom;
 
 /// <summary>会议室预定信息</summary>
-public class BookingInfo
+public sealed class BookingInfo
 {
     /// <summary>预定ID</summary>
     [JsonPropertyName("booking_id")] public string? BookingId { get; set; }

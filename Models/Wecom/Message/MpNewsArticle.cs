@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
-public class MpNewsArticle
+public sealed class MpNewsArticle
 {
     [JsonPropertyName("title")] public string Title { get; set; } = string.Empty;
     [JsonPropertyName("thumb_media_id")] public string ThumbMediaId { get; set; } = string.Empty;

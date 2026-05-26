@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -8,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 获取用户基本信息响应（GET /cgi-bin/user/info）
 /// </summary>
-public class UserInfoResponse : WechatBaseResponse
+public sealed class UserInfoResponse : WechatBaseResponse
 {
     /// <summary>用户是否订阅该公众号（0 未关注，1 已关注）</summary>
     [JsonPropertyName("subscribe")] public int Subscribe { get; set; }

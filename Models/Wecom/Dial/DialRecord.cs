@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Dial;
 
 /// <summary>公费电话拨打记录</summary>
-public class DialRecord
+public sealed class DialRecord
 {
     /// <summary>拨打的userid</summary>
     [JsonPropertyName("caller")] public DialCaller? Caller { get; set; }

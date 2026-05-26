@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 /// <summary>卡片来源样式信息</summary>
-public class TemplateCardSource
+public sealed class TemplateCardSource
 {
     /// <summary>来源图片的 URL</summary>
     [JsonPropertyName("icon_url")] public string? IconUrl { get; set; }

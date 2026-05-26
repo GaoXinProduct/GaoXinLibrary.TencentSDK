@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Living;
 
 /// <summary>直播信息</summary>
-public class LivingInfo
+public sealed class LivingInfo
 {
     /// <summary>直播ID</summary>
     [JsonPropertyName("livingid")] public string? LivingId { get; set; }

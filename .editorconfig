@@ -1,0 +1,26 @@
+# .NET Code Analysis & Formatting Rules
+# Based on Microsoft Learn: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/overview
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.cs]
+# Code analysis rules
+dotnet_diagnostic.CA1062.severity = warning
+dotnet_diagnostic.CA2000.severity = warning
+dotnet_diagnostic.CA2007.severity = warning
+dotnet_diagnostic.CA2016.severity = warning
+dotnet_diagnostic.CA2200.severity = error
+dotnet_diagnostic.CA2208.severity = warning
+
+# Style preferences
+csharp_style_var_for_built_in_types = true:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_namespace_declarations = file_scoped:error

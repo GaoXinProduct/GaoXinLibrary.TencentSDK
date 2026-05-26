@@ -1,11 +1,10 @@
 using System.Xml.Linq;
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
 /// <summary>视频/小视频消息</summary>
-public class CallbackVideoMessage : CallbackMessageBase
+public sealed class CallbackVideoMessage : CallbackMessageBase
 {
     /// <summary>消息 ID</summary>
     public long MsgId { get; set; }

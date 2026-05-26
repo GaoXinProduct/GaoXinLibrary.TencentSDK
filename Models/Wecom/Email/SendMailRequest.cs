@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Email;
 
 /// <summary>发送邮件请求</summary>
-public class SendMailRequest
+public sealed class SendMailRequest
 {
     /// <summary>收件人列表</summary>
     [JsonPropertyName("to")] public EmailAddress[]? To { get; set; }

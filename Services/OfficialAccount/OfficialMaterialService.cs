@@ -6,7 +6,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号素材管理服务实现</summary>
-public class OfficialMaterialService
+public sealed class OfficialMaterialService
 {
     private readonly WechatHttpClient _http;
 
@@ -34,13 +34,13 @@ public class OfficialMaterialService
     public async Task<UploadMediaResponse> UploadTempMaterialAsync(Stream fileStream, string fileName, string type, CancellationToken ct = default)
     {
         using var ms = new MemoryStream();
-        await fileStream.CopyToAsync(ms, ct);
+        await fileStream.CopyToAsync(ms, ct).ConfigureAwait(false);
         using var form = BuildMediaForm(fileName, ms.ToArray());
         return await _http.PostRawFormAsync<UploadMediaResponse>(
             "/cgi-bin/media/upload",
             form,
             new Dictionary<string, string?> { ["type"] = type },
-            ct);
+            ct).ConfigureAwait(false);
     }
 
     /// <summary>上传临时素材（图片/语音/视频/缩略图）</summary>
@@ -51,7 +51,7 @@ public class OfficialMaterialService
             "/cgi-bin/media/upload",
             form,
             new Dictionary<string, string?> { ["type"] = type },
-            ct);
+            ct).ConfigureAwait(false);
     }
 
     /// <summary>下载临时素材字节流</summary>
@@ -60,19 +60,19 @@ public class OfficialMaterialService
 
     /// <summary>下载临时素材（ReadOnlyMemory 版本）</summary>
     public async Task<ReadOnlyMemory<byte>> DownloadTempMaterialReadOnlyAsync(string mediaId, CancellationToken ct = default)
-        => await _http.GetForBytesAsync("/cgi-bin/media/get", new Dictionary<string, string?> { ["media_id"] = mediaId }, ct);
+        => await _http.GetForBytesAsync("/cgi-bin/media/get", new Dictionary<string, string?> { ["media_id"] = mediaId }, ct).ConfigureAwait(false);
 
     /// <summary>新增永久素材（图片/语音/视频/缩略图）</summary>
     public async Task<AddMaterialResponse> AddPermanentMaterialAsync(Stream fileStream, string fileName, string type, CancellationToken ct = default)
     {
         using var ms = new MemoryStream();
-        await fileStream.CopyToAsync(ms, ct);
+        await fileStream.CopyToAsync(ms, ct).ConfigureAwait(false);
         using var form = BuildMediaForm(fileName, ms.ToArray());
         return await _http.PostRawFormAsync<AddMaterialResponse>(
             "/cgi-bin/material/add_material",
             form,
             new Dictionary<string, string?> { ["type"] = type },
-            ct);
+            ct).ConfigureAwait(false);
     }
 
     /// <summary>新增永久素材（图片/语音/视频/缩略图）</summary>
@@ -83,7 +83,7 @@ public class OfficialMaterialService
             "/cgi-bin/material/add_material",
             form,
             new Dictionary<string, string?> { ["type"] = type },
-            ct);
+            ct).ConfigureAwait(false);
     }
 
     // 手动拼接 multipart/form-data 原始字节，完全绕过 .NET 的 MultipartFormDataContent

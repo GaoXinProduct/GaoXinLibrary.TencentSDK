@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
 /// <summary>日报规则信息</summary>
-public class CheckinDayRuleInfo
+public sealed class CheckinDayRuleInfo
 {
     /// <summary>打卡规则 id</summary>
     [JsonPropertyName("groupid")] public int? GroupId { get; set; }

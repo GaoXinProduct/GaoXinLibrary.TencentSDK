@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>链接消息内容</summary>
-public class KfMsgLink
+public sealed class KfMsgLink
 {
     /// <summary>标题</summary>
     [JsonPropertyName("title")] public string? Title { get; set; }

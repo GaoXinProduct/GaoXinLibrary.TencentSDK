@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 /// <summary>跳转指引样式</summary>
-public class TemplateCardJump
+public sealed class TemplateCardJump
 {
     /// <summary>跳转链接类型：0/1=跳转url, 2=跳转小程序</summary>
     [JsonPropertyName("type")] public int? Type { get; set; }

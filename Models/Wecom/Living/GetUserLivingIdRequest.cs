@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Living;
 
 /// <summary>获取成员直播 ID 列表请求</summary>
-public class GetUserLivingIdRequest
+public sealed class GetUserLivingIdRequest
 {
     /// <summary>成员的 userid</summary>
     [JsonPropertyName("userid")]

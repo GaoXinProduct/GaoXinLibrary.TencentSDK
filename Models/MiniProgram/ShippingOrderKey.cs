@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>订单标识</summary>
-public class ShippingOrderKey
+public sealed class ShippingOrderKey
 {
     /// <summary>
     /// 订单单号类型（1 微信支付单号；2 商户单号）

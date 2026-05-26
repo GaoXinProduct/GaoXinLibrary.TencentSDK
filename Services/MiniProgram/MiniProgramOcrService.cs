@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>小程序 OCR 与图像处理服务实现</summary>
-public class MiniProgramOcrService
+public sealed class MiniProgramOcrService
 {
     private readonly WechatHttpClient _http;
     public MiniProgramOcrService(WechatHttpClient http) => _http = http;

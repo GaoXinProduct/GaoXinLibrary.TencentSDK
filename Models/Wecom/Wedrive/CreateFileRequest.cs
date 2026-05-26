@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Wedrive;
 
 /// <summary>创建文件请求</summary>
-public class CreateFileRequest
+public sealed class CreateFileRequest
 {
     /// <summary>空间 ID</summary>
     [JsonPropertyName("spaceid")]

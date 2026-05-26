@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 录入抬头到用户微信请求
 /// </summary>
-public class InvoiceGetUserTitleUrlRequest
+public sealed class InvoiceGetUserTitleUrlRequest
 {
     [JsonPropertyName("title")] public string? Title { get; set; }
     [JsonPropertyName("phone")] public string? Phone { get; set; }

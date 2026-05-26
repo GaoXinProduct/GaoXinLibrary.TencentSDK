@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -8,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 文本内容安全检测请求（POST /wxa/msg_sec_check）
 /// </summary>
-public class MsgSecCheckRequest
+public sealed class MsgSecCheckRequest
 {
     /// <summary>需检测的文本内容（不超过 500KB）</summary>
     [JsonPropertyName("content")] public required string Content { get; set; }

@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号用户管理服务实现</summary>
-public class OfficialUserService
+public sealed class OfficialUserService
 {
     private readonly WechatHttpClient _http;
 
@@ -63,7 +63,7 @@ public class OfficialUserService
 
         do
         {
-            var response = await GetListAsync(nextOpenId, ct);
+            var response = await GetListAsync(nextOpenId, ct).ConfigureAwait(false);
             if (response.Data?.OpenId is { Count: > 0 } openIds)
                 allOpenIds.AddRange(openIds);
 

@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.ExternalContact;
 
 /// <summary>外部联系人信息</summary>
-public class ExternalContactInfo
+public sealed class ExternalContactInfo
 {
     /// <summary>外部联系人的userid</summary>
     [JsonPropertyName("external_userid")] public string? ExternalUserId { get; set; }

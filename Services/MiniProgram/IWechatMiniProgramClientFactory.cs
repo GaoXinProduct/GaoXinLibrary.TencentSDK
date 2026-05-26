@@ -19,7 +19,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 ///
 /// <b>注入（MVC Controller）：</b>
 /// <code>
-/// public class MyController(IWechatMiniProgramClientFactory miniFactory) : ControllerBase
+/// public sealed class MyController(IWechatMiniProgramClientFactory miniFactory) : ControllerBase
 /// {
 ///     private readonly WechatMiniProgramClient _appA = miniFactory.CreateClient("appA");
 ///     private readonly WechatMiniProgramClient _appB = miniFactory.CreateClient("appB");

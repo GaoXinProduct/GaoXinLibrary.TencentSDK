@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 
 /// <summary>假期额度属性</summary>
-public class VacationQuotaAttr
+public sealed class VacationQuotaAttr
 {
     /// <summary>假期是否按工龄计算</summary>
     [JsonPropertyName("type")] public int? Type { get; set; }

@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>小程序订阅消息服务实现</summary>
-public class MiniProgramSubscribeMessageService
+public sealed class MiniProgramSubscribeMessageService
 {
     private readonly WechatHttpClient _http;
 

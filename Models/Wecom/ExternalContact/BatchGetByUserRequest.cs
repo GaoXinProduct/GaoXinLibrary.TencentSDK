@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.ExternalContact;
 
 /// <summary>批量获取客户详情请求</summary>
-public class BatchGetByUserRequest
+public sealed class BatchGetByUserRequest
 {
     /// <summary>企业成员 userid 列表</summary>
     [JsonPropertyName("userid_list")]

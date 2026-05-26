@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 
 /// <summary>审批节点详情</summary>
-public class SpDetail
+public sealed class SpDetail
 {
     /// <summary>分支审批人</summary>
     [JsonPropertyName("approver")] public ApprovalApplyerInfo? Approver { get; set; }

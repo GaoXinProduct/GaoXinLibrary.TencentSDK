@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.MeetingRoom;
 
 /// <summary>查询会议室列表请求</summary>
-public class ListMeetingRoomRequest
+public sealed class ListMeetingRoomRequest
 {
     /// <summary>城市</summary>
     [JsonPropertyName("city")]

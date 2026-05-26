@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.ExternalContact;
 
 /// <summary>获取联系客户统计数据请求</summary>
-public class GetUserBehaviorDataRequest
+public sealed class GetUserBehaviorDataRequest
 {
     /// <summary>成员 userid 列表</summary>
     [JsonPropertyName("userid")]

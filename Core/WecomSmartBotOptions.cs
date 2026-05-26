@@ -7,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Core;
 /// 与群机器人配置（<see cref="WecomWebHookOptions"/>）完全解耦，不继承 <see cref="WecomOptions"/>。
 /// </para>
 /// </summary>
-public class WecomSmartBotOptions
+public sealed class WecomSmartBotOptions
 {
     #region 企业微信核心配置（主动发消息所需）
 

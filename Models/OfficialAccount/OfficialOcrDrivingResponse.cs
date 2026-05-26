@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>OCR — 行驶证识别响应</summary>
-public class OfficialOcrDrivingResponse : WechatBaseResponse
+public sealed class OfficialOcrDrivingResponse : WechatBaseResponse
 {
     [JsonPropertyName("plate_num")] public string? PlateNum { get; set; }
     [JsonPropertyName("vehicle_type")] public string? VehicleType { get; set; }

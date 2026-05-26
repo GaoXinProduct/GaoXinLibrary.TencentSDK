@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>获取知识库分组列表请求</summary>
-public class KfKnowledgeListGroupRequest
+public sealed class KfKnowledgeListGroupRequest
 {
     /// <summary>分页游标</summary>
     [JsonPropertyName("cursor")] public string? Cursor { get; set; }

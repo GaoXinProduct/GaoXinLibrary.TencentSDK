@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>JS 错误项</summary>
-public class JsErrItem
+public sealed class JsErrItem
 {
     /// <summary>错误信息</summary>
     [JsonPropertyName("errorMsg")] public string? ErrorMsg { get; set; }

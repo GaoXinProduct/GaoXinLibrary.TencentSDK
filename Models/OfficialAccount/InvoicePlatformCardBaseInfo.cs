@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 发票卡券模板基础信息
 /// </summary>
-public class InvoicePlatformCardBaseInfo
+public sealed class InvoicePlatformCardBaseInfo
 {
     [JsonPropertyName("payee")] public required string Payee { get; set; }
     [JsonPropertyName("logo_url")] public required string LogoUrl { get; set; }

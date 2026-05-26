@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号数据统计服务实现</summary>
-public class OfficialDataAnalysisService
+public sealed class OfficialDataAnalysisService
 {
     private readonly WechatHttpClient _http;
     public OfficialDataAnalysisService(WechatHttpClient http) => _http = http;

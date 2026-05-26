@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -8,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 发送设备消息请求（POST /cgi-bin/message/device/subscribe/send）
 /// </summary>
-public class SendDeviceMessageRequest
+public sealed class SendDeviceMessageRequest
 {
     /// <summary>接收者 OpenId</summary>
     [JsonPropertyName("to_openid")] public required string ToOpenId { get; set; }

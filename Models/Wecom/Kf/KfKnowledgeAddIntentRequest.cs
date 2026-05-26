@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>添加知识库问答请求</summary>
-public class KfKnowledgeAddIntentRequest
+public sealed class KfKnowledgeAddIntentRequest
 {
     /// <summary>分组 id</summary>
     [JsonPropertyName("group_id")] public string GroupId { get; set; } = string.Empty;

@@ -1,7 +1,7 @@
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
 /// <summary>审批回调 - 审批流程节点</summary>
-public class CallbackApprovalSpRecord
+public sealed class CallbackApprovalSpRecord
 {
     /// <summary>
     /// 审批节点状态

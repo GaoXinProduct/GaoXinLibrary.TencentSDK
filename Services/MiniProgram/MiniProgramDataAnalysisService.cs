@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>小程序数据分析服务实现</summary>
-public class MiniProgramDataAnalysisService
+public sealed class MiniProgramDataAnalysisService
 {
     private readonly WechatHttpClient _http;
     public MiniProgramDataAnalysisService(WechatHttpClient http) => _http = http;

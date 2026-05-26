@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Menu;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Menu;
 #region 工作台自定义展示
 
 /// <summary>设置工作台自定义展示请求</summary>
-public class SetWorkbenchTemplateRequest
+public sealed class SetWorkbenchTemplateRequest
 {
     /// <summary>应用 agentid</summary>
     [JsonPropertyName("agentid")] public int AgentId { get; set; }

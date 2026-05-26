@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>获取打卡日报数据请求</summary>
-public class GetCheckinDayDataRequest
+public sealed class GetCheckinDayDataRequest
 {
     /// <summary>开始时间（Unix 时间戳）</summary>
     [JsonPropertyName("starttime")] public long StartTime { get; set; }

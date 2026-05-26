@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
 /// <summary>WiFi 打卡信息</summary>
-public class WifiMacInfo
+public sealed class WifiMacInfo
 {
     /// <summary>WiFi 名称</summary>
     [JsonPropertyName("wifiname")] public string? WifiName { get; set; }

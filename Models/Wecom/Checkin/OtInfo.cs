@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
 /// <summary>加班信息</summary>
-public class OtInfo
+public sealed class OtInfo
 {
     /// <summary>加班类型 0-申请核算 1-打卡时间 2-审批为准</summary>
     [JsonPropertyName("type")] public int? Type { get; set; }

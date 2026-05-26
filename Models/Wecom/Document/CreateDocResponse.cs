@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Document;
 
 /// <summary>新建文档响应</summary>
-public class CreateDocResponse : WecomBaseResponse
+public sealed class CreateDocResponse : WecomBaseResponse
 {
     /// <summary>文档的url</summary>
     [JsonPropertyName("url")] public string? Url { get; set; }

@@ -5,7 +5,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号 OAuth 服务实现</summary>
-public class OfficialOAuthService
+public sealed class OfficialOAuthService
 {
     private readonly WechatHttpClient _http;
     private readonly WechatOptions _options;

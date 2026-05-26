@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.QQConnect;
 
@@ -10,7 +9,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.QQConnect;
 /// 对应接口：GET https://graph.qq.com/oauth2.0/me
 /// </para>
 /// </summary>
-public class QQOpenIdResponse : QQBaseResponse
+public sealed class QQOpenIdResponse : QQBaseResponse
 {
     /// <summary>应用的 AppID</summary>
     [JsonPropertyName("client_id")] public string? ClientId { get; set; }

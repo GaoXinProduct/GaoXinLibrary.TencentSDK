@@ -1,11 +1,10 @@
 using System.Xml.Linq;
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
 /// <summary>扫码推事件/扫码推事件且弹出"消息接收中"事件</summary>
-public class CallbackScanCodeEvent : CallbackEventBase
+public sealed class CallbackScanCodeEvent : CallbackEventBase
 {
     /// <summary>事件 KEY 值</summary>
     public string EventKey { get; set; } = string.Empty;

@@ -1,11 +1,10 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.GroupChat;
 
 /// <summary>应用推送群聊消息请求</summary>
-public class SendGroupChatMessageRequest
+public sealed class SendGroupChatMessageRequest
 {
     /// <summary>群聊唯一标识</summary>
     [JsonPropertyName("chatid")] public string ChatId { get; set; } = string.Empty;

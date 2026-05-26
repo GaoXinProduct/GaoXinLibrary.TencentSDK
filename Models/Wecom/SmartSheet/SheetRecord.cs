@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartSheet;
 
 /// <summary>智能表格记录</summary>
-public class SheetRecord
+public sealed class SheetRecord
 {
     /// <summary>记录ID</summary>
     [JsonPropertyName("record_id")] public string? RecordId { get; set; }

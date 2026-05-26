@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 
@@ -11,7 +9,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 /// 参考文档：<see href="https://developer.work.weixin.qq.com/document/path/101468"/>
 /// </para>
 /// </summary>
-public class DocToolCallInfo
+public sealed class DocToolCallInfo
 {
     /// <summary>工具调用唯一 ID，回传结果时需要透传</summary>
     [JsonPropertyName("tool_call_id")] public string ToolCallId { get; set; } = string.Empty;

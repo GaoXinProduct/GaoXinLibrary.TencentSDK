@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Hr;
 
 /// <summary>花名册字段</summary>
-public class HrField
+public sealed class HrField
 {
     /// <summary>字段id</summary>
     [JsonPropertyName("fieldid")] public int FieldId { get; set; }

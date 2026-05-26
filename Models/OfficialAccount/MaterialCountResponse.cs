@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 获取素材总数响应（GET /cgi-bin/material/get_materialcount）
 /// </summary>
-public class MaterialCountResponse : WechatBaseResponse
+public sealed class MaterialCountResponse : WechatBaseResponse
 {
     /// <summary>语音素材数量</summary>
     [JsonPropertyName("voice_count")] public int VoiceCount { get; set; }

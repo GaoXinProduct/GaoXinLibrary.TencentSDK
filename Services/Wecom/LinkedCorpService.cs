@@ -5,7 +5,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.LinkedCorp;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>上下游/互联企业服务实现</summary>
-public class LinkedCorpService
+public sealed class LinkedCorpService
 {
     private readonly WecomHttpClient _http;
 
@@ -21,7 +21,7 @@ public class LinkedCorpService
     {
         return await _http.PostAsync<GetPermListResponse>(
             "/cgi-bin/linkedcorp/agent/get_perm_list",
-            EmptyRequest.Instance, ct);
+            EmptyRequest.Instance, ct).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ public class LinkedCorpService
     {
         var resp = await _http.PostAsync<LinkedCorpUserGetResponse>(
             "/cgi-bin/linkedcorp/user/get",
-            new LinkedCorpUserGetRequest { UserId = userId }, ct);
+            new LinkedCorpUserGetRequest { UserId = userId }, ct).ConfigureAwait(false);
         return resp.UserInfo;
     }
 
@@ -48,7 +48,7 @@ public class LinkedCorpService
     {
         var resp = await _http.PostAsync<LinkedCorpSimpleListResponse>(
             "/cgi-bin/linkedcorp/user/simplelist",
-            new LinkedCorpUserListRequest { DepartmentId = departmentId }, ct);
+            new LinkedCorpUserListRequest { DepartmentId = departmentId }, ct).ConfigureAwait(false);
         return resp.UserList ?? [];
     }
 
@@ -62,7 +62,7 @@ public class LinkedCorpService
     {
         var resp = await _http.PostAsync<LinkedCorpUserListResponse>(
             "/cgi-bin/linkedcorp/user/list",
-            new LinkedCorpUserListRequest { DepartmentId = departmentId }, ct);
+            new LinkedCorpUserListRequest { DepartmentId = departmentId }, ct).ConfigureAwait(false);
         return resp.UserList ?? [];
     }
 
@@ -76,7 +76,7 @@ public class LinkedCorpService
     {
         var resp = await _http.PostAsync<LinkedCorpDepartmentListResponse>(
             "/cgi-bin/linkedcorp/department/list",
-            new LinkedCorpDepartmentListRequest { DepartmentId = departmentId }, ct);
+            new LinkedCorpDepartmentListRequest { DepartmentId = departmentId }, ct).ConfigureAwait(false);
         return resp.DepartmentList ?? [];
     }
 }

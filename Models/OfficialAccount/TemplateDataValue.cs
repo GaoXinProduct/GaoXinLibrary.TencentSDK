@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>模板数据值</summary>
-public class TemplateDataValue
+public sealed class TemplateDataValue
 {
     /// <summary>数据值</summary>
     [JsonPropertyName("value")] public required string Value { get; set; }

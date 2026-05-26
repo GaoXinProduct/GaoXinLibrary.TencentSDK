@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.ExternalContact;
 
 /// <summary>发送新客户欢迎语请求</summary>
-public class SendWelcomeMsgRequest
+public sealed class SendWelcomeMsgRequest
 {
     /// <summary>欢迎语 code</summary>
     [JsonPropertyName("welcome_code")]

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>获取审批数据（旧）请求</summary>
-public class GetApprovalDataRequest
+public sealed class GetApprovalDataRequest
 {
     /// <summary>获取审批记录的开始时间（Unix 时间戳）</summary>
     [JsonPropertyName("starttime")] public long StartTime { get; set; }

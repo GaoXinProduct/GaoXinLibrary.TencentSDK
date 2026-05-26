@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>查询JS错误详情响应</summary>
-public class GetJsErrDetailResponse : WechatBaseResponse
+public sealed class GetJsErrDetailResponse : WechatBaseResponse
 {
     /// <summary>错误总数</summary>
     [JsonPropertyName("totalCount")]  public int TotalCount { get; set; }
@@ -13,7 +12,7 @@ public class GetJsErrDetailResponse : WechatBaseResponse
 }
 
 /// <summary>JS错误详情项</summary>
-public class JsErrDetailItem
+public sealed class JsErrDetailItem
 {
     [JsonPropertyName("openid")]       public string? OpenId { get; set; }
     [JsonPropertyName("appversion")]   public string? AppVersion { get; set; }

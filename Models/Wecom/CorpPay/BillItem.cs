@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.CorpPay;
 
 /// <summary>收款记录</summary>
-public class BillItem
+public sealed class BillItem
 {
     /// <summary>交易单号</summary>
     [JsonPropertyName("transaction_id")] public string? TransactionId { get; set; }

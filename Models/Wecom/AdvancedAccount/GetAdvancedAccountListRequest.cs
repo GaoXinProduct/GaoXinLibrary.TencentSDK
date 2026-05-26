@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.AdvancedAccount;
 
 /// <summary>获取高级功能账号列表请求</summary>
-public class GetAdvancedAccountListRequest
+public sealed class GetAdvancedAccountListRequest
 {
     /// <summary>账号类型</summary>
     [JsonPropertyName("type")]

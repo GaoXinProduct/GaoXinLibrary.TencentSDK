@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.AsyncImport;
 
 /// <summary>获取异步任务结果响应</summary>
-public class GetAsyncJobResultResponse : WecomBaseResponse
+public sealed class GetAsyncJobResultResponse : WecomBaseResponse
 {
     /// <summary>任务状态：1-处理中，2-已完成，3-异常失败</summary>
     [JsonPropertyName("status")] public int Status { get; set; }

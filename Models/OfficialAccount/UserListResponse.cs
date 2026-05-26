@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 获取用户列表响应（GET /cgi-bin/user/get）
 /// </summary>
-public class UserListResponse : WechatBaseResponse
+public sealed class UserListResponse : WechatBaseResponse
 {
     /// <summary>关注总数</summary>
     [JsonPropertyName("total")] public int Total { get; set; }

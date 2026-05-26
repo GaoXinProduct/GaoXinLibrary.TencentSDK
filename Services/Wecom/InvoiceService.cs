@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Invoice;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>电子发票服务实现</summary>
-public class InvoiceService
+public sealed class InvoiceService
 {
     private readonly WecomHttpClient _http;
 
@@ -13,22 +13,22 @@ public class InvoiceService
     /// <summary>查询电子发票</summary>
     public async Task<InvoiceInfo?> GetInvoiceInfoAsync(GetInvoiceInfoRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetInvoiceInfoResponse>("/cgi-bin/card/invoice/reimburse/getinvoiceinfo", request, ct);
+        var resp = await _http.PostAsync<GetInvoiceInfoResponse>("/cgi-bin/card/invoice/reimburse/getinvoiceinfo", request, ct).ConfigureAwait(false);
         return resp.InvoiceInfo;
     }
 
     /// <summary>批量查询电子发票</summary>
     public async Task<InvoiceInfo[]> BatchGetInvoiceInfoAsync(BatchGetInvoiceInfoRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<BatchGetInvoiceInfoResponse>("/cgi-bin/card/invoice/reimburse/getinvoiceinfobatch", request, ct);
+        var resp = await _http.PostAsync<BatchGetInvoiceInfoResponse>("/cgi-bin/card/invoice/reimburse/getinvoiceinfobatch", request, ct).ConfigureAwait(false);
         return resp.ItemList ?? [];
     }
 
     /// <summary>更新发票状态</summary>
     public async Task UpdateInvoiceStatusAsync(UpdateInvoiceStatusRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/card/invoice/reimburse/updateinvoicestatus", request, ct);
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/card/invoice/reimburse/updateinvoicestatus", request, ct).ConfigureAwait(false);
 
     /// <summary>批量更新发票状态</summary>
     public async Task BatchUpdateInvoiceStatusAsync(BatchUpdateInvoiceStatusRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/card/invoice/reimburse/updatestatusbatch", request, ct);
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/card/invoice/reimburse/updatestatusbatch", request, ct).ConfigureAwait(false);
 }

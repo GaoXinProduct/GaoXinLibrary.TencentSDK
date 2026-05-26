@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
 /// <summary>位置打卡信息</summary>
-public class LocInfo
+public sealed class LocInfo
 {
     /// <summary>纬度（实际纬度 × 1000000）</summary>
     [JsonPropertyName("lat")] public long Lat { get; set; }

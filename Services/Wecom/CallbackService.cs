@@ -7,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 /// <summary>
 /// 应用接收消息与事件回调服务实现
 /// </summary>
-public class CallbackService
+public sealed class CallbackService
 {
     private readonly WecomCryptoHelper _crypto;
     private readonly WecomHttpClient _http;
@@ -83,7 +83,7 @@ public class CallbackService
     /// <returns>IP 地址段数组</returns>
     public async Task<string[]> GetCallbackIpAsync(CancellationToken ct = default)
     {
-        var response = await _http.GetAsync<GetCallbackIpResponse>("/cgi-bin/getcallbackip", ct: ct);
+        var response = await _http.GetAsync<GetCallbackIpResponse>("/cgi-bin/getcallbackip", ct: ct).ConfigureAwait(false);
         return response.IpList ?? [];
     }
 
@@ -95,7 +95,7 @@ public class CallbackService
     /// <returns>接口 IP 地址段数组</returns>
     public async Task<string[]> GetApiDomainIpAsync(CancellationToken ct = default)
     {
-        var response = await _http.GetAsync<GetCallbackIpResponse>("/cgi-bin/get_api_domain_ip", ct: ct);
+        var response = await _http.GetAsync<GetCallbackIpResponse>("/cgi-bin/get_api_domain_ip", ct: ct).ConfigureAwait(false);
         return response.IpList ?? [];
     }
 }

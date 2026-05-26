@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>菜单-点击</summary>
-public class KfMenuClick
+public sealed class KfMenuClick
 {
     /// <summary>菜单 id</summary>
     [JsonPropertyName("id")] public string? Id { get; set; }

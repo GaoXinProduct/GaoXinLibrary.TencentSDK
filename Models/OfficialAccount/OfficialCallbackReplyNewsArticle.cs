@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Core;
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>图文回复消息中的文章项</summary>
-public class OfficialCallbackReplyNewsArticle
+public sealed class OfficialCallbackReplyNewsArticle
 {
     /// <summary>图文消息标题</summary>
     public string Title { get; set; } = string.Empty;

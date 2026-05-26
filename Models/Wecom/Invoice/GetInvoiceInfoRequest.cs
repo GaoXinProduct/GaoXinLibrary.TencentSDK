@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Invoice;
 
 /// <summary>获取发票信息请求</summary>
-public class GetInvoiceInfoRequest
+public sealed class GetInvoiceInfoRequest
 {
     /// <summary>卡券 ID</summary>
     [JsonPropertyName("card_id")]

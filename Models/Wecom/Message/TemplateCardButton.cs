@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 /// <summary>模版卡片按钮</summary>
-public class TemplateCardButton
+public sealed class TemplateCardButton
 {
     /// <summary>按钮文字</summary>
     [JsonPropertyName("text")] public string Text { get; set; } = string.Empty;

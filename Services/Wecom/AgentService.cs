@@ -5,7 +5,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Menu;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>应用管理服务实现（含自定义菜单管理）</summary>
-public class AgentService
+public sealed class AgentService
 {
     private readonly WecomHttpClient _http;
     private readonly WecomOptions _options;
@@ -25,7 +25,7 @@ public class AgentService
     public async Task<AgentInfo> GetAgentAsync(CancellationToken ct = default)
     {
         var resp = await _http.GetAsync<GetAgentResponse>("/cgi-bin/agent/get",
-            new() { ["agentid"] = _options.AgentId.ToString() }, ct);
+            new() { ["agentid"] = _options.AgentId.ToString() }, ct).ConfigureAwait(false);
         return resp.ToAgentInfo();
     }
 
@@ -37,7 +37,7 @@ public class AgentService
     /// <returns>应用信息数组</returns>
     public async Task<AgentInfo[]> GetAgentListAsync(CancellationToken ct = default)
     {
-        var resp = await _http.GetAsync<GetAgentListResponse>("/cgi-bin/agent/list", null, ct);
+        var resp = await _http.GetAsync<GetAgentListResponse>("/cgi-bin/agent/list", null, ct).ConfigureAwait(false);
         return resp.AgentList ?? [];
     }
 
@@ -48,7 +48,7 @@ public class AgentService
     /// <param name="request">应用设置请求，仅填写需修改的字段</param>
     /// <param name="ct">取消令牌</param>
     public async Task SetAgentAsync(SetAgentRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/agent/set", request, ct);
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/agent/set", request, ct).ConfigureAwait(false);
 
     /// <summary>
     /// 创建或覆盖当前应用的自定义菜单
@@ -58,7 +58,7 @@ public class AgentService
     /// <param name="ct">取消令牌</param>
     public async Task CreateMenuAsync(CreateMenuRequest request, CancellationToken ct = default)
         => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/menu/create", request,
-            new() { ["agentid"] = _options.AgentId.ToString() }, ct);
+            new() { ["agentid"] = _options.AgentId.ToString() }, ct).ConfigureAwait(false);
 
     /// <summary>
     /// 获取当前应用已创建的菜单
@@ -69,7 +69,7 @@ public class AgentService
     public async Task<MenuButton[]> GetMenuAsync(CancellationToken ct = default)
     {
         var resp = await _http.GetAsync<GetMenuResponse>("/cgi-bin/menu/get",
-            new() { ["agentid"] = _options.AgentId.ToString() }, ct);
+            new() { ["agentid"] = _options.AgentId.ToString() }, ct).ConfigureAwait(false);
         return resp.Button ?? [];
     }
 
@@ -80,7 +80,7 @@ public class AgentService
     /// <param name="ct">取消令牌</param>
     public async Task DeleteMenuAsync(CancellationToken ct = default)
         => await _http.GetAsync<WecomBaseResponse>("/cgi-bin/menu/delete",
-            new() { ["agentid"] = _options.AgentId.ToString() }, ct);
+            new() { ["agentid"] = _options.AgentId.ToString() }, ct).ConfigureAwait(false);
 
     /// <summary>
     /// 设置工作台自定义展示（设置应用在工作台的展示模板和内容）
@@ -89,5 +89,5 @@ public class AgentService
     /// <param name="request">工作台展示设置请求</param>
     /// <param name="ct">取消令牌</param>
     public async Task SetWorkbenchTemplateAsync(SetWorkbenchTemplateRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/agent/set_workbench_template", request, ct);
+        => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/agent/set_workbench_template", request, ct).ConfigureAwait(false);
 }

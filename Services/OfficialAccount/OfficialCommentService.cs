@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号留言管理服务实现</summary>
-public class OfficialCommentService
+public sealed class OfficialCommentService
 {
     private readonly WechatHttpClient _http;
     public OfficialCommentService(WechatHttpClient http) => _http = http;

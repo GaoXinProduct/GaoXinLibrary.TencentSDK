@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 /// <summary>投票选项</summary>
-public class TemplateCardCheckboxOption
+public sealed class TemplateCardCheckboxOption
 {
     /// <summary>选项 ID</summary>
     [JsonPropertyName("id")] public string Id { get; set; } = string.Empty;

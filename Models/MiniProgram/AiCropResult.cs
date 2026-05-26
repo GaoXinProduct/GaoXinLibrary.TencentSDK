@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>裁切结果</summary>
-public class AiCropResult
+public sealed class AiCropResult
 {
     [JsonPropertyName("crop_left")] public int CropLeft { get; set; }
     [JsonPropertyName("crop_top")] public int CropTop { get; set; }

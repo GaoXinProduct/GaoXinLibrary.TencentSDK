@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>提交审批申请请求</summary>
-public class ApplyEventRequest
+public sealed class ApplyEventRequest
 {
     /// <summary>申请人 userid</summary>
     [JsonPropertyName("creator_userid")] public string CreatorUserId { get; set; } = string.Empty;

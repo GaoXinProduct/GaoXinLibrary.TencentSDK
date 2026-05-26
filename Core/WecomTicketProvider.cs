@@ -1,4 +1,3 @@
-using GaoXinLibrary.TencentSDK.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Core;
 
@@ -9,7 +8,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Core;
 /// 可通过 <see cref="OnTicketChanged"/> 在 Ticket 刷新时获得通知（携带新 Ticket）。
 /// </para>
 /// </summary>
-public class WecomTicketProvider
+public sealed class WecomTicketProvider
 {
     private readonly Func<CancellationToken, Task<(string Ticket, int ExpiresIn)>> _fetchTicket;
     private string _cachedTicket = string.Empty;
@@ -40,13 +39,13 @@ public class WecomTicketProvider
         if (DateTimeOffset.UtcNow < _expireAt)
             return _cachedTicket;
 
-        await _lock.WaitAsync(ct);
+        await _lock.WaitAsync(ct).ConfigureAwait(false);
         try
         {
             if (DateTimeOffset.UtcNow < _expireAt)
                 return _cachedTicket;
 
-            var (ticket, expiresIn) = await _fetchTicket(ct);
+            var (ticket, expiresIn) = await _fetchTicket(ct).ConfigureAwait(false);
             var newTicket = ticket ?? throw new TencentException("jsapi_ticket 为空");
             var expiresInSeconds = expiresIn;
 
@@ -54,7 +53,7 @@ public class WecomTicketProvider
             _expireAt = DateTimeOffset.UtcNow.AddSeconds(expiresInSeconds - 60);
 
             if (OnTicketChanged is not null)
-                await OnTicketChanged(newTicket, ct);
+                await OnTicketChanged(newTicket, ct).ConfigureAwait(false);
 
             return _cachedTicket;
         }
@@ -76,7 +75,7 @@ public class WecomTicketProvider
     public async Task<string> RefreshTicketAsync(CancellationToken ct = default)
     {
         InvalidateCache();
-        return await GetTicketAsync(ct);
+        return await GetTicketAsync(ct).ConfigureAwait(false);
     }
 
     /// <summary>

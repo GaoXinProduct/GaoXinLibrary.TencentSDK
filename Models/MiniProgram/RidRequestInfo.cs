@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>rid 请求信息</summary>
-public class RidRequestInfo
+public sealed class RidRequestInfo
 {
     /// <summary>发起请求的时间戳</summary>
     [JsonPropertyName("invoke_time")] public long InvokeTime { get; set; }

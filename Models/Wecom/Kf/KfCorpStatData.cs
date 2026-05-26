@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>企业汇总统计数据详情</summary>
-public class KfCorpStatData
+public sealed class KfCorpStatData
 {
     /// <summary>咨询会话数</summary>
     [JsonPropertyName("session_cnt")] public int SessionCnt { get; set; }

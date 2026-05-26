@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.OAuth;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>网页授权登录服务实现</summary>
-public class OAuthService
+public sealed class OAuthService
 {
     private readonly WecomHttpClient _http;
     private readonly WecomOptions _options;

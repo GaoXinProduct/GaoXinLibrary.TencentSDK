@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>事件消息内容</summary>
-public class KfMsgEvent
+public sealed class KfMsgEvent
 {
     /// <summary>事件类型</summary>
     [JsonPropertyName("event_type")] public string? EventType { get; set; }

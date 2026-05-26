@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Document;
 
 /// <summary>分享文档请求</summary>
-public class ShareDocRequest
+public sealed class ShareDocRequest
 {
     /// <summary>文档 ID</summary>
     [JsonPropertyName("docid")]

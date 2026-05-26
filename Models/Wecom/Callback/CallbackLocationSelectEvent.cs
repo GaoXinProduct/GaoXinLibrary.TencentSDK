@@ -1,11 +1,10 @@
 using System.Xml.Linq;
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
 /// <summary>弹出地理位置选择器事件</summary>
-public class CallbackLocationSelectEvent : CallbackEventBase
+public sealed class CallbackLocationSelectEvent : CallbackEventBase
 {
     /// <summary>事件 KEY 值</summary>
     public string EventKey { get; set; } = string.Empty;

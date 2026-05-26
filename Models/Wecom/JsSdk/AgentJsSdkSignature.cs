@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.JsSdk;
 
 /// <summary>应用级别 JS-SDK 签名结果</summary>
-public class AgentJsSdkSignature
+public sealed class AgentJsSdkSignature
 {
     /// <summary>企业 CorpId（即 appId）</summary>
     public string CorpId { get; set; } = string.Empty;

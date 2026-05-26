@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
 /// <summary>班次时段</summary>
-public class TimeSection
+public sealed class TimeSection
 {
     /// <summary>时段 id</summary>
     [JsonPropertyName("time_id")] public int TimeId { get; set; }

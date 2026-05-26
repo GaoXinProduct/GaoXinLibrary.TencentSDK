@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>删除回复请求（POST /cgi-bin/comment/reply/delete）</summary>
-public class DeleteCommentReplyRequest
+public sealed class DeleteCommentReplyRequest
 {
     [JsonPropertyName("msg_data_id")] public required long MsgDataId { get; set; }
     [JsonPropertyName("index")] public int Index { get; set; }

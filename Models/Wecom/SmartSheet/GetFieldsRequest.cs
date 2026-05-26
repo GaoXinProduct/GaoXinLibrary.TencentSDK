@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartSheet;
 
 /// <summary>获取字段列表请求</summary>
-public class GetFieldsRequest
+public sealed class GetFieldsRequest
 {
     /// <summary>文档 ID</summary>
     [JsonPropertyName("docid")]

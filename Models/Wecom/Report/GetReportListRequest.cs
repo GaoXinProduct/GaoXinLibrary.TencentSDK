@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Report;
 
 /// <summary>获取汇报列表请求</summary>
-public class GetReportListRequest
+public sealed class GetReportListRequest
 {
     /// <summary>起始时间（Unix 时间戳，秒）</summary>
     [JsonPropertyName("starttime")]

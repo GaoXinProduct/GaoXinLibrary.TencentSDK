@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>用户加密 key 信息</summary>
-public class UserEncryptKeyInfo
+public sealed class UserEncryptKeyInfo
 {
     /// <summary>加密 key</summary>
     [JsonPropertyName("encrypt_key")] public string? EncryptKey { get; set; }

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>获取设备打卡数据请求</summary>
-public class GetCheckinDeviceDataRequest
+public sealed class GetCheckinDeviceDataRequest
 {
     /// <summary>需要过滤的打卡类型列表，1-上班 2-下班</summary>
     [JsonPropertyName("filter_type")] public int[]? FilterType { get; set; }

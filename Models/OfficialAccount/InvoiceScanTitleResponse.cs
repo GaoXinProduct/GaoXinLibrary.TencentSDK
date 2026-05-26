@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 解析抬头二维码响应
 /// </summary>
-public class InvoiceScanTitleResponse : WechatBaseResponse
+public sealed class InvoiceScanTitleResponse : WechatBaseResponse
 {
     [JsonPropertyName("title_type")] public int? TitleType { get; set; }
     [JsonPropertyName("title")] public string? Title { get; set; }

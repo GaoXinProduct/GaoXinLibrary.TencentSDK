@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 获取用户反馈列表响应（GET /wxaapi/feedback/list）
 /// </summary>
-public class GetFeedbackListResponse : WechatBaseResponse
+public sealed class GetFeedbackListResponse : WechatBaseResponse
 {
     /// <summary>反馈总数</summary>
     [JsonPropertyName("total")]    public int Total { get; set; }
@@ -15,7 +14,7 @@ public class GetFeedbackListResponse : WechatBaseResponse
 }
 
 /// <summary>用户反馈单条</summary>
-public class FeedbackItem
+public sealed class FeedbackItem
 {
     /// <summary>反馈ID</summary>
     [JsonPropertyName("feedback_id")]   public long FeedbackId { get; set; }

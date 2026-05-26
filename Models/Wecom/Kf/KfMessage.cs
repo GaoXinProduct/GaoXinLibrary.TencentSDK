@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>客服消息</summary>
-public class KfMessage
+public sealed class KfMessage
 {
     /// <summary>消息 id</summary>
     [JsonPropertyName("msgid")] public string? MsgId { get; set; }

@@ -7,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Core;
 /// Token 失效重试由 SDK 内部独立处理，不受此配置影响。
 /// </para>
 /// </summary>
-public class TencentRetryOptions
+public sealed class TencentRetryOptions
 {
     /// <summary>
     /// 最大重试次数（不含首次请求），默认 2 次

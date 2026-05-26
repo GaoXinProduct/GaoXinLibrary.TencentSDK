@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Meeting;
 
 /// <summary>获取用户会议 ID 列表请求</summary>
-public class GetUserMeetingIdRequest
+public sealed class GetUserMeetingIdRequest
 {
     /// <summary>用户 userid</summary>
     [JsonPropertyName("userid")]

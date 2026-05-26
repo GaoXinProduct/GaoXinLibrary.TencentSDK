@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 发票授权页自定义字段
 /// </summary>
-public class InvoiceCustomField
+public sealed class InvoiceCustomField
 {
     /// <summary>字段名</summary>
     [JsonPropertyName("key")] public required string Key { get; set; }

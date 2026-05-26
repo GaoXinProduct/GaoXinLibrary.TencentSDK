@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>小程序内容安全服务实现</summary>
-public class MiniProgramSecurityService
+public sealed class MiniProgramSecurityService
 {
     private readonly WechatHttpClient _http;
 

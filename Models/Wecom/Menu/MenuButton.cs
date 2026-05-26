@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Menu;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Menu;
 #region 菜单按钮
 
 /// <summary>自定义菜单按钮</summary>
-public class MenuButton
+public sealed class MenuButton
 {
     /// <summary>
     /// 菜单按钮类型：

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Media;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Media;
 #region 异步上传临时素材（通过 URL）
 
 /// <summary>异步上传临时素材（通过 URL）请求</summary>
-public class UploadByUrlRequest
+public sealed class UploadByUrlRequest
 {
     /// <summary>场景值。1-其他</summary>
     [JsonPropertyName("scene")] public int Scene { get; set; }

@@ -18,7 +18,7 @@
 ///
 /// <b>注入（MVC Controller）：</b>
 /// <code>
-/// public class MyController(IWebhookServiceFactory webhookFactory)
+/// public sealed class MyController(IWebhookServiceFactory webhookFactory)
 /// {
 ///     private readonly WebhookService _bot1 = webhookFactory.CreateClient("bot1");
 ///     private readonly WebhookService _bot2 = webhookFactory.CreateClient("bot2");

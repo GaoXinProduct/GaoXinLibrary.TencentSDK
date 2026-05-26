@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Hr;
 
 /// <summary>更新员工信息请求</summary>
-public class UpdateStaffInfoRequest
+public sealed class UpdateStaffInfoRequest
 {
     /// <summary>用户 userid</summary>
     [JsonPropertyName("userid")]

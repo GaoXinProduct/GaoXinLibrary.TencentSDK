@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.ExternalContact;
 
 /// <summary>客户联系行为数据</summary>
-public class UserBehaviorData
+public sealed class UserBehaviorData
 {
     /// <summary>统计时间戳</summary>
     [JsonPropertyName("stat_time")] public long StatTime { get; set; }

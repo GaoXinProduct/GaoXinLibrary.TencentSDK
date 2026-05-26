@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>小程序硬件设备服务实现</summary>
-public class MiniProgramDeviceService
+public sealed class MiniProgramDeviceService
 {
     private readonly WechatHttpClient _http;
     public MiniProgramDeviceService(WechatHttpClient http) => _http = http;

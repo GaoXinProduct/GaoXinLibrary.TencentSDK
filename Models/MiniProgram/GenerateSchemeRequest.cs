@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -8,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 生成 URL Scheme 请求（POST /wxa/generatescheme）
 /// </summary>
-public class GenerateSchemeRequest
+public sealed class GenerateSchemeRequest
 {
     /// <summary>跳转到的目标小程序信息</summary>
     [JsonPropertyName("jump_wxa")] public JumpWxa? JumpWxa { get; set; }

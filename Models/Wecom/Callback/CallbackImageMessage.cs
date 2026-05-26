@@ -1,11 +1,10 @@
 using System.Xml.Linq;
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
 /// <summary>图片消息</summary>
-public class CallbackImageMessage : CallbackMessageBase
+public sealed class CallbackImageMessage : CallbackMessageBase
 {
     /// <summary>消息 ID</summary>
     public long MsgId { get; set; }

@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号菜单服务实现</summary>
-public class OfficialMenuService
+public sealed class OfficialMenuService
 {
     private readonly WechatHttpClient _http;
 

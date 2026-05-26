@@ -1,11 +1,10 @@
 using System.Xml.Linq;
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
 /// <summary>异步任务完成事件</summary>
-public class CallbackBatchJobEvent : CallbackEventBase
+public sealed class CallbackBatchJobEvent : CallbackEventBase
 {
     /// <summary>异步任务 ID（最大长度64字符）</summary>
     public string JobId { get; set; } = string.Empty;

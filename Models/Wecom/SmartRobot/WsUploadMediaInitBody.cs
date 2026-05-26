@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 /// aibot_upload_media_init 上传初始化请求体
 /// <para>参考文档：<see href="https://developer.work.weixin.qq.com/document/path/101463"/></para>
 /// </summary>
-public class WsUploadMediaInitBody
+public sealed class WsUploadMediaInitBody
 {
     /// <summary>文件类型（file / image / voice / video）</summary>
     [JsonPropertyName("type")] public string Type { get; set; } = string.Empty;

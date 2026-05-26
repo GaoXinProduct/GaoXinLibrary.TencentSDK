@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
 /// <summary>月报汇总信息</summary>
-public class CheckinMonthSummaryInfo
+public sealed class CheckinMonthSummaryInfo
 {
     /// <summary>应打卡天数</summary>
     [JsonPropertyName("work_days")] public int? WorkDays { get; set; }

@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>物流信息项</summary>
-public class ShippingItem
+public sealed class ShippingItem
 {
     /// <summary>物流单号</summary>
     [JsonPropertyName("tracking_no")] public string? TrackingNo { get; set; }

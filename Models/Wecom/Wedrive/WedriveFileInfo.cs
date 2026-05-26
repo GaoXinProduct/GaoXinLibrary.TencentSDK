@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Wedrive;
 
 /// <summary>微盘文件信息</summary>
-public class WedriveFileInfo
+public sealed class WedriveFileInfo
 {
     /// <summary>文件ID</summary>
     [JsonPropertyName("fileid")] public string? FileId { get; set; }

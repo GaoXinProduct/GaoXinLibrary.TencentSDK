@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Dial;
 
 /// <summary>获取公费电话通话记录请求</summary>
-public class GetDialRecordRequest
+public sealed class GetDialRecordRequest
 {
     /// <summary>起始时间（Unix 时间戳，秒）</summary>
     [JsonPropertyName("start_time")]

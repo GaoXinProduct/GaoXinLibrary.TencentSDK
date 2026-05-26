@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Calendar;
 
 /// <summary>日历共享成员</summary>
-public class CalendarShare
+public sealed class CalendarShare
 {
     /// <summary>共享成员的userid</summary>
     [JsonPropertyName("userid")] public string? UserId { get; set; }

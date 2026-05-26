@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
 /// <summary>排班项</summary>
-public class SetScheduleItem
+public sealed class SetScheduleItem
 {
     /// <summary>用户 userid</summary>
     [JsonPropertyName("userid")] public string UserId { get; set; } = string.Empty;

@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 /// <summary>整体卡片点击跳转事件</summary>
-public class TemplateCardAction
+public sealed class TemplateCardAction
 {
     /// <summary>跳转事件类型：1=跳转url, 2=打开小程序</summary>
     [JsonPropertyName("type")] public int Type { get; set; }

@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.AccountId;
 
 /// <summary>tmp_external_userid转换结果项</summary>
-public class ConvertTmpExternalUserIdResult
+public sealed class ConvertTmpExternalUserIdResult
 {
     /// <summary>原始tmp_external_userid</summary>
     [JsonPropertyName("tmp_external_userid")] public string? TmpExternalUserId { get; set; }

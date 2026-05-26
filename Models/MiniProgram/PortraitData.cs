@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>画像数据</summary>
-public class PortraitData
+public sealed class PortraitData
 {
     /// <summary>省份分布</summary>
     [JsonPropertyName("province")] public List<PortraitItem>? Province { get; set; }

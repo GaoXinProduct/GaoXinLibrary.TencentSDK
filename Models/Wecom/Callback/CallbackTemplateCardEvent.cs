@@ -1,11 +1,10 @@
 using System.Xml.Linq;
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
 /// <summary>模版卡片事件推送</summary>
-public class CallbackTemplateCardEvent : CallbackEventBase
+public sealed class CallbackTemplateCardEvent : CallbackEventBase
 {
     /// <summary>与发送模版卡片消息时指定的 task_id 对应</summary>
     public string TaskId { get; set; } = string.Empty;

@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
 /// <summary>月报基础信息</summary>
-public class CheckinMonthBaseInfo
+public sealed class CheckinMonthBaseInfo
 {
     /// <summary>用户 userid</summary>
     [JsonPropertyName("acctid")] public string? AcctId { get; set; }

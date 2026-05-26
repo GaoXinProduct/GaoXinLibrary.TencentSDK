@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>手机号详细信息</summary>
-public class PhoneInfo
+public sealed class PhoneInfo
 {
     /// <summary>用户绑定的手机号（国外手机号会有区号）</summary>
     [JsonPropertyName("phoneNumber")] public string? PhoneNumber { get; set; }

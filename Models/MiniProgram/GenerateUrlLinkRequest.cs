@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 生成 URL Link 请求（POST /wxa/generate_urllink）
 /// </summary>
-public class GenerateUrlLinkRequest
+public sealed class GenerateUrlLinkRequest
 {
     /// <summary>小程序页面路径</summary>
     [JsonPropertyName("path")] public string? Path { get; set; }

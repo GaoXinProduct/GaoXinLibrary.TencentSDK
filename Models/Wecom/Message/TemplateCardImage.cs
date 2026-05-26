@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 /// <summary>卡片图片样式</summary>
-public class TemplateCardImage
+public sealed class TemplateCardImage
 {
     /// <summary>图片的 URL</summary>
     [JsonPropertyName("url")] public string Url { get; set; } = string.Empty;

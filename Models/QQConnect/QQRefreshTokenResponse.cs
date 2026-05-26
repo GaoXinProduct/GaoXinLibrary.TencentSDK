@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.QQConnect;
 
@@ -11,7 +10,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.QQConnect;
 /// 参数 grant_type=refresh_token
 /// </para>
 /// </summary>
-public class QQRefreshTokenResponse : QQBaseResponse
+public sealed class QQRefreshTokenResponse : QQBaseResponse
 {
     /// <summary>授权令牌</summary>
     [JsonPropertyName("access_token")] public string? AccessToken { get; set; }

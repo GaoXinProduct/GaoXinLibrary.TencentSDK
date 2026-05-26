@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Media;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
-public class MediaService
+public sealed class MediaService
 {
     private readonly WecomHttpClient _http;
     private readonly AccessTokenProvider _tokenProvider;
@@ -44,12 +44,12 @@ public class MediaService
     /// <summary>上传临时素材，返回 media_id（有效期3天）</summary>
     public async Task<string> UploadTempMediaAsync(string type, string fileName, ReadOnlyMemory<byte> fileData, CancellationToken ct = default)
     {
-        var token = await _tokenProvider.GetTokenAsync(ct);
+        var token = await _tokenProvider.GetTokenAsync(ct).ConfigureAwait(false);
         var url = $"{_baseUrl}/cgi-bin/media/upload?access_token={token}&type={type}";
         using var form = BuildMediaForm(fileName, fileData);
-        var response = await _rawHttpClient.PostAsync(url, form, ct);
+        var response = await _rawHttpClient.PostAsync(url, form, ct).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
-        var json = await response.Content.ReadAsStringAsync(ct);
+        var json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
         var result = System.Text.Json.JsonSerializer.Deserialize<UploadMediaResponse>(json, WecomHttpClient.JsonOptions)
                      ?? throw new TencentException("上传素材响应为空");
         if (result.ErrCode != 0) throw new TencentException(result.ErrCode, result.ErrMsg ?? string.Empty, "企业微信");
@@ -59,12 +59,12 @@ public class MediaService
     /// <summary>上传图片素材，返回永久 URL（不受10MB限制，上限2048px）</summary>
     public async Task<string> UploadImageAsync(string fileName, ReadOnlyMemory<byte> fileData, CancellationToken ct = default)
     {
-        var token = await _tokenProvider.GetTokenAsync(ct);
+        var token = await _tokenProvider.GetTokenAsync(ct).ConfigureAwait(false);
         var url = $"{_baseUrl}/cgi-bin/media/uploadimg?access_token={token}";
         using var form = BuildMediaForm(fileName, fileData);
-        var response = await _rawHttpClient.PostAsync(url, form, ct);
+        var response = await _rawHttpClient.PostAsync(url, form, ct).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
-        var json = await response.Content.ReadAsStringAsync(ct);
+        var json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
         var result = System.Text.Json.JsonSerializer.Deserialize<UploadImageResponse>(json, WecomHttpClient.JsonOptions)
                      ?? throw new TencentException("上传图片响应为空");
         if (result.ErrCode != 0) throw new TencentException(result.ErrCode, result.ErrMsg ?? string.Empty, "企业微信");
@@ -74,44 +74,44 @@ public class MediaService
     /// <summary>获取临时素材，返回文件字节</summary>
     public async Task<byte[]> GetTempMediaAsync(string mediaId, CancellationToken ct = default)
     {
-        var token = await _tokenProvider.GetTokenAsync(ct);
+        var token = await _tokenProvider.GetTokenAsync(ct).ConfigureAwait(false);
         var url = $"{_baseUrl}/cgi-bin/media/get?access_token={token}&media_id={mediaId}";
-        var response = await _rawHttpClient.GetAsync(url, ct);
+        var response = await _rawHttpClient.GetAsync(url, ct).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
         // 企业微信在出错时以 HTTP 200 返回 JSON 错误体，需要区分文件流与错误响应
         if (response.Content.Headers.ContentType?.MediaType == "application/json")
         {
-            var json = await response.Content.ReadAsStringAsync(ct);
+            var json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
             var error = System.Text.Json.JsonSerializer.Deserialize<WecomBaseResponse>(json, WecomHttpClient.JsonOptions)
                         ?? throw new TencentException("获取临时素材响应为空");
             throw new TencentException(error.ErrCode, error.ErrMsg ?? string.Empty, "企业微信");
         }
-        return await response.Content.ReadAsByteArrayAsync(ct);
+        return await response.Content.ReadAsByteArrayAsync(ct).ConfigureAwait(false);
     }
 
     /// <summary>获取高清语音素材（JSSDK 专用），返回文件字节</summary>
     public async Task<byte[]> GetJsSdkVoiceAsync(string mediaId, CancellationToken ct = default)
     {
-        var token = await _tokenProvider.GetTokenAsync(ct);
+        var token = await _tokenProvider.GetTokenAsync(ct).ConfigureAwait(false);
         var url = $"{_baseUrl}/cgi-bin/media/get/jssdk?access_token={token}&media_id={mediaId}";
-        var response = await _rawHttpClient.GetAsync(url, ct);
+        var response = await _rawHttpClient.GetAsync(url, ct).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
         // 企业微信在出错时以 HTTP 200 返回 JSON 错误体，需要区分文件流与错误响应
         if (response.Content.Headers.ContentType?.MediaType == "application/json")
         {
-            var json = await response.Content.ReadAsStringAsync(ct);
+            var json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
             var error = System.Text.Json.JsonSerializer.Deserialize<WecomBaseResponse>(json, WecomHttpClient.JsonOptions)
                         ?? throw new TencentException("获取高清语音素材响应为空");
             throw new TencentException(error.ErrCode, error.ErrMsg ?? string.Empty, "企业微信");
         }
-        return await response.Content.ReadAsByteArrayAsync(ct);
+        return await response.Content.ReadAsByteArrayAsync(ct).ConfigureAwait(false);
     }
 
     /// <summary>异步上传临时素材（通过 URL），返回 jobid</summary>
     public async Task<string> UploadByUrlAsync(UploadByUrlRequest request, CancellationToken ct = default)
     {
         var result = await _http.PostAsync<UploadByUrlResponse>(
-            "/cgi-bin/media/upload_by_url", request, ct);
+            "/cgi-bin/media/upload_by_url", request, ct).ConfigureAwait(false);
         return result.JobId ?? string.Empty;
     }
 
@@ -120,18 +120,18 @@ public class MediaService
     {
         return await _http.PostAsync<GetUploadByUrlResultResponse>(
             "/cgi-bin/media/get_upload_by_url_result",
-            new GetUploadByUrlResultRequest { JobId = jobId }, ct);
+            new GetUploadByUrlResultRequest { JobId = jobId }, ct).ConfigureAwait(false);
     }
 
     /// <summary>上传附件资源（客户联系专用），返回 media_id</summary>
     public async Task<string> UploadAttachmentAsync(string mediaType, int attachmentType, string fileName, ReadOnlyMemory<byte> fileData, CancellationToken ct = default)
     {
-        var token = await _tokenProvider.GetTokenAsync(ct);
+        var token = await _tokenProvider.GetTokenAsync(ct).ConfigureAwait(false);
         var url = $"{_baseUrl}/cgi-bin/media/upload_attachment?access_token={token}&media_type={mediaType}&attachment_type={attachmentType}";
         using var form = BuildMediaForm(fileName, fileData);
-        var response = await _rawHttpClient.PostAsync(url, form, ct);
+        var response = await _rawHttpClient.PostAsync(url, form, ct).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
-        var json = await response.Content.ReadAsStringAsync(ct);
+        var json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
         var result = System.Text.Json.JsonSerializer.Deserialize<UploadAttachmentResponse>(json, WecomHttpClient.JsonOptions)
                      ?? throw new TencentException("上传附件资源响应为空");
         if (result.ErrCode != 0) throw new TencentException(result.ErrCode, result.ErrMsg ?? string.Empty, "企业微信");

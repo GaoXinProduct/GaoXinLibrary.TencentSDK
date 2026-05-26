@@ -7,7 +7,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>公众号用户标签管理服务实现</summary>
-public class OfficialTagService
+public sealed class OfficialTagService
 {
     private readonly WechatHttpClient _http;
     public OfficialTagService(WechatHttpClient http) => _http = http;

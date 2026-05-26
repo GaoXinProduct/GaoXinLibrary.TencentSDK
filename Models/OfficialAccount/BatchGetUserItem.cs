@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>批量获取用户 — 单项</summary>
-public class BatchGetUserItem
+public sealed class BatchGetUserItem
 {
     /// <summary>用户 OpenId</summary>
     [JsonPropertyName("openid")] public required string OpenId { get; set; }

@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.CorpGroup;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>企业互联服务实现</summary>
-public class CorpGroupService
+public sealed class CorpGroupService
 {
     private readonly WecomHttpClient _http;
 
@@ -21,7 +21,7 @@ public class CorpGroupService
     {
         var resp = await _http.PostAsync<GetAppShareInfoResponse>(
             "/cgi-bin/corpgroup/corp/get_app_share_info",
-            new GetAppShareInfoRequest { AgentId = agentId }, ct);
+            new GetAppShareInfoRequest { AgentId = agentId }, ct).ConfigureAwait(false);
         return resp.CorpList ?? [];
     }
 
@@ -37,7 +37,7 @@ public class CorpGroupService
     {
         return await _http.PostAsync<GetCorpTokenResponse>(
             "/cgi-bin/corpgroup/corp/gettoken",
-            new GetCorpTokenRequest { CorpId = corpId, AgentId = agentId }, ct);
+            new GetCorpTokenRequest { CorpId = corpId, AgentId = agentId }, ct).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -52,6 +52,6 @@ public class CorpGroupService
     {
         return await _http.PostAsync<TransferSessionResponse>(
             "/cgi-bin/miniprogram/transfer_session",
-            new TransferSessionRequest { UserId = userId, SessionKey = sessionKey }, ct);
+            new TransferSessionRequest { UserId = userId, SessionKey = sessionKey }, ct).ConfigureAwait(false);
     }
 }

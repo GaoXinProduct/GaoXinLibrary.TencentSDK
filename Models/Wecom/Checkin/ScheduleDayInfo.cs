@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 
 /// <summary>每日排班信息</summary>
-public class ScheduleDayInfo
+public sealed class ScheduleDayInfo
 {
     /// <summary>时间段信息</summary>
     [JsonPropertyName("time_section")] public TimeSection[]? TimeSection { get; set; }

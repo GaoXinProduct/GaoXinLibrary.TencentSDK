@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.ExternalContact;
 
 /// <summary>获取客户群列表请求</summary>
-public class GetGroupChatListRequest
+public sealed class GetGroupChatListRequest
 {
     /// <summary>群状态筛选，0-所有，1-正常，2-跟进中，3-待开发</summary>
     [JsonPropertyName("status_filter")]

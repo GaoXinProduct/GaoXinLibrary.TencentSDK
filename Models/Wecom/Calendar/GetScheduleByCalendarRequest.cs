@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Calendar;
 
 /// <summary>按日历获取日程请求</summary>
-public class GetScheduleByCalendarRequest
+public sealed class GetScheduleByCalendarRequest
 {
     /// <summary>日历 ID</summary>
     [JsonPropertyName("cal_id")]

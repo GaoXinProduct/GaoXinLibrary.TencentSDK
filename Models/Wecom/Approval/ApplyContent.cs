@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 
 /// <summary>审批申请内容</summary>
-public class ApplyContent
+public sealed class ApplyContent
 {
     /// <summary>控件类型</summary>
     [JsonPropertyName("control")] public string Control { get; set; } = string.Empty;

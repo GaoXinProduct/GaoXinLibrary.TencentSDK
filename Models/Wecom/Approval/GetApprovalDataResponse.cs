@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 
 /// <summary>获取审批数据（旧）响应</summary>
-public class GetApprovalDataResponse : WecomBaseResponse
+public sealed class GetApprovalDataResponse : WecomBaseResponse
 {
     /// <summary>审批数据总数</summary>
     [JsonPropertyName("count")] public int Count { get; set; }

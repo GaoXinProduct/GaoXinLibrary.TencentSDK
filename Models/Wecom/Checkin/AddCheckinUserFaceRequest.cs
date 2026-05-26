@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Checkin;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>录入打卡人员人脸信息请求</summary>
-public class AddCheckinUserFaceRequest
+public sealed class AddCheckinUserFaceRequest
 {
     /// <summary>需要录入的用户 userid</summary>
     [JsonPropertyName("userid")] public string UserId { get; set; } = string.Empty;

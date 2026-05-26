@@ -1,10 +1,3 @@
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace GaoXinLibrary.TencentSDK.Core;
 
@@ -65,10 +58,10 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
             {
                 var query = BuildQuery(queryParams, token);
                 var url = $"{_baseUrl}{path}?{query}";
-                var json = await _httpClient.GetStringAsync(url, ct);
+                var json = await _httpClient.GetStringAsync(url, ct).ConfigureAwait(false);
                 return DeserializeAndValidate<T>(json);
-            }, ct);
-        }, ct);
+            }, ct).ConfigureAwait(false);
+        }, ct).ConfigureAwait(false);
     }
 
     /// <summary>POST 请求（JSON body），自动附加 access_token</summary>
@@ -86,12 +79,12 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
             {
                 var query = BuildQuery(queryParams, token);
                 var url = $"{_baseUrl}{path}?{query}";
-                var response = await _httpClient.PostAsync(url, CreateJsonContent(body), ct);
+                var response = await _httpClient.PostAsync(url, CreateJsonContent(body), ct).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
-                var json = await response.Content.ReadAsStringAsync(ct);
+                var json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
                 return DeserializeAndValidate<T>(json);
-            }, ct);
-        }, ct);
+            }, ct).ConfigureAwait(false);
+        }, ct).ConfigureAwait(false);
     }
 
     #endregion
@@ -103,9 +96,9 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
     {
         return await ExecuteWithTransientRetryAsync(async () =>
         {
-            var json = await _httpClient.GetStringAsync(url, ct);
+            var json = await _httpClient.GetStringAsync(url, ct).ConfigureAwait(false);
             return DeserializeAndValidate<T>(json);
-        }, ct);
+        }, ct).ConfigureAwait(false);
     }
 
     /// <summary>POST 请求（无 access_token，用于 Webhook 等，瞬态故障自动重试）</summary>
@@ -114,11 +107,11 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
     {
         return await ExecuteWithTransientRetryAsync(async () =>
         {
-            var response = await _httpClient.PostAsync(url, CreateJsonContent(body), ct);
+            var response = await _httpClient.PostAsync(url, CreateJsonContent(body), ct).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
-            var json = await response.Content.ReadAsStringAsync(ct);
+            var json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
             return DeserializeAndValidate<T>(json);
-        }, ct);
+        }, ct).ConfigureAwait(false);
     }
 
     /// <summary>GET 请求（自定义完整 URL，不走 BaseUrl），不附加 token（瞬态故障自动重试）</summary>
@@ -127,9 +120,9 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
     {
         return await ExecuteWithTransientRetryAsync(async () =>
         {
-            var json = await _httpClient.GetStringAsync(fullUrl, ct);
+            var json = await _httpClient.GetStringAsync(fullUrl, ct).ConfigureAwait(false);
             return DeserializeAndValidate<T>(json);
-        }, ct);
+        }, ct).ConfigureAwait(false);
     }
 
     /// <summary>POST 请求（multipart/form-data），自动附加 access_token 及额外查询参数（Token 失效时自动刷新重试一次，瞬态故障自动重试）</summary>
@@ -147,13 +140,13 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
                 var boundary = multipart.Headers.ContentType!.Parameters.First(p => p.Name == "boundary");
                 boundary.Value = boundary.Value!.Trim('"');
 
-                var response = await _httpClient.PostAsync(url, multipart, ct);
+                var response = await _httpClient.PostAsync(url, multipart, ct).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
-                var json = await response.Content.ReadAsStringAsync(ct);
+                var json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
 
                 return DeserializeAndValidate<T>(json);
-            }, ct);
-        }, ct);
+            }, ct).ConfigureAwait(false);
+        }, ct).ConfigureAwait(false);
     }
 
     /// <summary>POST 请求（预构建原始 multipart 体），自动附加 access_token 及额外查询参数（Token 失效时自动刷新重试一次，瞬态故障自动重试）</summary>
@@ -167,13 +160,13 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
                 var query = BuildQuery(queryParams, token);
                 var url = $"{_baseUrl}{path}?{query}";
 
-                var response = await _httpClient.PostAsync(url, rawForm, ct);
+                var response = await _httpClient.PostAsync(url, rawForm, ct).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
-                var json = await response.Content.ReadAsStringAsync(ct);
+                var json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
 
                 return DeserializeAndValidate<T>(json);
-            }, ct);
-        }, ct);
+            }, ct).ConfigureAwait(false);
+        }, ct).ConfigureAwait(false);
     }
 
     #endregion
@@ -189,21 +182,21 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
                 var query = BuildQuery(queryParams, token);
                 var url = $"{_baseUrl}{path}?{query}";
 
-                var response = await _httpClient.GetAsync(url, ct);
+                var response = await _httpClient.GetAsync(url, ct).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
 
                 var contentType = response.Content.Headers.ContentType?.MediaType;
                 if (contentType != null && contentType.Contains("json", StringComparison.OrdinalIgnoreCase))
                 {
-                    var json = await response.Content.ReadAsStringAsync(ct);
+                    var json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
                     var error = JsonSerializer.Deserialize<TResponse>(json, JsonOptions);
                     if (error is { ErrCode: not 0 })
                         throw CreateException(error.ErrCode, error.ErrMsg ?? "未知错误");
                 }
 
-                return await response.Content.ReadAsByteArrayAsync(ct);
-            }, ct);
-        }, ct);
+                return await response.Content.ReadAsByteArrayAsync(ct).ConfigureAwait(false);
+            }, ct).ConfigureAwait(false);
+        }, ct).ConfigureAwait(false);
     }
 
     /// <summary>POST 请求，返回原始字节流（如获取小程序码）（Token 失效时自动刷新重试一次，瞬态故障自动重试）</summary>
@@ -215,22 +208,22 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
             {
                 var url = $"{_baseUrl}{path}?access_token={Uri.EscapeDataString(token)}";
 
-                var response = await _httpClient.PostAsync(url, CreateJsonContent(body), ct);
+                var response = await _httpClient.PostAsync(url, CreateJsonContent(body), ct).ConfigureAwait(false);
                 response.EnsureSuccessStatusCode();
 
                 // 如果返回 JSON 则可能是错误
                 var contentType = response.Content.Headers.ContentType?.MediaType;
                 if (contentType != null && contentType.Contains("json", StringComparison.OrdinalIgnoreCase))
                 {
-                    var json = await response.Content.ReadAsStringAsync(ct);
+                    var json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
                     var error = JsonSerializer.Deserialize<TResponse>(json, JsonOptions);
                     if (error is { ErrCode: not 0 })
                         throw CreateException(error.ErrCode, error.ErrMsg ?? "未知错误");
                 }
 
-                return await response.Content.ReadAsByteArrayAsync(ct);
-            }, ct);
-        }, ct);
+                return await response.Content.ReadAsByteArrayAsync(ct).ConfigureAwait(false);
+            }, ct).ConfigureAwait(false);
+        }, ct).ConfigureAwait(false);
     }
 
     #endregion
@@ -241,17 +234,17 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
     /// </summary>
     private async Task<T> ExecuteWithTokenRetryAsync<T>(Func<string, Task<T>> action, CancellationToken ct)
     {
-        var token = await _tokenProvider.GetTokenAsync(ct);
+        var token = await _tokenProvider.GetTokenAsync(ct).ConfigureAwait(false);
         try
         {
-            return await action(token);
+            return await action(token).ConfigureAwait(false);
         }
         catch (TencentException ex) when (TencentAccessTokenProvider.IsTokenInvalidError(ex.ErrCode))
         {
             Logger.LogWarning("[{Platform}] Token 失效 (errcode={ErrCode})，正在自动刷新重试", _platformName, ex.ErrCode);
             _tokenProvider.InvalidateCache();
-            token = await _tokenProvider.GetTokenAsync(ct);
-            return await action(token);
+            token = await _tokenProvider.GetTokenAsync(ct).ConfigureAwait(false);
+            return await action(token).ConfigureAwait(false);
         }
     }
 
@@ -264,7 +257,7 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
     private async Task<T> ExecuteWithTransientRetryAsync<T>(Func<Task<T>> action, CancellationToken ct)
     {
         if (_retryOptions is not { MaxRetries: > 0 })
-            return await action();
+            return await action().ConfigureAwait(false);
 
         var maxRetries = _retryOptions.MaxRetries;
         var delay = _retryOptions.InitialDelay;
@@ -274,14 +267,14 @@ public abstract class TencentHttpClient<TResponse> where TResponse : TencentBase
         {
             try
             {
-                return await action();
+                return await action().ConfigureAwait(false);
             }
             catch (Exception ex) when (attempt < maxRetries && IsTransientException(ex, ct))
             {
                 Logger.LogWarning("[{Platform}] 瞬态故障 ({ExceptionType}: {Message})，第 {Attempt}/{MaxRetries} 次重试，等待 {Delay}ms",
                     _platformName, ex.GetType().Name, ex.Message, attempt + 1, maxRetries, (int)delay.TotalMilliseconds);
 
-                await Task.Delay(delay, ct);
+                await Task.Delay(delay, ct).ConfigureAwait(false);
                 delay = TimeSpan.FromTicks(Math.Min(delay.Ticks * 2, maxDelay.Ticks));
             }
         }

@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Agent;
 
 /// <summary>设置应用请求</summary>
-public class SetAgentRequest
+public sealed class SetAgentRequest
 {
     [JsonPropertyName("agentid")] public int AgentId { get; set; }
     [JsonPropertyName("report_location_flag")] public int? ReportLocationFlag { get; set; }

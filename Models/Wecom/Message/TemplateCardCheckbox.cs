@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 /// <summary>投票交互型 — 选择题</summary>
-public class TemplateCardCheckbox
+public sealed class TemplateCardCheckbox
 {
     /// <summary>选择题 key（回调用）</summary>
     [JsonPropertyName("question_key")] public string QuestionKey { get; set; } = string.Empty;

@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>接口分析数据项</summary>
-public class InterfaceSummaryItem
+public sealed class InterfaceSummaryItem
 {
     [JsonPropertyName("ref_date")] public string? RefDate { get; set; }
     [JsonPropertyName("callback_count")] public int CallbackCount { get; set; }

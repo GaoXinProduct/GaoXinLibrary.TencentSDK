@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 
@@ -7,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 /// aibot_event_callback 事件回调体
 /// <para>参考文档：<see href="https://developer.work.weixin.qq.com/document/path/101463"/></para>
 /// </summary>
-public class WsEventCallbackBody
+public sealed class WsEventCallbackBody
 {
     /// <summary>本次回调的唯一性标志，用于事件排重</summary>
     [JsonPropertyName("msgid")] public string MsgId { get; set; } = string.Empty;

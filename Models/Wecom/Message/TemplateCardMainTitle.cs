@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 /// <summary>模版卡片一级标题</summary>
-public class TemplateCardMainTitle
+public sealed class TemplateCardMainTitle
 {
     /// <summary>一级标题（建议不超过26个字，不超过2行）</summary>
     [JsonPropertyName("title")] public string? Title { get; set; }

@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Email;
 
 /// <summary>邮件地址</summary>
-public class EmailAddress
+public sealed class EmailAddress
 {
     /// <summary>邮箱地址</summary>
     [JsonPropertyName("addr")] public string Addr { get; set; } = string.Empty;

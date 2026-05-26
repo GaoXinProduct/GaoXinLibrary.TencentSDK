@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>图文群发总数据详情</summary>
-public class ArticleTotalDetail
+public sealed class ArticleTotalDetail
 {
     [JsonPropertyName("stat_date")] public string? StatDate { get; set; }
     [JsonPropertyName("target_user")] public int TargetUser { get; set; }

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 重置 session_key 请求（GET /wxa/resetusersessionkey）
 /// </summary>
-public class ResetUserSessionKeyRequest
+public sealed class ResetUserSessionKeyRequest
 {
     /// <summary>用户 OpenId</summary>
     public required string OpenId { get; set; }

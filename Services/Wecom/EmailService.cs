@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Email;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>邮件服务实现</summary>
-public class EmailService
+public sealed class EmailService
 {
     private readonly WecomHttpClient _http;
 
@@ -13,14 +13,14 @@ public class EmailService
     /// <summary>发送普通邮件</summary>
     public async Task<string?> SendMailAsync(SendMailRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<SendMailResponse>("/cgi-bin/exmail/app/compose_send", request, ct);
+        var resp = await _http.PostAsync<SendMailResponse>("/cgi-bin/exmail/app/compose_send", request, ct).ConfigureAwait(false);
         return resp.MailId;
     }
 
     /// <summary>获取邮件未读数</summary>
     public async Task<int> GetUnreadCountAsync(GetMailUnreadCountRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetMailUnreadCountResponse>("/cgi-bin/exmail/app/get_unread_count", request, ct);
+        var resp = await _http.PostAsync<GetMailUnreadCountResponse>("/cgi-bin/exmail/app/get_unread_count", request, ct).ConfigureAwait(false);
         return resp.UnreadCount;
     }
 

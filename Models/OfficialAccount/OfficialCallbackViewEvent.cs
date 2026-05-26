@@ -7,7 +7,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// 点击菜单跳转链接事件
 /// <para>Event = VIEW</para>
 /// </summary>
-public class OfficialCallbackViewEvent : OfficialCallbackEventBase
+public sealed class OfficialCallbackViewEvent : OfficialCallbackEventBase
 {
     /// <summary>事件 KEY 值（设置的跳转 URL）</summary>
     public string EventKey { get; set; } = string.Empty;

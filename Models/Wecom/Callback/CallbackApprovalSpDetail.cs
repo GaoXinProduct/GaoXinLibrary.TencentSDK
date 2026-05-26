@@ -1,7 +1,7 @@
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
 /// <summary>审批回调 - 审批节点详情</summary>
-public class CallbackApprovalSpDetail
+public sealed class CallbackApprovalSpDetail
 {
     /// <summary>审批人 userid</summary>
     public string UserId { get; set; } = string.Empty;

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 /// aibot_upload_media_chunk 上传分片请求体
 /// <para>分片可乱序上传，重复上传同一分片会被自动忽略（幂等）。</para>
 /// </summary>
-public class WsUploadMediaChunkBody
+public sealed class WsUploadMediaChunkBody
 {
     /// <summary>上传 ID（初始化时返回）</summary>
     [JsonPropertyName("upload_id")] public string UploadId { get; set; } = string.Empty;

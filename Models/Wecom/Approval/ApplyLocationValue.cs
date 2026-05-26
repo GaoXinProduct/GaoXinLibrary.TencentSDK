@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 
 /// <summary>位置值</summary>
-public class ApplyLocationValue
+public sealed class ApplyLocationValue
 {
     /// <summary>纬度</summary>
     [JsonPropertyName("latitude")] public string? Latitude { get; set; }

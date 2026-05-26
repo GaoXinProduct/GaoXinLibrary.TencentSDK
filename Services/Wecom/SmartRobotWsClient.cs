@@ -505,8 +505,7 @@ public sealed class SmartRobotWsClient : ISmartRobotWsClient
             {
                 try
                 {
-                    await _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "dispose", CancellationToken.None)
-                        .ConfigureAwait(false);
+                    await _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "dispose", CancellationToken.None).ConfigureAwait(false);
                 }
                 catch
                 {

@@ -6,7 +6,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 /// <summary>
 /// 公众号服务号二维码服务实现
 /// </summary>
-public class OfficialQrCodeService
+public sealed class OfficialQrCodeService
 {
     private readonly WechatHttpClient _http;
 

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 发票插卡扩展信息
 /// </summary>
-public class InvoiceCardExt
+public sealed class InvoiceCardExt
 {
     /// <summary>随机字符串</summary>
     [JsonPropertyName("nonce_str")] public string? NonceStr { get; set; }

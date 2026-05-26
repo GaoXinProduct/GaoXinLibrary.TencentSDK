@@ -1,11 +1,10 @@
 using System.Xml.Linq;
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
 /// <summary>通讯录回调扩展属性项</summary>
-public class CallbackExtAttrItem
+public sealed class CallbackExtAttrItem
 {
     /// <summary>属性名称</summary>
     public string Name { get; set; } = string.Empty;

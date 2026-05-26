@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.MsgAudit;
 
 /// <summary>获取会话内容存档内部群信息响应</summary>
-public class MsgAuditGroupChatGetResponse : WecomBaseResponse
+public sealed class MsgAuditGroupChatGetResponse : WecomBaseResponse
 {
     /// <summary>群成员列表</summary>
     [JsonPropertyName("roomname")] public string? RoomName { get; set; }

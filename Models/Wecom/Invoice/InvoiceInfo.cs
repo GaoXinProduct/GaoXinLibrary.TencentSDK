@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Invoice;
 
 /// <summary>电子发票信息</summary>
-public class InvoiceInfo
+public sealed class InvoiceInfo
 {
     /// <summary>发票抬头</summary>
     [JsonPropertyName("title")] public string? Title { get; set; }

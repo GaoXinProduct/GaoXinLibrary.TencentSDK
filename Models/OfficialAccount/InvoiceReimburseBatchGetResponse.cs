@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 批量获取报销发票信息响应
 /// </summary>
-public class InvoiceReimburseBatchGetResponse : WechatBaseResponse
+public sealed class InvoiceReimburseBatchGetResponse : WechatBaseResponse
 {
     [JsonPropertyName("item_list")] public List<InvoiceReimburseBatchItem>? ItemList { get; set; }
 }

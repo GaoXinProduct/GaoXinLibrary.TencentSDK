@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Approval;
 
 /// <summary>审批流程节点</summary>
-public class SpRecord
+public sealed class SpRecord
 {
     /// <summary>审批节点状态：1-审批中 2-已同意 3-已驳回 4-已转审</summary>
     [JsonPropertyName("sp_status")] public int? SpStatus { get; set; }

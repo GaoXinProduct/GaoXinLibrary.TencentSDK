@@ -1,8 +1,5 @@
-using GaoXinLibrary.TencentSDK.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 using GaoXinLibrary.TencentSDK.Wecom.Services;
-using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace GaoXinLibrary.TencentSDK.Wecom;
 
@@ -21,7 +18,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom;
 ///     CorpSecret = "your_corpsecret",
 ///     AgentId    = 1000001
 /// });
-/// await client.Message.SendTextAsync("Hello!", toUser: "@all");
+/// await client.Message.SendTextAsync("Hello!", toUser: "@all").ConfigureAwait(false);
 /// </code>
 /// </para>
 /// </remarks>
@@ -199,7 +196,7 @@ public sealed class WecomClient : IDisposable
             async ct =>
             {
                 var resp = await _http.GetAsync<GaoXinLibrary.TencentSDK.Wecom.Models.JsSdk.GetJsApiTicketResponse>(
-                    "/cgi-bin/get_jsapi_ticket", ct: ct);
+                    "/cgi-bin/get_jsapi_ticket", ct: ct).ConfigureAwait(false);
                 return (resp.Ticket, resp.ExpiresIn);
             });
 
@@ -208,7 +205,7 @@ public sealed class WecomClient : IDisposable
             {
                 var resp = await _http.GetAsync<GaoXinLibrary.TencentSDK.Wecom.Models.JsSdk.GetAgentTicketResponse>(
                     "/cgi-bin/ticket/get",
-                    new Dictionary<string, string?> { ["type"] = "agent_config" }, ct);
+                    new Dictionary<string, string?> { ["type"] = "agent_config" }, ct).ConfigureAwait(false);
                 return (resp.Ticket, resp.ExpiresIn);
             });
 
@@ -421,7 +418,7 @@ public sealed class WecomClient : IDisposable
         if (string.IsNullOrWhiteSpace(Options.ShareSecret))
             throw new InvalidOperationException("获取统一共享密钥需配置 WecomOptions.ShareSecret");
 
-        var payload = await _tokenProvider.BuildBasePayloadAsync(ct);
+        var payload = await _tokenProvider.BuildBasePayloadAsync(ct).ConfigureAwait(false);
 
         payload.CorpId = Options.CorpId;
         payload.CorpSecret = Options.CorpSecret;
@@ -430,7 +427,7 @@ public sealed class WecomClient : IDisposable
         // 企业级 jsapi_ticket（可选，未缓存时不阻塞）
         try
         {
-            payload.JsApiTicket = await _jsApiTicketProvider.GetTicketAsync(ct);
+            payload.JsApiTicket = await _jsApiTicketProvider.GetTicketAsync(ct).ConfigureAwait(false);
             payload.TicketExpiresIn = _jsApiTicketProvider.GetRemainingSeconds();
         }
         catch { /* 主服务器尚未获取过 jsapi_ticket 时忽略 */ }
@@ -438,7 +435,7 @@ public sealed class WecomClient : IDisposable
         // 应用级 jsapi_ticket（可选）
         try
         {
-            payload.AgentTicket = await _agentTicketProvider.GetTicketAsync(ct);
+            payload.AgentTicket = await _agentTicketProvider.GetTicketAsync(ct).ConfigureAwait(false);
             payload.AgentTicketExpiresIn = _agentTicketProvider.GetRemainingSeconds();
         }
         catch { /* 同上 */ }

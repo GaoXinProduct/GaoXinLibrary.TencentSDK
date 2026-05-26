@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartSheet;
 
 /// <summary>删除字段请求</summary>
-public class DeleteFieldsRequest
+public sealed class DeleteFieldsRequest
 {
     /// <summary>文档 ID</summary>
     [JsonPropertyName("docid")]

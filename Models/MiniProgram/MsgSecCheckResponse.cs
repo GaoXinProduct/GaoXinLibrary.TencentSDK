@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 文本内容安全检测响应
 /// </summary>
-public class MsgSecCheckResponse : WechatBaseResponse
+public sealed class MsgSecCheckResponse : WechatBaseResponse
 {
     /// <summary>检测结果详情</summary>
     [JsonPropertyName("detail")] public List<MsgSecCheckDetail>? Detail { get; set; }

@@ -1,17 +1,16 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 
 /// <summary>获取分阶段发布详情响应（GET /wxa/getgrayreleaseplan）</summary>
-public class GetGrayReleasePlanResponse : WechatBaseResponse
+public sealed class GetGrayReleasePlanResponse : WechatBaseResponse
 {
     /// <summary>分阶段发布详情</summary>
     [JsonPropertyName("gray_release_plan")] public GrayReleasePlan? GrayReleasePlan { get; set; }
 }
 
 /// <summary>分阶段发布计划</summary>
-public class GrayReleasePlan
+public sealed class GrayReleasePlan
 {
     /// <summary>状态：0=初始未设置 1=正在灰度 2=全量发布</summary>
     [JsonPropertyName("status")]             public int Status { get; set; }

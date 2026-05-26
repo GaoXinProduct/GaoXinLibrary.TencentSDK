@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Document;
 
 /// <summary>文档基础信息</summary>
-public class DocBaseInfo
+public sealed class DocBaseInfo
 {
     /// <summary>文档docid</summary>
     [JsonPropertyName("docid")] public string? DocId { get; set; }

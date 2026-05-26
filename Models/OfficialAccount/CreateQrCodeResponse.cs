@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 创建公众号带参二维码响应（POST /cgi-bin/qrcode/create）
 /// </summary>
-public class CreateQrCodeResponse : WechatBaseResponse
+public sealed class CreateQrCodeResponse : WechatBaseResponse
 {
     /// <summary>二维码 ticket，可用于换取二维码图片</summary>
     [JsonPropertyName("ticket")] public string? Ticket { get; set; }

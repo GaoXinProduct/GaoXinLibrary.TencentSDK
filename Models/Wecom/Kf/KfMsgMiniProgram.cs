@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>小程序消息内容</summary>
-public class KfMsgMiniProgram
+public sealed class KfMsgMiniProgram
 {
     /// <summary>标题</summary>
     [JsonPropertyName("title")] public string? Title { get; set; }

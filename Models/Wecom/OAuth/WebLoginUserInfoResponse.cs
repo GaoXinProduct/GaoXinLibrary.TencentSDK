@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.OAuth;
@@ -14,7 +13,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.OAuth;
 /// 参见：<see href="https://developer.work.weixin.qq.com/document/path/98176"/>
 /// </para>
 /// </summary>
-public class WebLoginUserInfoResponse : WecomBaseResponse
+public sealed class WebLoginUserInfoResponse : WecomBaseResponse
 {
     /// <summary>
     /// 企业成员的 UserID（仅企业成员登录时返回）

@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Kf;
 
 /// <summary>接待人员操作结果</summary>
-public class KfServicerResult
+public sealed class KfServicerResult
 {
     /// <summary>接待人员 userid</summary>
     [JsonPropertyName("userid")] public string? UserId { get; set; }

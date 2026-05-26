@@ -1,5 +1,3 @@
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 
@@ -7,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 /// aibot_send_msg 主动推送消息体
 /// <para>参考文档：<see href="https://developer.work.weixin.qq.com/document/path/101463"/></para>
 /// </summary>
-public class WsSendMsgBody
+public sealed class WsSendMsgBody
 {
     /// <summary>会话 ID（单聊填用户 userid，群聊填群聊 chatid）</summary>
     [JsonPropertyName("chatid")] public string ChatId { get; set; } = string.Empty;

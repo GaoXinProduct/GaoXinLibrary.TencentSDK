@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.MsgAudit;
 
 /// <summary>单条会话记录（加密状态）</summary>
-public class ChatDataItem
+public sealed class ChatDataItem
 {
     /// <summary>消息的 seq 值，用于翻页续拉</summary>
     [JsonPropertyName("seq")] public long Seq { get; set; }

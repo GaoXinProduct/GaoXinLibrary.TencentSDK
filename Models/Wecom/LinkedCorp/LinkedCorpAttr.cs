@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.LinkedCorp;
 
 /// <summary>单个扩展属性</summary>
-public class LinkedCorpAttr
+public sealed class LinkedCorpAttr
 {
     /// <summary>属性名称</summary>
     [JsonPropertyName("name")] public string? Name { get; set; }

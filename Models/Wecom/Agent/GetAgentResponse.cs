@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Agent;
 
-public class GetAgentResponse : WecomBaseResponse
+public sealed class GetAgentResponse : WecomBaseResponse
 {
     [JsonPropertyName("agentid")] public int AgentId { get; set; }
     [JsonPropertyName("name")] public string? Name { get; set; }

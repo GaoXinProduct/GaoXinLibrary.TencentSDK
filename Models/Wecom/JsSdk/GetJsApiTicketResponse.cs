@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.JsSdk;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.JsSdk;
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// <summary>获取 jsapi_ticket 响应</summary>
-public class GetJsApiTicketResponse : WecomBaseResponse
+public sealed class GetJsApiTicketResponse : WecomBaseResponse
 {
     /// <summary>生成签名所需的 jsapi_ticket</summary>
     [JsonPropertyName("ticket")] public string Ticket { get; set; } = string.Empty;

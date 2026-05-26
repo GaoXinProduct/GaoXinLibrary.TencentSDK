@@ -4,7 +4,7 @@ using GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 namespace GaoXinLibrary.TencentSDK.Wechat.Services;
 
 /// <summary>小程序登录服务实现</summary>
-public class MiniProgramAuthService
+public sealed class MiniProgramAuthService
 {
     private readonly WechatHttpClient _http;
     private readonly string _appId;
@@ -28,7 +28,7 @@ public class MiniProgramAuthService
     public async Task<Code2SessionResponse> Code2SessionAsync(string jsCode, CancellationToken ct = default)
     {
         var url = $"{_baseUrl}/sns/jscode2session?appid={Uri.EscapeDataString(_appId)}&secret={Uri.EscapeDataString(_appSecret)}&js_code={Uri.EscapeDataString(jsCode)}&grant_type=authorization_code";
-        return await _http.GetWithoutTokenAsync<Code2SessionResponse>(url, ct);
+        return await _http.GetWithoutTokenAsync<Code2SessionResponse>(url, ct).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public class MiniProgramAuthService
     {
         return await _http.PostAsync<GetPhoneNumberResponse>(
             "/wxa/business/getuserphonenumber",
-            new GetPhoneNumberRequest { Code = code }, ct);
+            new GetPhoneNumberRequest { Code = code }, ct).ConfigureAwait(false);
     }
 
     /// <summary>

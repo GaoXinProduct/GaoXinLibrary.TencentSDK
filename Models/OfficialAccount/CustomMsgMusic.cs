@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 
 /// <summary>音乐消息内容</summary>
-public class CustomMsgMusic
+public sealed class CustomMsgMusic
 {
     [JsonPropertyName("title")] public string? Title { get; set; }
     [JsonPropertyName("description")] public string? Description { get; set; }

@@ -1,9 +1,8 @@
-using System.Text.Json.Serialization;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.User;
 
 /// <summary>通过邮箱获取 userid 请求</summary>
-public class GetUserIdByEmailRequest
+public sealed class GetUserIdByEmailRequest
 {
     /// <summary>邮箱</summary>
     [JsonPropertyName("email")]

@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OfficialAccount;
 /// <summary>
 /// 查询与设置授权页与商户信息响应
 /// </summary>
-public class InvoiceSetBizAttrResponse : WechatBaseResponse
+public sealed class InvoiceSetBizAttrResponse : WechatBaseResponse
 {
     /// <summary>授权页字段（set_auth_field/get_auth_field 返回）</summary>
     [JsonPropertyName("auth_field")] public InvoiceAuthField? AuthField { get; set; }

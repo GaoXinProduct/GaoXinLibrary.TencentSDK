@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.OpenPlatform;
@@ -7,7 +6,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.OpenPlatform;
 /// 刷新 access_token 响应
 /// （GET /sns/oauth2/refresh_token）
 /// </summary>
-public class OpenRefreshTokenResponse : WechatBaseResponse
+public sealed class OpenRefreshTokenResponse : WechatBaseResponse
 {
     [JsonPropertyName("access_token")] public string? AccessToken { get; set; }
     [JsonPropertyName("expires_in")] public int ExpiresIn { get; set; }

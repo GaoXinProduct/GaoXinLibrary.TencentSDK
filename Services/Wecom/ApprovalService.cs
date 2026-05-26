@@ -6,7 +6,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.Approval.Workflow;
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
 /// <summary>审批服务实现</summary>
-public class ApprovalService
+public sealed class ApprovalService
 {
     private readonly WecomHttpClient _http;
 
@@ -25,7 +25,7 @@ public class ApprovalService
     {
         return await _http.PostAsync<GetTemplateDetailResponse>(
             "/cgi-bin/oa/gettemplatedetail",
-            new GetTemplateDetailRequest { TemplateId = templateId }, ct);
+            new GetTemplateDetailRequest { TemplateId = templateId }, ct).ConfigureAwait(false);
     }
 
     /// <summary>提交审批申请</summary>
@@ -35,7 +35,7 @@ public class ApprovalService
     public async Task<string> ApplyEventAsync(ApplyEventRequest request, CancellationToken ct = default)
     {
         var resp = await _http.PostAsync<ApplyEventResponse>(
-            "/cgi-bin/oa/applyevent", request, ct);
+            "/cgi-bin/oa/applyevent", request, ct).ConfigureAwait(false);
         return resp.SpNo ?? string.Empty;
     }
 
@@ -47,7 +47,7 @@ public class ApprovalService
     {
         var builder = new ApplyEventBuilder();
         configure(builder);
-        return await ApplyEventAsync(builder.Build(), ct);
+        return await ApplyEventAsync(builder.Build(), ct).ConfigureAwait(false);
     }
 
     /// <summary>批量获取审批单号</summary>
@@ -57,7 +57,7 @@ public class ApprovalService
     public async Task<GetApprovalInfoResponse> GetApprovalInfoAsync(GetApprovalInfoRequest request, CancellationToken ct = default)
     {
         return await _http.PostAsync<GetApprovalInfoResponse>(
-            "/cgi-bin/oa/getapprovalinfo", request, ct);
+            "/cgi-bin/oa/getapprovalinfo", request, ct).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -84,7 +84,7 @@ public class ApprovalService
                 Cursor = cursor,
                 Size = 100,
                 Filters = filters
-            }, ct);
+            }, ct).ConfigureAwait(false);
 
             if (resp.SpNoList is { Length: > 0 })
                 allSpNos.AddRange(resp.SpNoList);
@@ -106,7 +106,7 @@ public class ApprovalService
     {
         var resp = await _http.PostAsync<GetApprovalDetailResponse>(
             "/cgi-bin/oa/getapprovaldetail",
-            new GetApprovalDetailRequest { SpNo = spNo }, ct);
+            new GetApprovalDetailRequest { SpNo = spNo }, ct).ConfigureAwait(false);
         return resp.Info;
     }
 
@@ -120,7 +120,7 @@ public class ApprovalService
     {
         var resp = await _http.PostAsync<GetCorpVacationConfResponse>(
             "/cgi-bin/oa/vacation/getcorpconf",
-            EmptyRequest.Instance, ct);
+            EmptyRequest.Instance, ct).ConfigureAwait(false);
         return resp.Lists ?? [];
     }
 
@@ -132,7 +132,7 @@ public class ApprovalService
     {
         var resp = await _http.PostAsync<GetUserVacationQuotaResponse>(
             "/cgi-bin/oa/vacation/getuservacationquota",
-            new GetUserVacationQuotaRequest { UserId = userId }, ct);
+            new GetUserVacationQuotaRequest { UserId = userId }, ct).ConfigureAwait(false);
         return resp.Lists ?? [];
     }
 
@@ -142,7 +142,7 @@ public class ApprovalService
     public async Task SetOneUserQuotaAsync(SetOneUserQuotaRequest request, CancellationToken ct = default)
     {
         await _http.PostAsync<WecomBaseResponse>(
-            "/cgi-bin/oa/vacation/setoneuserquota", request, ct);
+            "/cgi-bin/oa/vacation/setoneuserquota", request, ct).ConfigureAwait(false);
     }
 
     #endregion
@@ -155,7 +155,7 @@ public class ApprovalService
     public async Task<GetApprovalDataResponse> GetApprovalDataAsync(GetApprovalDataRequest request, CancellationToken ct = default)
     {
         return await _http.PostAsync<GetApprovalDataResponse>(
-            "/cgi-bin/corp/getapprovaldata", request, ct);
+            "/cgi-bin/corp/getapprovaldata", request, ct).ConfigureAwait(false);
     }
 
     #endregion
@@ -168,7 +168,7 @@ public class ApprovalService
     public async Task<string> CreateTemplateAsync(CreateTemplateRequest request, CancellationToken ct = default)
     {
         var resp = await _http.PostAsync<CreateTemplateResponse>(
-            "/cgi-bin/oa/approval/create_template", request, ct);
+            "/cgi-bin/oa/approval/create_template", request, ct).ConfigureAwait(false);
         return resp.TemplateId ?? string.Empty;
     }
 
@@ -178,7 +178,7 @@ public class ApprovalService
     public async Task UpdateTemplateAsync(UpdateTemplateRequest request, CancellationToken ct = default)
     {
         await _http.PostAsync<WecomBaseResponse>(
-            "/cgi-bin/oa/approval/update_template", request, ct);
+            "/cgi-bin/oa/approval/update_template", request, ct).ConfigureAwait(false);
     }
     #endregion
     #region 审批模板管理（新版工作台引擎）

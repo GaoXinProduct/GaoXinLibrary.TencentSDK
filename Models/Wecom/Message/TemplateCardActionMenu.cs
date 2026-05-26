@@ -1,10 +1,9 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wecom.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Message;
 
 /// <summary>右上角更多操作按钮</summary>
-public class TemplateCardActionMenu
+public sealed class TemplateCardActionMenu
 {
     /// <summary>更多操作界面的描述</summary>
     [JsonPropertyName("desc")] public string? Desc { get; set; }

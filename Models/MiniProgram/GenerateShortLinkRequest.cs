@@ -1,4 +1,3 @@
-using System.Text.Json.Serialization;
 using GaoXinLibrary.TencentSDK.Wechat.Core;
 
 namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
@@ -6,7 +5,7 @@ namespace GaoXinLibrary.TencentSDK.Wechat.Models.MiniProgram;
 /// <summary>
 /// 生成 Short Link 请求（POST /wxa/genwxashortlink）
 /// </summary>
-public class GenerateShortLinkRequest
+public sealed class GenerateShortLinkRequest
 {
     /// <summary>通过 Short Link 进入的小程序页面路径（须是已发布的小程序存在的页面）</summary>
     [JsonPropertyName("page_url")] public required string PageUrl { get; set; }

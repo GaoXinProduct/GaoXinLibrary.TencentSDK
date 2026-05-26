@@ -3,7 +3,7 @@ using GaoXinLibrary.TencentSDK.Wecom.Models.CustomerMoments;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 
-public class CustomerMomentsService
+public sealed class CustomerMomentsService
 {
     private readonly WecomHttpClient _http;
 
@@ -13,25 +13,25 @@ public class CustomerMomentsService
         CreateMomentsTaskRequest request,
         CancellationToken ct = default)
         => await _http.PostAsync<CreateMomentsTaskResponse>(
-            "/cgi-bin/externalcontact/add_moment_task", request, ct);
+            "/cgi-bin/externalcontact/add_moment_task", request, ct).ConfigureAwait(false);
 
     public async Task<StopMomentsTaskResponse> StopCustomerMomentsTaskAsync(
         StopMomentsTaskRequest request,
         CancellationToken ct = default)
         => await _http.PostAsync<StopMomentsTaskResponse>(
-            "/cgi-bin/externalcontact/cancel_moment_task", request, ct);
+            "/cgi-bin/externalcontact/cancel_moment_task", request, ct).ConfigureAwait(false);
 
     public async Task<GetMomentsTasksResponse> GetCustomerMomentsTasksAsync(
         GetMomentsTasksRequest request,
         CancellationToken ct = default)
         => await _http.PostAsync<GetMomentsTasksResponse>(
-            "/cgi-bin/externalcontact/get_moment_list", request, ct);
+            "/cgi-bin/externalcontact/get_moment_list", request, ct).ConfigureAwait(false);
 
     public async Task<GetMomentsRuleGroupResponse> GetCustomerMomentsFilterListAsync(
         GetMomentsRuleGroupRequest request,
         CancellationToken ct = default)
         => await _http.PostAsync<GetMomentsRuleGroupResponse>(
-            "/cgi-bin/externalcontact/moment_strategy/list", request, ct);
+            "/cgi-bin/externalcontact/moment_strategy/list", request, ct).ConfigureAwait(false);
 
     public async Task<GetMomentsTasksResponse> GetCustomerMomentsTaskDetailAsync(
         string momentId,
@@ -41,6 +41,6 @@ public class CustomerMomentsService
     {
         var request = new { moment_id = momentId, cursor, limit };
         return await _http.PostAsync<GetMomentsTasksResponse>(
-            "/cgi-bin/externalcontact/get_moment_task", request, ct);
+            "/cgi-bin/externalcontact/get_moment_task", request, ct).ConfigureAwait(false);
     }
 }

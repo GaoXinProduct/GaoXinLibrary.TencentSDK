@@ -455,6 +455,8 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 | `AccountId` | `AccountIdService` | 账号 ID 管理 |
 | `IpRange` | `IpRangeService` | IP 段查询 |
 | `ExternalContact` | `ExternalContactService` | 客户联系（含客户朋友圈、获客助手、商品图册、聊天敏感词） |
+| `CustomerMoments` | `CustomerMomentsService` | 客户朋友圈独立服务 |
+| `VisitorAssistant` | `VisitorAssistantService` | 获客助手独立服务 |
 | `CorpPay` | `CorpPayService` | 企业支付（含对外收款） |
 | `Email` | `EmailService` | 邮件 |
 | `Document` | `DocumentService` | 文档 |
@@ -469,6 +471,8 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 | `Invoice` | `InvoiceService` | 电子发票 |
 | `SmartSheet` | `SmartSheetService` | 智能表格 |
 | `CollectForm` | `CollectFormService` | 收集表 |
+| `HomeSchool` | `HomeSchoolService` | 家校沟通 |
+| `DataIntelligence` | `DataIntelligenceService` | 数据与智能专区 |
 | `Callback` | `CallbackService?` | 应用消息回调（URL 验证 / 消息解密 / 加密回复）；未配置 `CallbackToken` + `CallbackEncodingAesKey` 时为 `null` |
 
 > 群机器人

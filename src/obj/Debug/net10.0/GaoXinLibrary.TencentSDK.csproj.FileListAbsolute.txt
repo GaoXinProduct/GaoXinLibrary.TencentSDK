@@ -1,0 +1,13 @@
+/root/project/GaoXinLibrary.TencentSDK/src/bin/Debug/net10.0/GaoXinLibrary.TencentSDK.deps.json
+/root/project/GaoXinLibrary.TencentSDK/src/bin/Debug/net10.0/GaoXinLibrary.TencentSDK.dll
+/root/project/GaoXinLibrary.TencentSDK/src/bin/Debug/net10.0/GaoXinLibrary.TencentSDK.xml
+/root/project/GaoXinLibrary.TencentSDK/src/obj/Debug/net10.0/GaoXinLibrary.TencentSDK.csproj.AssemblyReference.cache
+/root/project/GaoXinLibrary.TencentSDK/src/obj/Debug/net10.0/GaoXinLibrary.TencentSDK.GeneratedMSBuildEditorConfig.editorconfig
+/root/project/GaoXinLibrary.TencentSDK/src/obj/Debug/net10.0/GaoXinLibrary.TencentSDK.AssemblyInfoInputs.cache
+/root/project/GaoXinLibrary.TencentSDK/src/obj/Debug/net10.0/GaoXinLibrary.TencentSDK.AssemblyInfo.cs
+/root/project/GaoXinLibrary.TencentSDK/src/obj/Debug/net10.0/GaoXinLibrary.TencentSDK.csproj.CoreCompileInputs.cache
+/root/project/GaoXinLibrary.TencentSDK/src/obj/Debug/net10.0/GaoXinLibrary.TencentSDK.sourcelink.json
+/root/project/GaoXinLibrary.TencentSDK/src/obj/Debug/net10.0/GaoXinLibrary.TencentSDK.dll
+/root/project/GaoXinLibrary.TencentSDK/src/obj/Debug/net10.0/refint/GaoXinLibrary.TencentSDK.dll
+/root/project/GaoXinLibrary.TencentSDK/src/obj/Debug/net10.0/GaoXinLibrary.TencentSDK.xml
+/root/project/GaoXinLibrary.TencentSDK/src/obj/Debug/net10.0/ref/GaoXinLibrary.TencentSDK.dll

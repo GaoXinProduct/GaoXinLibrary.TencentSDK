@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GaoXinLibrary.TencentSDK.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GaoXinLibrary.TencentSDK.Tests/GaoXinLibrary.TencentSDK.Tests.csproj" />
+  </Folder>
+</Solution>

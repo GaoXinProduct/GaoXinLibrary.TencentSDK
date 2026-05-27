@@ -11,7 +11,7 @@ permissions:
   packages: write
 
 env:
-  PROJECT_PATH: GaoXinLibrary.TencentSDK.csproj
+  PROJECT_PATH: src/GaoXinLibrary.TencentSDK.csproj
   GHPKG_FEED: https://nuget.pkg.github.com/GaoXinProduct/index.json
   NAMESPACE: GaoXinProduct
 

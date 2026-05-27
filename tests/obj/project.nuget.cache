@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "51KUS5s7ne8=",
+  "dgSpecHash": "uV58mT+i7Hw=",
   "success": true,
-  "projectFilePath": "/root/project/GaoXinLibrary.TencentSDK/tests/GaoXinLibrary.TencentSDK.Tests/GaoXinLibrary.TencentSDK.Tests.csproj",
+  "projectFilePath": "/root/project/GaoXinLibrary.TencentSDK/tests/GaoXinLibrary.TencentSDK.Tests.csproj",
   "expectedPackageFiles": [
     "/root/.nuget/packages/microsoft.codecoverage/17.14.1/microsoft.codecoverage.17.14.1.nupkg.sha512",
     "/root/.nuget/packages/microsoft.extensions.configuration/10.0.8/microsoft.extensions.configuration.10.0.8.nupkg.sha512",

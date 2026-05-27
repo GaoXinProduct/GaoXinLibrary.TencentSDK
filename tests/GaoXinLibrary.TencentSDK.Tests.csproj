@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\GaoXinLibrary.TencentSDK.csproj" />
+    <ProjectReference Include="..\src\GaoXinLibrary.TencentSDK.csproj" />
   </ItemGroup>
 
 </Project>

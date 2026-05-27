@@ -1,7 +1,7 @@
 {
   "format": 1,
   "restore": {
-    "/root/project/GaoXinLibrary.TencentSDK/tests/GaoXinLibrary.TencentSDK.Tests/GaoXinLibrary.TencentSDK.Tests.csproj": {}
+    "/root/project/GaoXinLibrary.TencentSDK/tests/GaoXinLibrary.TencentSDK.Tests.csproj": {}
   },
   "projects": {
     "/root/project/GaoXinLibrary.TencentSDK/src/GaoXinLibrary.TencentSDK.csproj": {
@@ -1058,14 +1058,14 @@
         }
       }
     },
-    "/root/project/GaoXinLibrary.TencentSDK/tests/GaoXinLibrary.TencentSDK.Tests/GaoXinLibrary.TencentSDK.Tests.csproj": {
+    "/root/project/GaoXinLibrary.TencentSDK/tests/GaoXinLibrary.TencentSDK.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/root/project/GaoXinLibrary.TencentSDK/tests/GaoXinLibrary.TencentSDK.Tests/GaoXinLibrary.TencentSDK.Tests.csproj",
+        "projectUniqueName": "/root/project/GaoXinLibrary.TencentSDK/tests/GaoXinLibrary.TencentSDK.Tests.csproj",
         "projectName": "GaoXinLibrary.TencentSDK.Tests",
-        "projectPath": "/root/project/GaoXinLibrary.TencentSDK/tests/GaoXinLibrary.TencentSDK.Tests/GaoXinLibrary.TencentSDK.Tests.csproj",
+        "projectPath": "/root/project/GaoXinLibrary.TencentSDK/tests/GaoXinLibrary.TencentSDK.Tests.csproj",
         "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/root/project/GaoXinLibrary.TencentSDK/tests/GaoXinLibrary.TencentSDK.Tests/obj/",
+        "outputPath": "/root/project/GaoXinLibrary.TencentSDK/tests/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/root/.nuget/NuGet/NuGet.Config"

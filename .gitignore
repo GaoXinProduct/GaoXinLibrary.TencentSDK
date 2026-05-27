@@ -13,3 +13,5 @@
 TestResults/
 *.nupkg
 /AGENTS.md
+tests/bin/
+tests/obj/

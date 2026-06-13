@@ -67,6 +67,8 @@ jobs:
           dotnet pack "${{ env.PROJECT_PATH }}" -c Release -o artifacts \
             -p:PackageVersion=${{ steps.tag.outputs.version }} \
             -p:Version=${{ steps.tag.outputs.version }} \
+            -p:DebugType=portable \
+            -p:DebugSymbols=true \
             --no-build
 
       - name: Verify symbol package contains PDB

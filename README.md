@@ -545,8 +545,6 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 | `AppSecret` | `string` | — | 应用密钥 |
 | `BaseUrl` | `string` | `https://api.weixin.qq.com` | API 基础地址 |
 | `HttpTimeout` | `TimeSpan` | 30 秒 | HTTP 请求超时 |
-| `ShareSecret` | `string?` | `null` | 备服务器共享密钥（ChaCha20-Poly1305，SHA-256 派生 32 字节密钥） |
-| `SecretShareUrl` | `string?` | `null` | 备服务器拉取加密载荷的 URL；配置后无需 AppSecret |
 | `OnTokenChanged` | `Func<string, CancellationToken, Task>?` | `null` | Token 刷新成功回调（参数为新的明文 access_token） |
 | `RetryOptions` | `TencentRetryOptions?` | 默认启用 | 瞬态故障重试配置（见下方） |
 
@@ -589,8 +587,19 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 | `CallbackEncodingAesKey` | `string?` | `null` | 消息加解密 AES Key（43 位字符）；与 `CallbackToken` 同时配置时 `AddWecomService` 自动注册 `CallbackService` |
 | `MsgAuditSecret` | `string?` | `null` | 会话存档专用密钥（在企业微信管理后台「管理工具 - 会话内容存档」获取，非 CorpSecret） |
 | `MsgAuditPrivateKey` | `string?` | `null` | 会话存档 RSA 私钥（PEM 格式），用于解密 `encrypt_random_key` |
-| `ShareSecret` | `string?` | `null` | 备服务器共享密钥 |
-| `SecretShareUrl` | `string?` | `null` | 备服务器拉取加密载荷的 URL；配置后可省略 CorpSecret |
+| `OnTokenChanged` | `Func<string, CancellationToken, Task>?` | `null` | Token 刷新成功回调 |
+| `RetryOptions` | `TencentRetryOptions?` | 默认启用 | 瞬态故障重试配置 |
+
+### 备服务器共享密钥配置
+
+`WecomShareOptions`、`WechatOfficialShareOptions`、`WechatMiniProgramShareOptions` 是独立备服务器配置模型，不再混入普通 `Add*Service` 配置。
+
+| 字段 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `ShareSecret` | `string` | — | 备服务器共享密钥 |
+| `SecretShareUrl` | `string` | — | 备服务器拉取加密载荷的 URL |
+| `BaseUrl` | `string` | 平台默认地址 | API 基础地址 |
+| `HttpTimeout` | `TimeSpan` | 30 秒 | HTTP 请求超时 |
 | `OnTokenChanged` | `Func<string, CancellationToken, Task>?` | `null` | Token 刷新成功回调 |
 | `RetryOptions` | `TencentRetryOptions?` | 默认启用 | 瞬态故障重试配置 |
 
@@ -699,9 +708,9 @@ client.InvalidateAccessTokenCache();
 
 ## 备服务器模式（共享密钥）
 
-适用于多台服务器中只需一个主节点对接腾讯 API、其余备节点共享 token 的场景。`WecomClient` 和 `WechatOfficialClient` 均支持此模式。
+适用于多台服务器中只需一个主节点对接腾讯 API、其余备节点共享 token 的场景。企业微信、微信公众号和微信小程序均支持此模式。
 
-**主服务器**：正常配置凭证，额外配置 `ShareSecret`，通过受保护的内部接口将载荷暴露给备服务器：
+**主服务器**：正常配置凭证，通过受保护的内部接口将载荷暴露给备服务器：
 
 ```csharp
 // WecomClient 主服务器
@@ -710,7 +719,6 @@ builder.Services.AddWecomService(options =>
     options.CorpId      = "your_corpid";
     options.CorpSecret  = "your_corpsecret";
     options.AgentId     = 1000001;
-    options.ShareSecret = "shared_secret_32chars_or_more";  // 与备服务器约定的同一密钥
     options.OnTokenChanged = async (token, ct) =>
     {
         // 可选：将 token 推送至 Redis 等共享存储
@@ -719,18 +727,33 @@ builder.Services.AddWecomService(options =>
 
 // 内部接口（Controller 示例）：
 app.MapGet("/internal/shared-secret", async (WecomClient client) =>
-    Results.Ok(await client.GetSharedSecretAsync()))
+    Results.Ok(await client.GetSharedSecretAsync("shared_secret_32chars_or_more")))
    .RequireAuthorization("InternalOnly");
 ```
 
 **备服务器**：只需配置 `SecretShareUrl` + `ShareSecret`，无需 `CorpSecret`：
 
 ```csharp
-builder.Services.AddWecomService(options =>
+builder.Services.AddWecomShareService(options =>
 {
     options.ShareSecret    = "shared_secret_32chars_or_more"; // 与主服务器相同
     options.SecretShareUrl = "https://primary-server/internal/shared-secret";
-    // CorpId / CorpSecret 可省略
+});
+```
+
+微信侧备服务器使用对应的独立注册方法：
+
+```csharp
+builder.Services.AddWechatOfficialShareService(options =>
+{
+    options.ShareSecret    = "shared_secret_32chars_or_more";
+    options.SecretShareUrl = "https://primary-server/internal/wechat-official-share";
+});
+
+builder.Services.AddWechatMiniProgramShareService(options =>
+{
+    options.ShareSecret    = "shared_secret_32chars_or_more";
+    options.SecretShareUrl = "https://primary-server/internal/mini-program-share";
 });
 ```
 

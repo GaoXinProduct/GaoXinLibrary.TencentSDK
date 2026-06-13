@@ -30,6 +30,7 @@ public sealed class WecomClient : IDisposable
     private readonly WecomHttpClient _http;
     private readonly WecomTicketProvider _jsApiTicketProvider;
     private readonly WecomTicketProvider _agentTicketProvider;
+    private readonly ILogger _logger;
 
     #region 子服务
 
@@ -175,6 +176,7 @@ public sealed class WecomClient : IDisposable
         Options = options;
         _httpClient = httpClient;
         _ownsHttpClient = ownsHttpClient;
+        _logger = logger ?? NullLogger<WecomClient>.Instance;
         _tokenProvider = new AccessTokenProvider(options, httpClient);
         _http = new WecomHttpClient(httpClient, _tokenProvider, options, logger);
 
@@ -300,6 +302,14 @@ public sealed class WecomClient : IDisposable
         ArgumentNullException.ThrowIfNull(httpClient);
         ValidateOptions(options);
         return new WecomClient(options, httpClient, ownsHttpClient: false, logger);
+    }
+
+    internal static WecomClient CreateOwned(WecomOptions options, HttpClient httpClient, ILogger? logger = null)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(httpClient);
+        ValidateOptions(options);
+        return new WecomClient(options, httpClient, ownsHttpClient: true, logger);
     }
 
     private static void ValidateOptions(WecomOptions options)
@@ -430,7 +440,10 @@ public sealed class WecomClient : IDisposable
             payload.JsApiTicket = await _jsApiTicketProvider.GetTicketAsync(ct).ConfigureAwait(false);
             payload.TicketExpiresIn = _jsApiTicketProvider.GetRemainingSeconds();
         }
-        catch { /* 主服务器尚未获取过 jsapi_ticket 时忽略 */ }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "构建共享密钥载荷时未能获取企业级 jsapi_ticket，已跳过该字段");
+        }
 
         // 应用级 jsapi_ticket（可选）
         try
@@ -438,7 +451,10 @@ public sealed class WecomClient : IDisposable
             payload.AgentTicket = await _agentTicketProvider.GetTicketAsync(ct).ConfigureAwait(false);
             payload.AgentTicketExpiresIn = _agentTicketProvider.GetRemainingSeconds();
         }
-        catch { /* 同上 */ }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "构建共享密钥载荷时未能获取应用级 jsapi_ticket，已跳过该字段");
+        }
 
         var key = TencentTokenCrypto.DeriveKey(Options.ShareSecret);
         var payloadJson = JsonSerializer.Serialize(payload);

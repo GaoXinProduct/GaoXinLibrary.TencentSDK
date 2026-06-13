@@ -61,6 +61,13 @@ public sealed class WechatOpenClient : IDisposable
         return new WechatOpenClient(options, httpClient, ownsHttpClient: false, logger);
     }
 
+    internal static WechatOpenClient CreateOwned(WechatOpenOptions options, HttpClient httpClient, ILogger? logger = null)
+    {
+        ValidateOptions(options);
+        ArgumentNullException.ThrowIfNull(httpClient);
+        return new WechatOpenClient(options, httpClient, ownsHttpClient: true, logger);
+    }
+
     private static void ValidateOptions(WechatOpenOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);

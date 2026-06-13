@@ -23,6 +23,7 @@ public sealed class WechatOfficialClient : IDisposable
     private readonly bool _ownsHttpClient;
     private readonly AccessTokenProvider _tokenProvider;
     private readonly JsApiTicketProvider _ticketProvider;
+    private readonly ILogger _logger;
 
     /// <summary>OAuth 网页授权</summary>
     public OfficialOAuthService OAuth { get; }
@@ -84,11 +85,12 @@ public sealed class WechatOfficialClient : IDisposable
     /// <summary>当前配置</summary>
     public WechatOfficialOptions Options { get; }
 
-    private WechatOfficialClient(WechatOfficialOptions options, HttpClient httpClient, bool ownsHttpClient, ILogger? logger = null)
+    private WechatOfficialClient(WechatOfficialOptions options, HttpClient httpClient, bool ownsHttpClient, ILogger? logger = null, ILogger<OfficialCallbackService>? callbackLogger = null)
     {
         Options = options;
         _httpClient = httpClient;
         _ownsHttpClient = ownsHttpClient;
+        _logger = logger ?? NullLogger<WechatOfficialClient>.Instance;
         _tokenProvider = new AccessTokenProvider(options, httpClient);
         var http = new WechatHttpClient(httpClient, _tokenProvider, options, logger);
 
@@ -113,7 +115,7 @@ public sealed class WechatOfficialClient : IDisposable
         Poi = new OfficialPoiService(http);
         Invoice = new OfficialInvoiceService(http);
         OpenApi = new OfficialOpenApiService(http, options);
-        Callback = new OfficialCallbackService(http, options);
+        Callback = new OfficialCallbackService(http, options, callbackLogger);
 
         #region 备服务器模式：挂载载荷接收回调，分发 Ticket 并回写 Options
         if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
@@ -155,6 +157,20 @@ public sealed class WechatOfficialClient : IDisposable
         ValidateOptions(options);
         ArgumentNullException.ThrowIfNull(httpClient);
         return new WechatOfficialClient(options, httpClient, ownsHttpClient: false, logger);
+    }
+
+    internal static WechatOfficialClient CreateOwned(WechatOfficialOptions options, HttpClient httpClient, ILogger? logger = null)
+    {
+        ValidateOptions(options);
+        ArgumentNullException.ThrowIfNull(httpClient);
+        return new WechatOfficialClient(options, httpClient, ownsHttpClient: true, logger);
+    }
+
+    internal static WechatOfficialClient CreateOwned(WechatOfficialOptions options, HttpClient httpClient, ILogger? logger, ILogger<OfficialCallbackService>? callbackLogger)
+    {
+        ValidateOptions(options);
+        ArgumentNullException.ThrowIfNull(httpClient);
+        return new WechatOfficialClient(options, httpClient, ownsHttpClient: true, logger, callbackLogger);
     }
 
     /// <summary>使 access_token 缓存失效（下次 GetAccessTokenAsync 时自动重新获取）</summary>
@@ -227,7 +243,10 @@ public sealed class WechatOfficialClient : IDisposable
             payload.JsApiTicket = await _ticketProvider.GetTicketAsync(ct).ConfigureAwait(false);
             payload.TicketExpiresIn = _ticketProvider.GetRemainingSeconds();
         }
-        catch { /* 主服务器尚未获取过 jsapi_ticket 时忽略 */ }
+        catch (Exception ex)
+        {
+            _logger.LogDebug(ex, "构建共享密钥载荷时未能获取 jsapi_ticket，已跳过该字段");
+        }
 
         var key = TencentTokenCrypto.DeriveKey(Options.ShareSecret);
         var payloadJson = JsonSerializer.Serialize(payload);

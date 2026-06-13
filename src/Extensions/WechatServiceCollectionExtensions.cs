@@ -75,7 +75,7 @@ public static class WechatServiceCollectionExtensions
         {
             var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatMiniProgramClient>();
-            return WechatMiniProgramClient.Create(options, httpClient, logger);
+            return WechatMiniProgramClient.CreateOwned(options, httpClient, logger);
         });
 
         return services;
@@ -113,7 +113,7 @@ public static class WechatServiceCollectionExtensions
         {
             var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatMiniProgramClient>();
-            return WechatMiniProgramClient.Create(options, httpClient, logger);
+            return WechatMiniProgramClient.CreateOwned(options, httpClient, logger);
         });
 
         // 注册工厂（幂等），使 MVC Controller 构造函数可通过工厂按名称解析 Keyed 实例
@@ -153,7 +153,8 @@ public static class WechatServiceCollectionExtensions
         {
             var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOfficialClient>();
-            return WechatOfficialClient.Create(options, httpClient, logger);
+            var callbackLogger = sp.GetService<ILoggerFactory>()?.CreateLogger<OfficialCallbackService>();
+            return WechatOfficialClient.CreateOwned(options, httpClient, logger, callbackLogger);
         });
 
         // 回调服务：仅在配置了 CallbackToken 和 CallbackEncodingAesKey 时注册
@@ -198,7 +199,8 @@ public static class WechatServiceCollectionExtensions
         {
             var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOfficialClient>();
-            return WechatOfficialClient.Create(options, httpClient, logger);
+            var callbackLogger = sp.GetService<ILoggerFactory>()?.CreateLogger<OfficialCallbackService>();
+            return WechatOfficialClient.CreateOwned(options, httpClient, logger, callbackLogger);
         });
 
         // 回调服务：仅在配置了 CallbackToken 和 CallbackEncodingAesKey 时注册（Keyed）
@@ -245,7 +247,7 @@ public static class WechatServiceCollectionExtensions
         {
             var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOpenClient>();
-            return WechatOpenClient.Create(options, httpClient, logger);
+            return WechatOpenClient.CreateOwned(options, httpClient, logger);
         });
 
         return services;
@@ -283,7 +285,7 @@ public static class WechatServiceCollectionExtensions
         {
             var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOpenClient>();
-            return WechatOpenClient.Create(options, httpClient, logger);
+            return WechatOpenClient.CreateOwned(options, httpClient, logger);
         });
 
         // 注册工厂（幂等），使 MVC Controller 构造函数可通过工厂按名称解析 Keyed 实例
@@ -322,7 +324,7 @@ public static class WechatServiceCollectionExtensions
         services.TryAddSingleton<QQConnectClient>(sp =>
         {
             var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
-            return QQConnectClient.Create(options, httpClient);
+            return QQConnectClient.CreateOwned(options, httpClient);
         });
 
         return services;
@@ -359,7 +361,7 @@ public static class WechatServiceCollectionExtensions
         services.AddKeyedSingleton<QQConnectClient>(name, (sp, _) =>
         {
             var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
-            return QQConnectClient.Create(options, httpClient);
+            return QQConnectClient.CreateOwned(options, httpClient);
         });
 
         // 注册工厂（幂等），使 MVC Controller 构造函数可通过工厂按名称解析 Keyed 实例
@@ -521,7 +523,7 @@ public static class WechatServiceCollectionExtensions
         {
             PooledConnectionLifetime = TimeSpan.FromMinutes(15)
         };
-        return new HttpClient(handler, disposeHandler: false)
+        return new HttpClient(handler, disposeHandler: true)
         {
             Timeout = timeout
         };

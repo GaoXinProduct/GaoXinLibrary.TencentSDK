@@ -128,6 +128,13 @@ public sealed class WechatMiniProgramClient : IDisposable
         return new WechatMiniProgramClient(options, httpClient, ownsHttpClient: false, logger);
     }
 
+    internal static WechatMiniProgramClient CreateOwned(WechatMiniProgramOptions options, HttpClient httpClient, ILogger? logger = null)
+    {
+        ValidateOptions(options);
+        ArgumentNullException.ThrowIfNull(httpClient);
+        return new WechatMiniProgramClient(options, httpClient, ownsHttpClient: true, logger);
+    }
+
     /// <summary>使 access_token 缓存失效（下次 GetAccessTokenAsync 时自动重新获取）</summary>
     public void InvalidateAccessTokenCache() => _tokenProvider.InvalidateCache();
 

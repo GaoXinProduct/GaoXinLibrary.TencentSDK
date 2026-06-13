@@ -10,7 +10,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Services;
 /// <summary>
 /// 群机器人（Webhook）消息推送服务实现
 /// </summary>
-public sealed class WebhookService
+public sealed class WebhookService : IDisposable
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -20,6 +20,7 @@ public sealed class WebhookService
 
     private readonly HttpClient _http;
     private readonly string _sendUrl;
+    private readonly bool _ownsHttpClient;
 
     /// <summary>
     /// 初始化群机器人服务
@@ -28,9 +29,15 @@ public sealed class WebhookService
     /// <param name="baseUrl">API 基础地址</param>
     /// <param name="webhookKey">群机器人 Webhook Key（来自机器人配置页面）</param>
     public WebhookService(HttpClient http, string baseUrl, string webhookKey)
+        : this(http, baseUrl, webhookKey, ownsHttpClient: false)
+    {
+    }
+
+    internal WebhookService(HttpClient http, string baseUrl, string webhookKey, bool ownsHttpClient)
     {
         _http = http;
         _sendUrl = $"{baseUrl.TrimEnd('/')}/cgi-bin/webhook/send?key={webhookKey}";
+        _ownsHttpClient = ownsHttpClient;
     }
 
     /// <summary>
@@ -123,4 +130,10 @@ public sealed class WebhookService
             MsgType = "file",
             File = new WebhookFileContent { MediaId = mediaId }
         }, ct);
+
+    public void Dispose()
+    {
+        if (_ownsHttpClient)
+            _http.Dispose();
+    }
 }

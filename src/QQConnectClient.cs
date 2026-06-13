@@ -56,6 +56,13 @@ public sealed class QQConnectClient : IDisposable
         return new QQConnectClient(options, httpClient, ownsHttpClient: false);
     }
 
+    internal static QQConnectClient CreateOwned(QQConnectOptions options, HttpClient httpClient)
+    {
+        ValidateOptions(options);
+        ArgumentNullException.ThrowIfNull(httpClient);
+        return new QQConnectClient(options, httpClient, ownsHttpClient: true);
+    }
+
     private static void ValidateOptions(QQConnectOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);

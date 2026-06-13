@@ -86,7 +86,8 @@ public static class WecomSmartBotServiceCollectionExtensions
         // 智能机器人长连接（仅当 BotId + BotSecret 均配置时注册）
         if (!string.IsNullOrWhiteSpace(options.BotId) && !string.IsNullOrWhiteSpace(options.BotSecret))
         {
-            services.TryAddSingleton<ISmartRobotWsClient>(_ => new SmartRobotWsClient(options));
+            services.TryAddSingleton<ISmartRobotWsClient>(sp =>
+                new SmartRobotWsClient(options, sp.GetService<ILoggerFactory>()?.CreateLogger<SmartRobotWsClient>()));
         }
 
         return services;
@@ -139,7 +140,8 @@ public static class WecomSmartBotServiceCollectionExtensions
         // 智能机器人长连接（仅当 BotId + BotSecret 均配置时注册，Keyed）
         if (!string.IsNullOrWhiteSpace(options.BotId) && !string.IsNullOrWhiteSpace(options.BotSecret))
         {
-            services.AddKeyedSingleton<ISmartRobotWsClient>(name, (_, _) => new SmartRobotWsClient(options));
+            services.AddKeyedSingleton<ISmartRobotWsClient>(name, (sp, _) =>
+                new SmartRobotWsClient(options, sp.GetService<ILoggerFactory>()?.CreateLogger<SmartRobotWsClient>()));
         }
 
         // 注册工厂（幂等），使 MVC Controller 构造函数可通过工厂按名称解析 Keyed 实例

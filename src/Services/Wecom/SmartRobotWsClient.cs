@@ -34,6 +34,7 @@ public sealed class SmartRobotWsClient : ISmartRobotWsClient
     private Timer? _heartbeatTimer;
     private readonly SemaphoreSlim _sendLock = new(1, 1);
     private readonly ConcurrentDictionary<string, TaskCompletionSource<JsonElement>> _pendingRequests = new();
+    private readonly ILogger _logger;
     private volatile bool _disposed;
 
     /// <inheritdoc/>
@@ -55,7 +56,7 @@ public sealed class SmartRobotWsClient : ISmartRobotWsClient
     /// 使用企业微信智能机器人配置创建 WebSocket 客户端
     /// </summary>
     /// <param name="options">包含 BotId、BotSecret、BotWsUrl 的智能机器人配置</param>
-    public SmartRobotWsClient(WecomSmartBotOptions options)
+    public SmartRobotWsClient(WecomSmartBotOptions options, ILogger<SmartRobotWsClient>? logger = null)
     {
         ArgumentNullException.ThrowIfNull(options);
         if (string.IsNullOrWhiteSpace(options.BotId))
@@ -64,6 +65,7 @@ public sealed class SmartRobotWsClient : ISmartRobotWsClient
             throw new ArgumentException("WecomWebHookOptions.BotSecret 不能为空", nameof(options));
 
         _options = options;
+        _logger = logger ?? NullLogger<SmartRobotWsClient>.Instance;
     }
 
     #region 连接管理
@@ -261,9 +263,9 @@ public sealed class SmartRobotWsClient : ISmartRobotWsClient
             };
             await SendFrameAsync(request, ct).ConfigureAwait(false);
         }
-        catch
+        catch (Exception ex)
         {
-            // 心跳失败不抛异常，由接收循环检测断连
+            _logger.LogDebug(ex, "WebSocket 心跳发送失败，等待接收循环检测断连");
         }
     }
 
@@ -398,16 +400,7 @@ public sealed class SmartRobotWsClient : ISmartRobotWsClient
                 if (result.MessageType != WebSocketMessageType.Text)
                     continue;
 
-                try
-                {
-                    var doc = JsonDocument.Parse(ms.ToArray());
-                    var root = doc.RootElement;
-                    DispatchFrame(root);
-                }
-                catch
-                {
-                    // 无法解析的消息静默忽略
-                }
+                HandleTextMessage(ms.ToArray());
             }
         }
         catch (OperationCanceledException) when (ct.IsCancellationRequested)
@@ -473,6 +466,26 @@ public sealed class SmartRobotWsClient : ISmartRobotWsClient
         }
     }
 
+    internal void ProcessTextMessageForTest(ReadOnlySpan<byte> utf8Json) => HandleTextMessage(utf8Json);
+
+    private void HandleTextMessage(ReadOnlySpan<byte> utf8Json)
+    {
+        try
+        {
+            ProcessTextMessage(utf8Json);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "WebSocket 消息解析失败，已忽略该帧");
+        }
+    }
+
+    private void ProcessTextMessage(ReadOnlySpan<byte> utf8Json)
+    {
+        using var doc = JsonDocument.Parse(utf8Json.ToArray());
+        DispatchFrame(doc.RootElement);
+    }
+
     private static string GetReqId(JsonElement root)
     {
         if (root.TryGetProperty("headers", out var headers) &&
@@ -507,9 +520,9 @@ public sealed class SmartRobotWsClient : ISmartRobotWsClient
                 {
                     await _ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "dispose", CancellationToken.None).ConfigureAwait(false);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // 忽略关闭时的异常
+                    _logger.LogDebug(ex, "WebSocket 关闭连接时发生异常，清理流程继续");
                 }
             }
             _ws.Dispose();
@@ -519,7 +532,10 @@ public sealed class SmartRobotWsClient : ISmartRobotWsClient
         if (_receiveTask is not null)
         {
             try { await _receiveTask.ConfigureAwait(false); }
-            catch { /* ignore */ }
+            catch (Exception ex)
+            {
+                _logger.LogDebug(ex, "WebSocket 接收循环结束时发生异常，清理流程继续");
+            }
             _receiveTask = null;
         }
 

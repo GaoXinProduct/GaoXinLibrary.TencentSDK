@@ -120,7 +120,7 @@ public static class WecomServiceCollectionExtensions
         {
             var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WecomClient>();
-            return WecomClient.Create(options, httpClient, logger);
+            return WecomClient.CreateOwned(options, httpClient, logger);
         });
 
         // 回调服务（仅当 CallbackToken + CallbackEncodingAesKey 均配置时注册）
@@ -130,7 +130,8 @@ public static class WecomServiceCollectionExtensions
             services.TryAddSingleton<CallbackService>(sp =>
                 new CallbackService(
                     sp.GetRequiredService<WecomClient>().GetInternalHttpClient(),
-                    options));
+                    options,
+                    sp.GetService<ILoggerFactory>()?.CreateLogger<CallbackService>()));
         }
 
         return services;
@@ -182,7 +183,7 @@ public static class WecomServiceCollectionExtensions
         {
             var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WecomClient>();
-            return WecomClient.Create(options, httpClient, logger);
+            return WecomClient.CreateOwned(options, httpClient, logger);
         });
 
         // 回调服务（仅当 CallbackToken + CallbackEncodingAesKey 均配置时注册，Keyed）
@@ -192,7 +193,8 @@ public static class WecomServiceCollectionExtensions
             services.TryAddKeyedSingleton<CallbackService>(name, (sp, key) =>
                 new CallbackService(
                     sp.GetRequiredKeyedService<WecomClient>(key).GetInternalHttpClient(),
-                    options));
+                    options,
+                    sp.GetService<ILoggerFactory>()?.CreateLogger<CallbackService>()));
         }
 
         // 注册工厂（幂等），使 MVC Controller 构造函数可通过工厂按名称解析 Keyed 实例
@@ -262,7 +264,7 @@ public static class WecomServiceCollectionExtensions
         {
             PooledConnectionLifetime = TimeSpan.FromMinutes(15)
         };
-        return new HttpClient(handler, disposeHandler: false)
+        return new HttpClient(handler, disposeHandler: true)
         {
             Timeout = timeout
         };

@@ -12,11 +12,13 @@ public sealed class OfficialCallbackService
     private readonly WechatCryptoHelper? _crypto;
     private readonly WechatHttpClient _http;
     private readonly string _token;
+    private readonly ILogger _logger;
 
-    public OfficialCallbackService(WechatHttpClient http, WechatOfficialOptions options)
+    public OfficialCallbackService(WechatHttpClient http, WechatOfficialOptions options, ILogger<OfficialCallbackService>? logger = null)
     {
         _http = http;
         _token = options.CallbackToken ?? string.Empty;
+        _logger = logger ?? NullLogger<OfficialCallbackService>.Instance;
 
         if (!string.IsNullOrWhiteSpace(options.CallbackToken) &&
             !string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
@@ -39,20 +41,28 @@ public sealed class OfficialCallbackService
     /// <returns>验证通过时返回 echostr（应直接写入 HTTP 响应）</returns>
     public string VerifyUrl(string signature, string timestamp, string nonce, string echoStr)
     {
-        if (string.IsNullOrWhiteSpace(_token))
-            throw new TencentException("回调功能未配置：请在 WechatOfficialOptions 中设置 CallbackToken");
+        try
+        {
+            if (string.IsNullOrWhiteSpace(_token))
+                throw new TencentException("回调功能未配置：请在 WechatOfficialOptions 中设置 CallbackToken");
 
-        // 明文模式：token + timestamp + nonce 字典排序后拼接做 SHA1
-        string[] arr = [_token, timestamp, nonce];
-        Array.Sort(arr, StringComparer.Ordinal);
-        var raw = string.Concat(arr);
-        var hash = System.Security.Cryptography.SHA1.HashData(System.Text.Encoding.UTF8.GetBytes(raw));
-        var computed = Convert.ToHexString(hash).ToLowerInvariant();
+            // 明文模式：token + timestamp + nonce 字典排序后拼接做 SHA1
+            string[] arr = [_token, timestamp, nonce];
+            Array.Sort(arr, StringComparer.Ordinal);
+            var raw = string.Concat(arr);
+            var hash = System.Security.Cryptography.SHA1.HashData(System.Text.Encoding.UTF8.GetBytes(raw));
+            var computed = Convert.ToHexString(hash).ToLowerInvariant();
 
-        if (!string.Equals(computed, signature, StringComparison.OrdinalIgnoreCase))
-            throw new TencentException("回调 URL 验证失败：签名不匹配");
+            if (!string.Equals(computed, signature, StringComparison.OrdinalIgnoreCase))
+                throw new TencentException("回调 URL 验证失败：签名不匹配");
 
-        return echoStr;
+            return echoStr;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "微信公众号回调 URL 验证失败");
+            throw;
+        }
     }
 
     /// <summary>
@@ -68,8 +78,16 @@ public sealed class OfficialCallbackService
     /// <returns>解密后的 echostr 明文</returns>
     public string VerifyUrlEncrypted(string msgSignature, string timestamp, string nonce, string echoStr)
     {
-        EnsureCryptoConfigured();
-        return _crypto!.VerifyUrl(msgSignature, timestamp, nonce, echoStr);
+        try
+        {
+            EnsureCryptoConfigured();
+            return _crypto!.VerifyUrl(msgSignature, timestamp, nonce, echoStr);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "微信公众号加密回调 URL 验证失败");
+            throw;
+        }
     }
 
     /// <summary>
@@ -79,7 +97,15 @@ public sealed class OfficialCallbackService
     /// <returns>解析后的消息/事件对象</returns>
     public OfficialCallbackMessageBase ParseMessage(string postBody)
     {
-        return OfficialCallbackMessageBase.FromXml(postBody);
+        try
+        {
+            return OfficialCallbackMessageBase.FromXml(postBody);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "微信公众号回调消息解析失败");
+            throw;
+        }
     }
 
     /// <summary>
@@ -92,9 +118,17 @@ public sealed class OfficialCallbackService
     /// <returns>解析后的消息/事件对象</returns>
     public OfficialCallbackMessageBase DecryptAndParse(string msgSignature, string timestamp, string nonce, string postBody)
     {
-        EnsureCryptoConfigured();
-        var decryptedXml = _crypto!.DecryptMessage(msgSignature, timestamp, nonce, postBody);
-        return OfficialCallbackMessageBase.FromXml(decryptedXml);
+        try
+        {
+            EnsureCryptoConfigured();
+            var decryptedXml = _crypto!.DecryptMessage(msgSignature, timestamp, nonce, postBody);
+            return OfficialCallbackMessageBase.FromXml(decryptedXml);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "微信公众号加密回调消息解密或解析失败");
+            throw;
+        }
     }
 
     /// <summary>
@@ -131,4 +165,3 @@ public sealed class OfficialCallbackService
             throw new TencentException("消息加解密未配置：请在 WechatOfficialOptions 中设置 CallbackToken 和 CallbackEncodingAesKey");
     }
 }
-

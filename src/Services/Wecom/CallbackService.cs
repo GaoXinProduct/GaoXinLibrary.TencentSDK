@@ -11,15 +11,17 @@ public sealed class CallbackService
 {
     private readonly WecomCryptoHelper _crypto;
     private readonly WecomHttpClient _http;
+    private readonly ILogger _logger;
 
     /// <summary>
     /// 初始化回调服务
     /// </summary>
     /// <param name="http">企业微信 HTTP 客户端</param>
     /// <param name="options">企业微信配置（需包含 CallbackToken 和 CallbackEncodingAesKey）</param>
-    public CallbackService(WecomHttpClient http, WecomOptions options)
+    public CallbackService(WecomHttpClient http, WecomOptions options, ILogger<CallbackService>? logger = null)
     {
         _http = http;
+        _logger = logger ?? NullLogger<CallbackService>.Instance;
 
         if (string.IsNullOrWhiteSpace(options.CallbackToken) ||
             string.IsNullOrWhiteSpace(options.CallbackEncodingAesKey))
@@ -43,7 +45,15 @@ public sealed class CallbackService
     /// <returns>解密后的 echostr 明文（应直接写入 HTTP 响应）</returns>
     public string VerifyUrl(string msgSignature, string timestamp, string nonce, string echoStr)
     {
-        return _crypto.VerifyUrl(msgSignature, timestamp, nonce, echoStr);
+        try
+        {
+            return _crypto.VerifyUrl(msgSignature, timestamp, nonce, echoStr);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "企业微信回调 URL 验证失败");
+            throw;
+        }
     }
 
     /// <summary>
@@ -56,8 +66,16 @@ public sealed class CallbackService
     /// <returns>解析后的消息/事件对象（可根据 MsgType 和具体子类型进行类型转换）</returns>
     public CallbackMessageBase DecryptAndParse(string msgSignature, string timestamp, string nonce, string postBody)
     {
-        var decryptedXml = _crypto.DecryptMessage(msgSignature, timestamp, nonce, postBody);
-        return CallbackMessageBase.FromXml(decryptedXml);
+        try
+        {
+            var decryptedXml = _crypto.DecryptMessage(msgSignature, timestamp, nonce, postBody);
+            return CallbackMessageBase.FromXml(decryptedXml);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "企业微信回调消息解密或解析失败");
+            throw;
+        }
     }
 
     /// <summary>

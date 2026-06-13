@@ -4,6 +4,8 @@
 
 /obj
 /bin
+/src/obj/
+/src/bin/
 /.sisyphus
 .vs/
 *.user

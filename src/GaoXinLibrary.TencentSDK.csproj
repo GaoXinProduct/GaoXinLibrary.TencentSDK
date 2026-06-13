@@ -12,12 +12,22 @@
     <Authors>GaoXin</Authors>
     <Description>腾讯平台统一 SDK，包含企业微信服务端 API 和微信（小程序、公众号、开放平台、QQ 互联）核心接口。</Description>
     <PackageTags>wecom;wechat-work;企业微信;wechat;wechat-mini-program;wechat-official-account;wechat-open-platform;gaoxin-sdk</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/GaoXinProduct/GaoXinLibrary.TencentSDK</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageProjectUrl>https://github.com/GaoXinProduct/GaoXinLibrary.TencentSDK</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591;1570;1572;1573;1574;0618</NoWarn>
   </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="GaoXinLibrary.TencentSDK.Tests" />
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
     <DebugType>embedded</DebugType>

@@ -123,6 +123,86 @@ public static class WechatServiceCollectionExtensions
     }
 
     #endregion
+    #region 小程序备服务器
+
+    public static IServiceCollection AddWechatMiniProgramShareService(
+        this IServiceCollection services,
+        Action<WechatMiniProgramShareOptions> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        var options = new WechatMiniProgramShareOptions();
+        configure(options);
+        return services.AddWechatMiniProgramShareService(options);
+    }
+
+    public static IServiceCollection AddWechatMiniProgramShareService(
+        this IServiceCollection services,
+        WechatMiniProgramShareOptions options)
+    {
+        ValidateShareOptions(options, nameof(WechatMiniProgramShareOptions));
+        services.TryAddSingleton(options);
+        services.TryAddSingleton<WechatMiniProgramClient>(sp =>
+        {
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
+            var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatMiniProgramClient>();
+            return WechatMiniProgramClient.CreateShareOwned(options, httpClient, logger);
+        });
+        return services;
+    }
+
+    public static IServiceCollection AddWechatMiniProgramShareService(
+        this IServiceCollection services,
+        string name,
+        Action<WechatMiniProgramShareOptions> configure)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(configure);
+        var options = new WechatMiniProgramShareOptions();
+        configure(options);
+        return services.AddWechatMiniProgramShareService(name, options);
+    }
+
+    public static IServiceCollection AddWechatMiniProgramShareService(
+        this IServiceCollection services,
+        string name,
+        WechatMiniProgramShareOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ValidateShareOptions(options, nameof(WechatMiniProgramShareOptions));
+        services.AddKeyedSingleton(name, options);
+        services.AddKeyedSingleton<WechatMiniProgramClient>(name, (sp, _) =>
+        {
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
+            var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatMiniProgramClient>();
+            return WechatMiniProgramClient.CreateShareOwned(options, httpClient, logger);
+        });
+        services.TryAddSingleton<IWechatMiniProgramClientFactory, WechatMiniProgramClientFactory>();
+        return services;
+    }
+
+    public static IServiceCollection AddWechatMiniProgramShareService(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new WechatMiniProgramShareOptions();
+        configuration.Bind(options);
+        return services.AddWechatMiniProgramShareService(options);
+    }
+
+    public static IServiceCollection AddWechatMiniProgramShareService(
+        this IServiceCollection services,
+        string name,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new WechatMiniProgramShareOptions();
+        configuration.Bind(options);
+        return services.AddWechatMiniProgramShareService(name, options);
+    }
+
+    #endregion
     #region 公众号
 
     /// <summary>
@@ -214,6 +294,88 @@ public static class WechatServiceCollectionExtensions
         services.TryAddSingleton<IWechatOfficialClientFactory, WechatOfficialClientFactory>();
 
         return services;
+    }
+
+    #endregion
+    #region 公众号备服务器
+
+    public static IServiceCollection AddWechatOfficialShareService(
+        this IServiceCollection services,
+        Action<WechatOfficialShareOptions> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        var options = new WechatOfficialShareOptions();
+        configure(options);
+        return services.AddWechatOfficialShareService(options);
+    }
+
+    public static IServiceCollection AddWechatOfficialShareService(
+        this IServiceCollection services,
+        WechatOfficialShareOptions options)
+    {
+        ValidateShareOptions(options, nameof(WechatOfficialShareOptions));
+        services.TryAddSingleton(options);
+        services.TryAddSingleton<WechatOfficialClient>(sp =>
+        {
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
+            var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOfficialClient>();
+            var callbackLogger = sp.GetService<ILoggerFactory>()?.CreateLogger<OfficialCallbackService>();
+            return WechatOfficialClient.CreateShareOwned(options, httpClient, logger, callbackLogger);
+        });
+        return services;
+    }
+
+    public static IServiceCollection AddWechatOfficialShareService(
+        this IServiceCollection services,
+        string name,
+        Action<WechatOfficialShareOptions> configure)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(configure);
+        var options = new WechatOfficialShareOptions();
+        configure(options);
+        return services.AddWechatOfficialShareService(name, options);
+    }
+
+    public static IServiceCollection AddWechatOfficialShareService(
+        this IServiceCollection services,
+        string name,
+        WechatOfficialShareOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ValidateShareOptions(options, nameof(WechatOfficialShareOptions));
+        services.AddKeyedSingleton(name, options);
+        services.AddKeyedSingleton<WechatOfficialClient>(name, (sp, _) =>
+        {
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
+            var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WechatOfficialClient>();
+            var callbackLogger = sp.GetService<ILoggerFactory>()?.CreateLogger<OfficialCallbackService>();
+            return WechatOfficialClient.CreateShareOwned(options, httpClient, logger, callbackLogger);
+        });
+        services.TryAddSingleton<IWechatOfficialClientFactory, WechatOfficialClientFactory>();
+        return services;
+    }
+
+    public static IServiceCollection AddWechatOfficialShareService(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new WechatOfficialShareOptions();
+        configuration.Bind(options);
+        return services.AddWechatOfficialShareService(options);
+    }
+
+    public static IServiceCollection AddWechatOfficialShareService(
+        this IServiceCollection services,
+        string name,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new WechatOfficialShareOptions();
+        configuration.Bind(options);
+        return services.AddWechatOfficialShareService(name, options);
     }
 
     #endregion
@@ -533,18 +695,19 @@ public static class WechatServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        // 备服务器模式（SecretShareUrl 已配置）：无需 AppId / AppSecret
-        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
-        {
-            if (string.IsNullOrWhiteSpace(options.ShareSecret))
-                throw new ArgumentException("配置 SecretShareUrl 时必须同时配置 ShareSecret", nameof(options));
-            return;
-        }
-
         if (string.IsNullOrWhiteSpace(options.AppId))
             throw new ArgumentException("WechatOptions.AppId 不能为空", nameof(options));
         if (string.IsNullOrWhiteSpace(options.AppSecret))
             throw new ArgumentException("WechatOptions.AppSecret 不能为空", nameof(options));
+    }
+
+    private static void ValidateShareOptions(WechatShareOptions options, string optionsName)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        if (string.IsNullOrWhiteSpace(options.SecretShareUrl))
+            throw new ArgumentException($"{optionsName}.SecretShareUrl 不能为空", nameof(options));
+        if (string.IsNullOrWhiteSpace(options.ShareSecret))
+            throw new ArgumentException($"{optionsName}.ShareSecret 不能为空", nameof(options));
     }
     #endregion
 }

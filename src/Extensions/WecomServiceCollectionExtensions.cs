@@ -204,6 +204,86 @@ public static class WecomServiceCollectionExtensions
     }
 
     #endregion
+    #region AddWecomShareService
+
+    public static IServiceCollection AddWecomShareService(
+        this IServiceCollection services,
+        Action<WecomShareOptions> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+        var options = new WecomShareOptions();
+        configure(options);
+        return services.AddWecomShareService(options);
+    }
+
+    public static IServiceCollection AddWecomShareService(
+        this IServiceCollection services,
+        WecomShareOptions options)
+    {
+        ValidateShareOptions(options);
+        services.TryAddSingleton(options);
+        services.TryAddSingleton<WecomClient>(sp =>
+        {
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
+            var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WecomClient>();
+            return WecomClient.CreateShareOwned(options, httpClient, logger);
+        });
+        return services;
+    }
+
+    public static IServiceCollection AddWecomShareService(
+        this IServiceCollection services,
+        string name,
+        Action<WecomShareOptions> configure)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(configure);
+        var options = new WecomShareOptions();
+        configure(options);
+        return services.AddWecomShareService(name, options);
+    }
+
+    public static IServiceCollection AddWecomShareService(
+        this IServiceCollection services,
+        string name,
+        WecomShareOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ValidateShareOptions(options);
+        services.AddKeyedSingleton(name, options);
+        services.AddKeyedSingleton<WecomClient>(name, (sp, _) =>
+        {
+            var httpClient = CreateLongLivedHttpClient(options.HttpTimeout);
+            var logger = sp.GetService<ILoggerFactory>()?.CreateLogger<WecomClient>();
+            return WecomClient.CreateShareOwned(options, httpClient, logger);
+        });
+        services.TryAddSingleton<IWecomClientFactory, WecomClientFactory>();
+        return services;
+    }
+
+    public static IServiceCollection AddWecomShareService(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new WecomShareOptions();
+        configuration.Bind(options);
+        return services.AddWecomShareService(options);
+    }
+
+    public static IServiceCollection AddWecomShareService(
+        this IServiceCollection services,
+        string name,
+        IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(configuration);
+        var options = new WecomShareOptions();
+        configuration.Bind(options);
+        return services.AddWecomShareService(name, options);
+    }
+
+    #endregion
     #region AddWecomService IConfiguration 绑定
 
     /// <summary>
@@ -274,18 +354,19 @@ public static class WecomServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        // 备服务器模式（SecretShareUrl 已配置）：无需 CorpId / CorpSecret
-        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
-        {
-            if (string.IsNullOrWhiteSpace(options.ShareSecret))
-                throw new ArgumentException("配置 SecretShareUrl 时必须同时配置 ShareSecret", nameof(options));
-            return;
-        }
-
         if (string.IsNullOrWhiteSpace(options.CorpId))
             throw new ArgumentException("WecomOptions.CorpId 不能为空", nameof(options));
         if (string.IsNullOrWhiteSpace(options.CorpSecret))
             throw new ArgumentException("WecomOptions.CorpSecret 不能为空", nameof(options));
+    }
+
+    private static void ValidateShareOptions(WecomShareOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        if (string.IsNullOrWhiteSpace(options.SecretShareUrl))
+            throw new ArgumentException("WecomShareOptions.SecretShareUrl 不能为空", nameof(options));
+        if (string.IsNullOrWhiteSpace(options.ShareSecret))
+            throw new ArgumentException("WecomShareOptions.ShareSecret 不能为空", nameof(options));
     }
     #endregion
 }

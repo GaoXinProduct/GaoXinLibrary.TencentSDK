@@ -31,7 +31,7 @@ public sealed class FinanceSdk : IDisposable
         ArgumentException.ThrowIfNullOrWhiteSpace(corpId);
         ArgumentException.ThrowIfNullOrWhiteSpace(secret);
 
-        _sdk = FinanceNativeMethods.NewSdk();
+        _sdk = InvokeNative(FinanceNativeMethods.NewSdk);
         if (_sdk == 0)
             throw new TencentException("会话内容存档 SDK 创建失败");
 
@@ -42,6 +42,39 @@ public sealed class FinanceSdk : IDisposable
             _sdk = 0;
             throw new TencentException(ret, $"会话内容存档 SDK 初始化失败，错误码: {ret}", "企业微信");
         }
+    }
+
+    private static T InvokeNative<T>(Func<T> action)
+    {
+        try
+        {
+            return action();
+        }
+        catch (DllNotFoundException ex)
+        {
+            throw CreateNativeLibraryException(ex);
+        }
+        catch (BadImageFormatException ex)
+        {
+            throw CreateNativeLibraryException(ex);
+        }
+        catch (EntryPointNotFoundException ex)
+        {
+            throw CreateNativeLibraryException(ex);
+        }
+    }
+
+    private static TencentException CreateNativeLibraryException(Exception inner)
+    {
+        var message = string.Join(Environment.NewLine,
+            "企业微信会话内容存档原生库加载失败。",
+            "请从企业微信官方渠道获取 Finance C SDK，并将 Linux 的 libWeWorkFinanceSdk_C.so 或 Windows 的 WeWorkFinanceSdk_C.dll 放到应用输出目录。",
+            $"当前系统: {RuntimeInformation.OSDescription}",
+            $"当前架构: {RuntimeInformation.ProcessArchitecture}",
+            $"应用目录: {AppContext.BaseDirectory}",
+            $"原始错误: {inner.Message}");
+
+        return new TencentException(message, inner);
     }
 
     /// <summary>
@@ -58,10 +91,10 @@ public sealed class FinanceSdk : IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        var slice = FinanceNativeMethods.NewSlice();
+        var slice = InvokeNative(FinanceNativeMethods.NewSlice);
         try
         {
-            var ret = FinanceNativeMethods.GetChatData(_sdk, seq, limit, proxy, passwd, timeout, slice);
+            var ret = InvokeNative(() => FinanceNativeMethods.GetChatData(_sdk, seq, limit, proxy, passwd, timeout, slice));
             if (ret != 0)
                 throw new TencentException(ret, $"拉取会话记录失败，错误码: {ret}", "企业微信");
 
@@ -69,7 +102,11 @@ public sealed class FinanceSdk : IDisposable
         }
         finally
         {
-            FinanceNativeMethods.FreeSlice(slice);
+            InvokeNative(() =>
+            {
+                FinanceNativeMethods.FreeSlice(slice);
+                return true;
+            });
         }
     }
 
@@ -108,10 +145,10 @@ public sealed class FinanceSdk : IDisposable
         }
 
         // 步骤 2：将解密后的密钥和加密消息传入原生 SDK 解密
-        var slice = FinanceNativeMethods.NewSlice();
+        var slice = InvokeNative(FinanceNativeMethods.NewSlice);
         try
         {
-            var ret = FinanceNativeMethods.DecryptData(encryptKey, encryptChatMsg, slice);
+            var ret = InvokeNative(() => FinanceNativeMethods.DecryptData(encryptKey, encryptChatMsg, slice));
             if (ret != 0)
                 throw new TencentException(ret, $"解密会话消息失败，错误码: {ret}", "企业微信");
 
@@ -119,7 +156,11 @@ public sealed class FinanceSdk : IDisposable
         }
         finally
         {
-            FinanceNativeMethods.FreeSlice(slice);
+            InvokeNative(() =>
+            {
+                FinanceNativeMethods.FreeSlice(slice);
+                return true;
+            });
         }
     }
 
@@ -143,15 +184,15 @@ public sealed class FinanceSdk : IDisposable
 
         while (true)
         {
-            var mediaData = FinanceNativeMethods.NewMediaData();
+            var mediaData = InvokeNative(FinanceNativeMethods.NewMediaData);
             try
             {
-                var ret = FinanceNativeMethods.GetMediaData(_sdk, indexBuf, sdkFileId, proxy, passwd, timeout, mediaData);
+                var ret = InvokeNative(() => FinanceNativeMethods.GetMediaData(_sdk, indexBuf, sdkFileId, proxy, passwd, timeout, mediaData));
                 if (ret != 0)
                     throw new TencentException(ret, $"下载媒体文件失败，错误码: {ret}", "企业微信");
 
-                var dataPtr = FinanceNativeMethods.GetData(mediaData);
-                var dataLen = FinanceNativeMethods.GetDataLen(mediaData);
+                var dataPtr = InvokeNative(() => FinanceNativeMethods.GetData(mediaData));
+                var dataLen = InvokeNative(() => FinanceNativeMethods.GetDataLen(mediaData));
                 if (dataLen > 0 && dataPtr != 0)
                 {
                     var span = new ReadOnlySpan<byte>((void*)dataPtr, dataLen);
@@ -159,17 +200,21 @@ public sealed class FinanceSdk : IDisposable
                 }
 
                 // is_finish: 0 表示拉取完成，非 0 表示未完成需继续
-                var isFinish = FinanceNativeMethods.IsMediaDataFinish(mediaData);
+                var isFinish = InvokeNative(() => FinanceNativeMethods.IsMediaDataFinish(mediaData));
                 if (isFinish == 0)
                     break;
 
                 // 获取下次拉取需要使用的 indexbuf
-                var outIndexPtr = FinanceNativeMethods.GetOutIndexBuf(mediaData);
+                var outIndexPtr = InvokeNative(() => FinanceNativeMethods.GetOutIndexBuf(mediaData));
                 indexBuf = outIndexPtr != 0 ? Marshal.PtrToStringUTF8(outIndexPtr) ?? string.Empty : string.Empty;
             }
             finally
             {
-                FinanceNativeMethods.FreeMediaData(mediaData);
+                InvokeNative(() =>
+                {
+                    FinanceNativeMethods.FreeMediaData(mediaData);
+                    return true;
+                });
             }
         }
 
@@ -195,15 +240,15 @@ public sealed class FinanceSdk : IDisposable
         var indexBuf = string.Empty;
         while (true)
         {
-            var mediaData = FinanceNativeMethods.NewMediaData();
+            var mediaData = InvokeNative(FinanceNativeMethods.NewMediaData);
             try
             {
-                var ret = FinanceNativeMethods.GetMediaData(_sdk, indexBuf, sdkFileId, proxy, passwd, timeout, mediaData);
+                var ret = InvokeNative(() => FinanceNativeMethods.GetMediaData(_sdk, indexBuf, sdkFileId, proxy, passwd, timeout, mediaData));
                 if (ret != 0)
                     throw new TencentException(ret, $"下载媒体文件失败，错误码: {ret}", "企业微信");
 
-                var dataPtr = FinanceNativeMethods.GetData(mediaData);
-                var dataLen = FinanceNativeMethods.GetDataLen(mediaData);
+                var dataPtr = InvokeNative(() => FinanceNativeMethods.GetData(mediaData));
+                var dataLen = InvokeNative(() => FinanceNativeMethods.GetDataLen(mediaData));
                 if (dataLen > 0 && dataPtr != 0)
                 {
                     var span = new ReadOnlySpan<byte>((void*)dataPtr, dataLen);
@@ -211,24 +256,28 @@ public sealed class FinanceSdk : IDisposable
                 }
 
                 // is_finish: 0 表示拉取完成，非 0 表示未完成需继续
-                var isFinish = FinanceNativeMethods.IsMediaDataFinish(mediaData);
+                var isFinish = InvokeNative(() => FinanceNativeMethods.IsMediaDataFinish(mediaData));
                 if (isFinish == 0)
                     break;
 
-                var outIndexPtr = FinanceNativeMethods.GetOutIndexBuf(mediaData);
+                var outIndexPtr = InvokeNative(() => FinanceNativeMethods.GetOutIndexBuf(mediaData));
                 indexBuf = outIndexPtr != 0 ? Marshal.PtrToStringUTF8(outIndexPtr) ?? string.Empty : string.Empty;
             }
             finally
             {
-                FinanceNativeMethods.FreeMediaData(mediaData);
+                InvokeNative(() =>
+                {
+                    FinanceNativeMethods.FreeMediaData(mediaData);
+                    return true;
+                });
             }
         }
     }
 
     private static string GetStringFromSlice(nint slice)
     {
-        var contentPtr = FinanceNativeMethods.GetContentFromSlice(slice);
-        var len = FinanceNativeMethods.GetSliceLen(slice);
+        var contentPtr = InvokeNative(() => FinanceNativeMethods.GetContentFromSlice(slice));
+        var len = InvokeNative(() => FinanceNativeMethods.GetSliceLen(slice));
         if (contentPtr == 0 || len <= 0)
             return string.Empty;
 
@@ -242,7 +291,11 @@ public sealed class FinanceSdk : IDisposable
 
         if (_sdk != 0)
         {
-            FinanceNativeMethods.DestroySdk(_sdk);
+            InvokeNative(() =>
+            {
+                FinanceNativeMethods.DestroySdk(_sdk);
+                return true;
+            });
             _sdk = 0;
         }
     }

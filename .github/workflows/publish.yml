@@ -59,7 +59,7 @@ jobs:
         run: dotnet build "${{ env.PROJECT_PATH }}" -c Release --no-restore /p:ContinuousIntegrationBuild=true /p:DebugType=portable /p:DebugSymbols=true
 
       - name: Test (Release)
-        run: dotnet test "${{ env.TEST_PROJECT_PATH }}" -c Release --no-restore
+        run: dotnet test "${{ env.TEST_PROJECT_PATH }}" -c Release --no-restore /p:ContinuousIntegrationBuild=true /p:DebugType=portable /p:DebugSymbols=true
 
       - name: Pack
         run: |

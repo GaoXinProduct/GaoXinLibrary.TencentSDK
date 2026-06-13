@@ -85,17 +85,19 @@ public sealed class WechatOfficialClient : IDisposable
     /// <summary>当前配置</summary>
     public WechatOfficialOptions Options { get; }
 
-    private WechatOfficialClient(WechatOfficialOptions options, HttpClient httpClient, bool ownsHttpClient, ILogger? logger = null, ILogger<OfficialCallbackService>? callbackLogger = null)
+    private WechatOfficialClient(WechatOfficialOptions options, HttpClient httpClient, bool ownsHttpClient, ILogger? logger = null, ILogger<OfficialCallbackService>? callbackLogger = null, WechatOfficialShareOptions? shareOptions = null)
     {
         Options = options;
         _httpClient = httpClient;
         _ownsHttpClient = ownsHttpClient;
         _logger = logger ?? NullLogger<WechatOfficialClient>.Instance;
         _tokenProvider = new AccessTokenProvider(options, httpClient);
+        if (shareOptions is not null)
+            _tokenProvider.ConfigureSharedSecret(shareOptions.SecretShareUrl, shareOptions.ShareSecret);
         var http = new WechatHttpClient(httpClient, _tokenProvider, options, logger);
 
         _ticketProvider = new JsApiTicketProvider(http);
-        _ticketProvider.OnTicketChanged = options.OnTicketChanged;
+        _ticketProvider.OnTicketChanged = options.OnTicketChanged ?? shareOptions?.OnTicketChanged;
 
         OAuth = new OfficialOAuthService(http, options);
         Menu = new OfficialMenuService(http);
@@ -118,7 +120,7 @@ public sealed class WechatOfficialClient : IDisposable
         Callback = new OfficialCallbackService(http, options, callbackLogger);
 
         #region 备服务器模式：挂载载荷接收回调，分发 Ticket 并回写 Options
-        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
+        if (shareOptions is not null)
         {
             _tokenProvider.OnSecretPayloadReceived = (payload, ct) =>
             {
@@ -173,6 +175,22 @@ public sealed class WechatOfficialClient : IDisposable
         return new WechatOfficialClient(options, httpClient, ownsHttpClient: true, logger, callbackLogger);
     }
 
+    internal static WechatOfficialClient CreateShareOwned(WechatOfficialShareOptions options, HttpClient httpClient, ILogger? logger = null, ILogger<OfficialCallbackService>? callbackLogger = null)
+    {
+        ValidateShareOptions(options);
+        ArgumentNullException.ThrowIfNull(httpClient);
+        return new WechatOfficialClient(ToOfficialOptions(options), httpClient, ownsHttpClient: true, logger, callbackLogger, options);
+    }
+
+    private static WechatOfficialOptions ToOfficialOptions(WechatOfficialShareOptions options) => new()
+    {
+        BaseUrl = options.BaseUrl,
+        HttpTimeout = options.HttpTimeout,
+        OnTokenChanged = options.OnTokenChanged,
+        RetryOptions = options.RetryOptions,
+        OnTicketChanged = options.OnTicketChanged
+    };
+
     /// <summary>使 access_token 缓存失效（下次 GetAccessTokenAsync 时自动重新获取）</summary>
     public void InvalidateAccessTokenCache() => _tokenProvider.InvalidateCache();
 
@@ -220,17 +238,16 @@ public sealed class WechatOfficialClient : IDisposable
     /// 获取统一共享密钥载荷（主服务器调用）
     /// <para>
     /// 将当前有效的 access_token、jsapi_ticket、AppId/AppSecret
-    /// 打包为 <see cref="SharedSecretPayload"/>，使用 <see cref="WechatOfficialOptions.ShareSecret"/> 加密后返回。<br/>
+    /// 打包为 <see cref="SharedSecretPayload"/>，使用 <paramref name="shareSecret"/> 加密后返回。<br/>
     /// 建议在主服务器侧通过受保护的内部接口对外暴露此方法的返回值。
     /// </para>
     /// </summary>
+    /// <param name="shareSecret">主服务器与备服务器约定的共享密钥</param>
     /// <param name="ct">取消令牌</param>
     /// <returns>加密后的统一共享密钥载荷</returns>
-    /// <exception cref="InvalidOperationException">未配置 <see cref="WechatOfficialOptions.ShareSecret"/> 时抛出</exception>
-    public async Task<SharedSecretResult> GetSharedSecretAsync(CancellationToken ct = default)
+    public async Task<SharedSecretResult> GetSharedSecretAsync(string shareSecret, CancellationToken ct = default)
     {
-        if (string.IsNullOrWhiteSpace(Options.ShareSecret))
-            throw new InvalidOperationException("获取统一共享密钥需配置 WechatOfficialOptions.ShareSecret");
+        ArgumentException.ThrowIfNullOrWhiteSpace(shareSecret);
 
         var payload = await _tokenProvider.BuildBasePayloadAsync(ct).ConfigureAwait(false);
 
@@ -248,7 +265,7 @@ public sealed class WechatOfficialClient : IDisposable
             _logger.LogDebug(ex, "构建共享密钥载荷时未能获取 jsapi_ticket，已跳过该字段");
         }
 
-        var key = TencentTokenCrypto.DeriveKey(Options.ShareSecret);
+        var key = TencentTokenCrypto.DeriveKey(shareSecret);
         var payloadJson = JsonSerializer.Serialize(payload);
         var encrypted = TencentTokenCrypto.EncryptWithKey(payloadJson, key);
 
@@ -259,18 +276,19 @@ public sealed class WechatOfficialClient : IDisposable
     {
         ArgumentNullException.ThrowIfNull(options);
 
-        // 备服务器模式（SecretShareUrl 已配置）：无需 AppId / AppSecret
-        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
-        {
-            if (string.IsNullOrWhiteSpace(options.ShareSecret))
-                throw new ArgumentException("配置 SecretShareUrl 时必须同时配置 ShareSecret", nameof(options));
-            return;
-        }
-
         if (string.IsNullOrWhiteSpace(options.AppId))
             throw new ArgumentException("AppId 不能为空", nameof(options));
         if (string.IsNullOrWhiteSpace(options.AppSecret))
             throw new ArgumentException("AppSecret 不能为空", nameof(options));
+    }
+
+    private static void ValidateShareOptions(WechatOfficialShareOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        if (string.IsNullOrWhiteSpace(options.SecretShareUrl))
+            throw new ArgumentException("WechatOfficialShareOptions.SecretShareUrl 不能为空", nameof(options));
+        if (string.IsNullOrWhiteSpace(options.ShareSecret))
+            throw new ArgumentException("WechatOfficialShareOptions.ShareSecret 不能为空", nameof(options));
     }
 
     public void Dispose()

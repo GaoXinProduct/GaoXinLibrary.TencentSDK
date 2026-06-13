@@ -171,13 +171,15 @@ public sealed class WecomClient : IDisposable
     #endregion
     #region 构造
 
-    private WecomClient(WecomOptions options, HttpClient httpClient, bool ownsHttpClient, ILogger? logger = null)
+    private WecomClient(WecomOptions options, HttpClient httpClient, bool ownsHttpClient, ILogger? logger = null, WecomShareOptions? shareOptions = null)
     {
         Options = options;
         _httpClient = httpClient;
         _ownsHttpClient = ownsHttpClient;
         _logger = logger ?? NullLogger<WecomClient>.Instance;
         _tokenProvider = new AccessTokenProvider(options, httpClient);
+        if (shareOptions is not null)
+            _tokenProvider.ConfigureSharedSecret(shareOptions.SecretShareUrl, shareOptions.ShareSecret);
         _http = new WecomHttpClient(httpClient, _tokenProvider, options, logger);
 
         User = new UserService(_http);
@@ -246,7 +248,7 @@ public sealed class WecomClient : IDisposable
             : null;
 
         #region 备服务器模式
-        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
+        if (shareOptions is not null)
         {
             _tokenProvider.OnSecretPayloadReceived = (payload, ct) =>
             {
@@ -277,10 +279,10 @@ public sealed class WecomClient : IDisposable
     /// <summary>
     /// 使用指定配置创建 <see cref="WecomClient"/> 实例（内部自动创建 <see cref="HttpClient"/>）
     /// </summary>
-    /// <param name="options">企业微信配置，必须包含 <see cref="WecomOptions.CorpId"/> 和 <see cref="WecomOptions.CorpSecret"/>（备服务器模式下可省略）。</param>
+    /// <param name="options">企业微信配置，必须包含 <see cref="WecomOptions.CorpId"/> 和 <see cref="WecomOptions.CorpSecret"/>。</param>
     /// <returns>已初始化的 <see cref="WecomClient"/> 实例。</returns>
     /// <exception cref="ArgumentNullException"><paramref name="options"/> 为 <c>null</c>。</exception>
-    /// <exception cref="ArgumentException"><see cref="WecomOptions.CorpId"/> 或 <see cref="WecomOptions.CorpSecret"/> 为空（非备服务器模式）。</exception>
+    /// <exception cref="ArgumentException"><see cref="WecomOptions.CorpId"/> 或 <see cref="WecomOptions.CorpSecret"/> 为空。</exception>
     public static WecomClient Create(WecomOptions options, ILogger? logger = null)
     {
         ArgumentNullException.ThrowIfNull(options);
@@ -312,20 +314,36 @@ public sealed class WecomClient : IDisposable
         return new WecomClient(options, httpClient, ownsHttpClient: true, logger);
     }
 
+    internal static WecomClient CreateShareOwned(WecomShareOptions options, HttpClient httpClient, ILogger? logger = null)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(httpClient);
+        ValidateShareOptions(options);
+        return new WecomClient(ToWecomOptions(options), httpClient, ownsHttpClient: true, logger, options);
+    }
+
+    private static WecomOptions ToWecomOptions(WecomShareOptions options) => new()
+    {
+        BaseUrl = options.BaseUrl,
+        HttpTimeout = options.HttpTimeout,
+        OnTokenChanged = options.OnTokenChanged,
+        RetryOptions = options.RetryOptions
+    };
+
     private static void ValidateOptions(WecomOptions options)
     {
-        // 备服务器模式（SecretShareUrl 已配置）：无需 CorpId / CorpSecret
-        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl))
-        {
-            if (string.IsNullOrWhiteSpace(options.ShareSecret))
-                throw new ArgumentException("配置 SecretShareUrl 时必须同时配置 ShareSecret", nameof(options));
-            return;
-        }
-
         if (string.IsNullOrWhiteSpace(options.CorpId))
             throw new ArgumentException("CorpId 不能为空", nameof(options));
         if (string.IsNullOrWhiteSpace(options.CorpSecret))
             throw new ArgumentException("CorpSecret 不能为空", nameof(options));
+    }
+
+    private static void ValidateShareOptions(WecomShareOptions options)
+    {
+        if (string.IsNullOrWhiteSpace(options.SecretShareUrl))
+            throw new ArgumentException("WecomShareOptions.SecretShareUrl 不能为空", nameof(options));
+        if (string.IsNullOrWhiteSpace(options.ShareSecret))
+            throw new ArgumentException("WecomShareOptions.ShareSecret 不能为空", nameof(options));
     }
 
     /// <summary>
@@ -416,17 +434,16 @@ public sealed class WecomClient : IDisposable
     /// 获取统一共享密钥载荷（主服务器调用）
     /// <para>
     /// 将当前有效的 access_token、企业级/应用级 jsapi_ticket、CorpId/CorpSecret/AgentId
-    /// 打包为 <see cref="SharedSecretPayload"/>，使用 <see cref="WecomOptions.ShareSecret"/> 加密后返回。<br/>
+    /// 打包为 <see cref="SharedSecretPayload"/>，使用 <paramref name="shareSecret"/> 加密后返回。<br/>
     /// 建议在主服务器侧通过受保护的内部接口对外暴露此方法的返回值。
     /// </para>
     /// </summary>
+    /// <param name="shareSecret">主服务器与备服务器约定的共享密钥</param>
     /// <param name="ct">取消令牌</param>
     /// <returns>加密后的统一共享密钥载荷</returns>
-    /// <exception cref="InvalidOperationException">未配置 <see cref="WecomOptions.ShareSecret"/> 时抛出</exception>
-    public async Task<SharedSecretResult> GetSharedSecretAsync(CancellationToken ct = default)
+    public async Task<SharedSecretResult> GetSharedSecretAsync(string shareSecret, CancellationToken ct = default)
     {
-        if (string.IsNullOrWhiteSpace(Options.ShareSecret))
-            throw new InvalidOperationException("获取统一共享密钥需配置 WecomOptions.ShareSecret");
+        ArgumentException.ThrowIfNullOrWhiteSpace(shareSecret);
 
         var payload = await _tokenProvider.BuildBasePayloadAsync(ct).ConfigureAwait(false);
 
@@ -456,7 +473,7 @@ public sealed class WecomClient : IDisposable
             _logger.LogDebug(ex, "构建共享密钥载荷时未能获取应用级 jsapi_ticket，已跳过该字段");
         }
 
-        var key = TencentTokenCrypto.DeriveKey(Options.ShareSecret);
+        var key = TencentTokenCrypto.DeriveKey(shareSecret);
         var payloadJson = JsonSerializer.Serialize(payload);
         var encrypted = TencentTokenCrypto.EncryptWithKey(payloadJson, key);
 

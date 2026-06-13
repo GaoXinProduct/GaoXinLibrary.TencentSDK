@@ -14,11 +14,6 @@ public sealed class AccessTokenProvider : TencentAccessTokenProvider
         _options = options;
         OnTokenChanged = options.OnTokenChanged;
 
-        if (!string.IsNullOrWhiteSpace(options.SecretShareUrl) &&
-            !string.IsNullOrWhiteSpace(options.ShareSecret))
-        {
-            ConfigureSharedSecret(options.SecretShareUrl, options.ShareSecret);
-        }
     }
 
     /// <inheritdoc/>

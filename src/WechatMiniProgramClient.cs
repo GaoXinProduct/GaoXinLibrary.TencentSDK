@@ -80,12 +80,14 @@ public sealed class WechatMiniProgramClient : IDisposable
     /// <summary>当前配置</summary>
     public WechatMiniProgramOptions Options { get; }
 
-    private WechatMiniProgramClient(WechatMiniProgramOptions options, HttpClient httpClient, bool ownsHttpClient, ILogger? logger = null)
+    private WechatMiniProgramClient(WechatMiniProgramOptions options, HttpClient httpClient, bool ownsHttpClient, ILogger? logger = null, WechatMiniProgramShareOptions? shareOptions = null)
     {
         Options = options;
         _httpClient = httpClient;
         _ownsHttpClient = ownsHttpClient;
         _tokenProvider = new AccessTokenProvider(options, httpClient);
+        if (shareOptions is not null)
+            _tokenProvider.ConfigureSharedSecret(shareOptions.SecretShareUrl, shareOptions.ShareSecret);
         var http = new WechatHttpClient(httpClient, _tokenProvider, options, logger);
 
         Auth = new MiniProgramAuthService(http, options);
@@ -135,6 +137,21 @@ public sealed class WechatMiniProgramClient : IDisposable
         return new WechatMiniProgramClient(options, httpClient, ownsHttpClient: true, logger);
     }
 
+    internal static WechatMiniProgramClient CreateShareOwned(WechatMiniProgramShareOptions options, HttpClient httpClient, ILogger? logger = null)
+    {
+        ValidateShareOptions(options);
+        ArgumentNullException.ThrowIfNull(httpClient);
+        return new WechatMiniProgramClient(ToMiniProgramOptions(options), httpClient, ownsHttpClient: true, logger, options);
+    }
+
+    private static WechatMiniProgramOptions ToMiniProgramOptions(WechatMiniProgramShareOptions options) => new()
+    {
+        BaseUrl = options.BaseUrl,
+        HttpTimeout = options.HttpTimeout,
+        OnTokenChanged = options.OnTokenChanged,
+        RetryOptions = options.RetryOptions
+    };
+
     /// <summary>使 access_token 缓存失效（下次 GetAccessTokenAsync 时自动重新获取）</summary>
     public void InvalidateAccessTokenCache() => _tokenProvider.InvalidateCache();
 
@@ -160,6 +177,15 @@ public sealed class WechatMiniProgramClient : IDisposable
         if (string.IsNullOrWhiteSpace(options.AppId)) throw new ArgumentException("AppId 不能为空", nameof(options));
         if (string.IsNullOrWhiteSpace(options.AppSecret))
             throw new ArgumentException("AppSecret 不能为空", nameof(options));
+    }
+
+    private static void ValidateShareOptions(WechatMiniProgramShareOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+        if (string.IsNullOrWhiteSpace(options.SecretShareUrl))
+            throw new ArgumentException("WechatMiniProgramShareOptions.SecretShareUrl 不能为空", nameof(options));
+        if (string.IsNullOrWhiteSpace(options.ShareSecret))
+            throw new ArgumentException("WechatMiniProgramShareOptions.ShareSecret 不能为空", nameof(options));
     }
 
     public void Dispose()

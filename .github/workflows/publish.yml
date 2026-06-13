@@ -12,6 +12,7 @@ permissions:
 
 env:
   PROJECT_PATH: src/GaoXinLibrary.TencentSDK.csproj
+  TEST_PROJECT_PATH: tests/GaoXinLibrary.TencentSDK.Tests.csproj
   GHPKG_FEED: https://nuget.pkg.github.com/GaoXinProduct/index.json
   NAMESPACE: GaoXinProduct
 
@@ -52,10 +53,13 @@ jobs:
             8.0.x
 
       - name: Restore
-        run: dotnet restore "${{ env.PROJECT_PATH }}"
+        run: dotnet restore "${{ env.TEST_PROJECT_PATH }}"
 
       - name: Build (Release portable PDB)
         run: dotnet build "${{ env.PROJECT_PATH }}" -c Release --no-restore /p:ContinuousIntegrationBuild=true /p:DebugType=portable /p:DebugSymbols=true
+
+      - name: Test (Release)
+        run: dotnet test "${{ env.TEST_PROJECT_PATH }}" -c Release --no-restore
 
       - name: Pack
         run: |

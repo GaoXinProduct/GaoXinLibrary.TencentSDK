@@ -95,8 +95,10 @@ public class WecomModelTests
         Assert.Equal("minimal", resp.UserId);
         Assert.Equal("Min", resp.Name);
         Assert.Null(resp.Alias);
+#pragma warning disable CS0618
         Assert.Null(resp.Mobile);
         Assert.Null(resp.Email);
+#pragma warning restore CS0618
         Assert.Null(resp.Position);
         Assert.Null(resp.Department);
     }

@@ -11,7 +11,7 @@ public sealed class QrcodeJumpGetRequest
     [JsonPropertyName("appid")] public string? AppId { get; set; }
 
     /// <summary>查询类型：0 最近新增，1 前缀查询，2 分页查询</summary>
-    [JsonPropertyName("get_type")] public int GetType { get; set; }
+    [JsonPropertyName("get_type")] public new int GetType { get; set; }
 
     /// <summary>前缀列表（get_type=1 时使用）</summary>
     [JsonPropertyName("prefix_list")] public List<string>? PrefixList { get; set; }

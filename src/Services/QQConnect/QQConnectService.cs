@@ -67,13 +67,24 @@ public sealed class QQConnectService
     }
 
     /// <summary>
-    /// 获取用户 OpenID
+    /// 获取用户 OpenID，可选同时获取 UnionID
     /// </summary>
     /// <param name="accessToken">授权令牌</param>
+    /// <param name="includeUnionId">
+    /// 是否同时获取 UnionID（跨应用统一标识）。
+    /// 需要先在 QQ 互联管理后台申请 UnionID 权限，否则会返回 100048 / 100049 错误。
+    /// </param>
     /// <param name="ct">取消令牌</param>
-    public async Task<QQOpenIdResponse> GetOpenIdAsync(string accessToken, CancellationToken ct = default)
+    /// <remarks>
+    /// <para>UnionID 用于同一 QQ 互联平台下不同应用间的用户统一标识，
+    /// 对同一个开发者账号下的多个应用，同一用户的 UnionID 相同。</para>
+    /// <para>参考文档：https://wiki.connect.qq.com/unionid介绍</para>
+    /// </remarks>
+    public async Task<QQOpenIdResponse> GetOpenIdAsync(string accessToken, bool includeUnionId = false, CancellationToken ct = default)
     {
         var url = $"{_baseUrl}/oauth2.0/me?access_token={Uri.EscapeDataString(accessToken)}&fmt=json";
+        if (includeUnionId)
+            url += "&unionid=1";
         return await GetQQResponseAsync<QQOpenIdResponse>(url, ct).ConfigureAwait(false);
     }
 

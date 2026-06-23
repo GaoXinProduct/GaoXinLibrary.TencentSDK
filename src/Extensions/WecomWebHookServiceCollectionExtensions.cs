@@ -124,7 +124,7 @@ public static class WecomWebHookServiceCollectionExtensions
                 ownsHttpClient: true));
 
         // 工厂（幂等注册，供 MVC Controller 构造函数等无法使用 [FromKeyedServices] 的场景）
-        services.TryAddSingleton<WebhookServiceFactory, WebhookServiceFactory>();
+        services.TryAddSingleton<IWebhookServiceFactory, WebhookServiceFactory>();
 
         return services;
     }

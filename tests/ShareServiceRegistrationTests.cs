@@ -17,9 +17,11 @@ public sealed class ShareServiceRegistrationTests
     [Fact]
     public void NormalOptions_DoNotExposeShareServiceFields()
     {
-        Assert.DoesNotContain(typeof(WecomOptions).GetProperties(), property => property.Name is "ShareSecret" or "SecretShareUrl");
+        // ShareSecret is allowed on primary Options (WecomOptions, WechatOfficialOptions) for convenience;
+        // SecretShareUrl must remain exclusive to ShareOptions (backup server only).
+        Assert.DoesNotContain(typeof(WecomOptions).GetProperties(), property => property.Name is "SecretShareUrl");
         Assert.DoesNotContain(typeof(WechatOptions).GetProperties(), property => property.Name is "ShareSecret" or "SecretShareUrl");
-        Assert.DoesNotContain(typeof(WechatOfficialOptions).GetProperties(), property => property.Name is "ShareSecret" or "SecretShareUrl");
+        Assert.DoesNotContain(typeof(WechatOfficialOptions).GetProperties(), property => property.Name is "SecretShareUrl");
         Assert.DoesNotContain(typeof(WechatMiniProgramOptions).GetProperties(), property => property.Name is "ShareSecret" or "SecretShareUrl");
         Assert.DoesNotContain(typeof(WechatOpenOptions).GetProperties(), property => property.Name is "ShareSecret" or "SecretShareUrl");
         Assert.DoesNotContain(typeof(QQConnectOptions).GetProperties(), property => property.Name is "ShareSecret" or "SecretShareUrl");

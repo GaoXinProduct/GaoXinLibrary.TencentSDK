@@ -431,6 +431,24 @@ public sealed class WecomClient : IDisposable
     #region 统一共享密钥（主服务器调用）
 
     /// <summary>
+    /// 获取统一共享密钥载荷（主服务器调用），使用 <see cref="WecomOptions.ShareSecret"/> 作为共享密钥
+    /// <para>
+    /// 需先在 <see cref="WecomClient.Options"/> 中配置 <see cref="WecomOptions.ShareSecret"/>。<br/>
+    /// 若未配置则抛出 <see cref="InvalidOperationException"/>。
+    /// </para>
+    /// </summary>
+    /// <param name="ct">取消令牌</param>
+    /// <returns>加密后的统一共享密钥载荷</returns>
+    /// <exception cref="InvalidOperationException">Options.ShareSecret 未配置</exception>
+    public Task<SharedSecretResult> GetSharedSecretAsync(CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(Options.ShareSecret))
+            throw new InvalidOperationException(
+                "WecomOptions.ShareSecret 未配置。请在 Options 中设置 ShareSecret，或调用 GetSharedSecretAsync(shareSecret, ct) 重载传入。");
+        return GetSharedSecretAsync(Options.ShareSecret, ct);
+    }
+
+    /// <summary>
     /// 获取统一共享密钥载荷（主服务器调用）
     /// <para>
     /// 将当前有效的 access_token、企业级/应用级 jsapi_ticket、CorpId/CorpSecret/AgentId

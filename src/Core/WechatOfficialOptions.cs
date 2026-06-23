@@ -16,4 +16,10 @@ public sealed class WechatOfficialOptions : WechatOptions
     /// <para>每次成功刷新 jsapi_ticket 后触发，参数为新的明文 ticket 及 CancellationToken。</para>
     /// </summary>
     public Func<string, CancellationToken, Task>? OnTicketChanged { get; set; }
+
+    /// <summary>
+    /// 主备服务器共享密钥（主服务器调用 <see cref="WechatOfficialClient.GetSharedSecretAsync(System.Threading.CancellationToken)"/> 时使用）
+    /// <para>配置后可不传参直接调用 GetSharedSecretAsync()。</para>
+    /// </summary>
+    public string? ShareSecret { get; set; }
 }

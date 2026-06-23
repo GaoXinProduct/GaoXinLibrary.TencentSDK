@@ -550,7 +550,11 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 
 ### WechatMiniProgramOptions
 
-无额外字段，继承 `WechatOptions` 所有字段。
+| 字段 | 类型 | 默认值 | 说明 |
+|---|---|---|---|
+| `ShareSecret` | `string?` | `null` | 主备服务器共享密钥；配置后可通过 `GetSharedSecretAsync()` 无参重载获取加密载荷 |
+
+继承 `WechatOptions` 所有字段。
 
 ### WechatOfficialOptions 额外字段
 
@@ -558,6 +562,7 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 |---|---|---|---|
 | `CallbackToken` | `string?` | `null` | 消息回调 Token（用于签名校验）；与 `CallbackEncodingAesKey` 同时配置时自动注册 `IOfficialCallbackService` |
 | `CallbackEncodingAesKey` | `string?` | `null` | 消息加解密 AES Key（43 位字符） |
+| `ShareSecret` | `string?` | `null` | 主备服务器共享密钥；配置后可通过 `GetSharedSecretAsync()` 无参重载获取加密载荷 |
 | `OnTicketChanged` | `Func<string, CancellationToken, Task>?` | `null` | jsapi_ticket 刷新成功回调 |
 
 ### WechatOpenOptions
@@ -589,10 +594,12 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 | `MsgAuditPrivateKey` | `string?` | `null` | 会话存档 RSA 私钥（PEM 格式），用于解密 `encrypt_random_key` |
 | `OnTokenChanged` | `Func<string, CancellationToken, Task>?` | `null` | Token 刷新成功回调 |
 | `RetryOptions` | `TencentRetryOptions?` | 默认启用 | 瞬态故障重试配置 |
+| `ShareSecret` | `string?` | `null` | 主备服务器共享密钥；配置后可通过 `GetSharedSecretAsync()` 无参重载获取加密载荷 |
 
 ### 备服务器共享密钥配置
 
-`WecomShareOptions`、`WechatOfficialShareOptions`、`WechatMiniProgramShareOptions` 是独立备服务器配置模型，不再混入普通 `Add*Service` 配置。
+`WecomOptions` 和 `WechatOfficialOptions` 上的 `ShareSecret` 字段用于主服务器配置（配合无参 `GetSharedSecretAsync()`）。  
+`WecomShareOptions`、`WechatOfficialShareOptions`、`WechatMiniProgramShareOptions` 是备服务器专用配置模型，不在 `AddWecomService`/`AddWechatOfficialService` 中使用。
 
 | 字段 | 类型 | 默认值 | 说明 |
 |---|---|---|---|
@@ -719,6 +726,7 @@ builder.Services.AddWecomService(options =>
     options.CorpId      = "your_corpid";
     options.CorpSecret  = "your_corpsecret";
     options.AgentId     = 1000001;
+    options.ShareSecret = "shared_secret_32chars_or_more"; // 配置后可不传参调用 GetSharedSecretAsync()
     options.OnTokenChanged = async (token, ct) =>
     {
         // 可选：将 token 推送至 Redis 等共享存储
@@ -727,7 +735,7 @@ builder.Services.AddWecomService(options =>
 
 // 内部接口（Controller 示例）：
 app.MapGet("/internal/shared-secret", async (WecomClient client) =>
-    Results.Ok(await client.GetSharedSecretAsync("shared_secret_32chars_or_more")))
+    Results.Ok(await client.GetSharedSecretAsync()))   // 无需传参，自动使用 Options.ShareSecret
    .RequireAuthorization("InternalOnly");
 ```
 

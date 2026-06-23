@@ -22,6 +22,7 @@ public sealed class WechatMiniProgramClient : IDisposable
     private readonly HttpClient _httpClient;
     private readonly bool _ownsHttpClient;
     private readonly AccessTokenProvider _tokenProvider;
+    private readonly ILogger _logger;
 
     /// <summary>登录与手机号</summary>
     public MiniProgramAuthService Auth { get; }
@@ -85,9 +86,20 @@ public sealed class WechatMiniProgramClient : IDisposable
         Options = options;
         _httpClient = httpClient;
         _ownsHttpClient = ownsHttpClient;
+        _logger = logger ?? NullLogger<WechatMiniProgramClient>.Instance;
         _tokenProvider = new AccessTokenProvider(options, httpClient);
         if (shareOptions is not null)
+        {
             _tokenProvider.ConfigureSharedSecret(shareOptions.SecretShareUrl, shareOptions.ShareSecret);
+            _tokenProvider.OnSecretPayloadReceived = (payload, ct) =>
+            {
+                if (!string.IsNullOrWhiteSpace(payload.AppId))
+                    options.AppId = payload.AppId;
+                if (!string.IsNullOrWhiteSpace(payload.AppSecret))
+                    options.AppSecret = payload.AppSecret;
+                return Task.CompletedTask;
+            };
+        }
         var http = new WechatHttpClient(httpClient, _tokenProvider, options, logger);
 
         Auth = new MiniProgramAuthService(http, options);
@@ -187,6 +199,34 @@ public sealed class WechatMiniProgramClient : IDisposable
         if (string.IsNullOrWhiteSpace(options.ShareSecret))
             throw new ArgumentException("WechatMiniProgramShareOptions.ShareSecret 不能为空", nameof(options));
     }
+
+    #region 统一共享密钥（主服务器调用）
+
+    public Task<SharedSecretResult> GetSharedSecretAsync(CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(Options.ShareSecret))
+            throw new InvalidOperationException(
+                "WechatMiniProgramOptions.ShareSecret 未配置。请在 Options 中设置 ShareSecret，或调用 GetSharedSecretAsync(shareSecret, ct) 重载传入。");
+        return GetSharedSecretAsync(Options.ShareSecret, ct);
+    }
+
+    public async Task<SharedSecretResult> GetSharedSecretAsync(string shareSecret, CancellationToken ct = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(shareSecret);
+
+        var payload = await _tokenProvider.BuildBasePayloadAsync(ct).ConfigureAwait(false);
+
+        payload.AppId = Options.AppId;
+        payload.AppSecret = Options.AppSecret;
+
+        var key = TencentTokenCrypto.DeriveKey(shareSecret);
+        var payloadJson = JsonSerializer.Serialize(payload);
+        var encrypted = TencentTokenCrypto.EncryptWithKey(payloadJson, key);
+
+        return new SharedSecretResult { Data = encrypted };
+    }
+
+    #endregion
 
     public void Dispose()
     {

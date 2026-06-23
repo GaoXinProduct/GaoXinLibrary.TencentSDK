@@ -17,12 +17,12 @@ public sealed class ShareServiceRegistrationTests
     [Fact]
     public void NormalOptions_DoNotExposeShareServiceFields()
     {
-        // ShareSecret is allowed on primary Options (WecomOptions, WechatOfficialOptions) for convenience;
+        // ShareSecret is allowed on primary Options for convenience;
         // SecretShareUrl must remain exclusive to ShareOptions (backup server only).
         Assert.DoesNotContain(typeof(WecomOptions).GetProperties(), property => property.Name is "SecretShareUrl");
         Assert.DoesNotContain(typeof(WechatOptions).GetProperties(), property => property.Name is "ShareSecret" or "SecretShareUrl");
         Assert.DoesNotContain(typeof(WechatOfficialOptions).GetProperties(), property => property.Name is "SecretShareUrl");
-        Assert.DoesNotContain(typeof(WechatMiniProgramOptions).GetProperties(), property => property.Name is "ShareSecret" or "SecretShareUrl");
+        Assert.DoesNotContain(typeof(WechatMiniProgramOptions).GetProperties(), property => property.Name is "SecretShareUrl");
         Assert.DoesNotContain(typeof(WechatOpenOptions).GetProperties(), property => property.Name is "ShareSecret" or "SecretShareUrl");
         Assert.DoesNotContain(typeof(QQConnectOptions).GetProperties(), property => property.Name is "ShareSecret" or "SecretShareUrl");
     }
@@ -116,5 +116,118 @@ public sealed class ShareServiceRegistrationTests
             {
                 Content = new StringContent(response)
             });
+    }
+
+    [Fact]
+    public async Task WecomClient_GetSharedSecretAsync_Parameterless_UsesOptionsShareSecret()
+    {
+        const string shareSecret = "shared-secret";
+        var client = WecomClient.Create(new WecomOptions
+        {
+            CorpId = "corp",
+            CorpSecret = "secret",
+            AgentId = 1000001,
+            ShareSecret = shareSecret
+        });
+        client.SetAccessToken("test-token");
+
+        var result = await client.GetSharedSecretAsync();
+
+        Assert.NotNull(result);
+        Assert.NotEmpty(result.Data);
+
+        var decrypted = TencentTokenCrypto.DecryptWithKey(result.Data, TencentTokenCrypto.DeriveKey(shareSecret));
+        var payload = JsonSerializer.Deserialize<SharedSecretPayload>(decrypted);
+        Assert.NotNull(payload);
+        Assert.Equal("test-token", payload!.AccessToken);
+        Assert.Equal("corp", payload.CorpId);
+    }
+
+    [Fact]
+    public async Task WechatOfficialClient_GetSharedSecretAsync_Parameterless_UsesOptionsShareSecret()
+    {
+        const string shareSecret = "shared-secret";
+        var client = WechatOfficialClient.Create(new WechatOfficialOptions
+        {
+            AppId = "appid",
+            AppSecret = "appsecret",
+            ShareSecret = shareSecret
+        });
+        client.SetAccessToken("test-token");
+
+        var result = await client.GetSharedSecretAsync();
+
+        Assert.NotNull(result);
+        Assert.NotEmpty(result.Data);
+
+        var decrypted = TencentTokenCrypto.DecryptWithKey(result.Data, TencentTokenCrypto.DeriveKey(shareSecret));
+        var payload = JsonSerializer.Deserialize<SharedSecretPayload>(decrypted);
+        Assert.NotNull(payload);
+        Assert.Equal("test-token", payload!.AccessToken);
+        Assert.Equal("appid", payload.AppId);
+    }
+
+    [Fact]
+    public async Task WechatMiniProgramClient_GetSharedSecretAsync_Parameterless_UsesOptionsShareSecret()
+    {
+        const string shareSecret = "shared-secret";
+        var client = WechatMiniProgramClient.Create(new WechatMiniProgramOptions
+        {
+            AppId = "appid",
+            AppSecret = "appsecret",
+            ShareSecret = shareSecret
+        });
+        client.SetAccessToken("test-token");
+
+        var result = await client.GetSharedSecretAsync();
+
+        Assert.NotNull(result);
+        Assert.NotEmpty(result.Data);
+
+        var decrypted = TencentTokenCrypto.DecryptWithKey(result.Data, TencentTokenCrypto.DeriveKey(shareSecret));
+        var payload = JsonSerializer.Deserialize<SharedSecretPayload>(decrypted);
+        Assert.NotNull(payload);
+        Assert.Equal("test-token", payload!.AccessToken);
+        Assert.Equal("appid", payload.AppId);
+    }
+
+    [Fact]
+    public async Task WecomClient_GetSharedSecretAsync_ThrowsWhenShareSecretNotConfigured()
+    {
+        var client = WecomClient.Create(new WecomOptions
+        {
+            CorpId = "corp",
+            CorpSecret = "secret",
+            AgentId = 1000001
+        });
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => client.GetSharedSecretAsync());
+        Assert.Contains("WecomOptions.ShareSecret", ex.Message);
+    }
+
+    [Fact]
+    public async Task WechatOfficialClient_GetSharedSecretAsync_ThrowsWhenShareSecretNotConfigured()
+    {
+        var client = WechatOfficialClient.Create(new WechatOfficialOptions
+        {
+            AppId = "appid",
+            AppSecret = "appsecret"
+        });
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => client.GetSharedSecretAsync());
+        Assert.Contains("WechatOfficialOptions.ShareSecret", ex.Message);
+    }
+
+    [Fact]
+    public async Task WechatMiniProgramClient_GetSharedSecretAsync_ThrowsWhenShareSecretNotConfigured()
+    {
+        var client = WechatMiniProgramClient.Create(new WechatMiniProgramOptions
+        {
+            AppId = "appid",
+            AppSecret = "appsecret"
+        });
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => client.GetSharedSecretAsync());
+        Assert.Contains("WechatMiniProgramOptions.ShareSecret", ex.Message);
     }
 }

@@ -9,6 +9,7 @@ on:
 permissions:
   contents: write
   packages: write
+  id-token: write
 
 env:
   PROJECT_PATH: src/GaoXinLibrary.TencentSDK.csproj
@@ -107,24 +108,32 @@ jobs:
             dotnet nuget push "$sym" --source github --api-key "$GITHUB_TOKEN" --skip-duplicate || true
           done
 
+      - name: Log in to NuGet.org
+        uses: NuGet/login@v1.2.0
+        id: nuget-login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
       - name: Push to NuGet.org
         env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
         run: |
           set -euo pipefail
           if [ -z "${NUGET_API_KEY}" ]; then
-            echo "NUGET_API_KEY missing; skip push to nuget.org" >&2
+            echo "NuGet login did not return a temporary API key" >&2
             exit 1
           fi
           for pkg in artifacts/*.nupkg; do
             echo "Pushing $pkg to nuget.org"
             dotnet nuget push "$pkg" --api-key "$NUGET_API_KEY" \
-              --source https://api.nuget.org/v3/index.json --skip-duplicate
+              --source https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
           done
+          # Push symbols separately so a retry can repair a missing symbol package.
           for sym in artifacts/*.snupkg; do
+            [ -f "$sym" ] || continue
             echo "Pushing $sym to nuget.org"
             dotnet nuget push "$sym" --api-key "$NUGET_API_KEY" \
-              --source https://api.nuget.org/v3/index.json --skip-duplicate || true
+              --source https://api.nuget.org/v3/index.json --skip-duplicate
           done
 
       - name: Upload artifacts

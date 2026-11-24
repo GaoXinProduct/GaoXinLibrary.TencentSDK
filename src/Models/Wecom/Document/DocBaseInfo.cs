@@ -16,7 +16,7 @@ public sealed class DocBaseInfo
     /// <summary>文档修改时间</summary>
     [JsonPropertyName("modify_time")] public long ModifyTime { get; set; }
 
-    /// <summary>文档类型，1-文档，3-表格，4-收集表</summary>
+    /// <summary>文档类型，例如 3-文档，4-表格，10-智能表格，11-智能文档</summary>
     [JsonPropertyName("doc_type")] public int DocType { get; set; }
 
     /// <summary>文档创建者userid</summary>

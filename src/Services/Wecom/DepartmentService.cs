@@ -38,7 +38,7 @@ public sealed class DepartmentService
     /// <param name="id">要删除的部门 ID</param>
     /// <param name="ct">取消令牌</param>
     public async Task DeleteDepartmentAsync(int id, CancellationToken ct = default)
-        => await _http.GetAsync<WecomBaseResponse>("/cgi-bin/department/delete",
+        => await _http.GetWithoutTransientRetryAsync<WecomBaseResponse>("/cgi-bin/department/delete",
             new() { ["id"] = id.ToString() }, ct).ConfigureAwait(false);
 
     /// <summary>

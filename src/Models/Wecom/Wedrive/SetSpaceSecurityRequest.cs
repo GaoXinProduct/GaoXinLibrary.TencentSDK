@@ -4,6 +4,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Wedrive;
 
 /// <summary>设置空间安全设置请求</summary>
 /// <remarks>对应文档：https://developer.work.weixin.qq.com/document/path/97876</remarks>
+[Obsolete("请使用 UpdateSpaceSecurityRequest 指定要修改的空间安全设置。")]
 public record SetSpaceSecurityRequest
 {
     /// <summary>空间 ID</summary>

@@ -6,7 +6,11 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Wedrive;
 /// <remarks>对应文档：https://developer.work.weixin.qq.com/document/path/98004</remarks>
 public record ChunkedUploadFinishRequest
 {
-    /// <summary>分块上传任务 ID</summary>
-    [JsonPropertyName("jobid")]
-    public required string JobId { get; init; }
+    /// <summary>初始化返回的上传凭证</summary>
+    [JsonPropertyName("upload_key")]
+    public string? UploadKey { get; init; }
+
+    /// <summary>上传凭证的兼容名称</summary>
+    [JsonIgnore]
+    public string? JobId { get => UploadKey; init => UploadKey = value; }
 }

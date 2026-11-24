@@ -15,4 +15,12 @@ public sealed class GetUserMeetingIdRequest
     /// <summary>每页大小</summary>
     [JsonPropertyName("limit")]
     public int Limit { get; set; } = 20;
+
+    /// <summary>查询开始时间（Unix 时间戳，秒）。</summary>
+    [JsonPropertyName("begin_time")]
+    public long? BeginTime { get; set; }
+
+    /// <summary>查询结束时间（Unix 时间戳，秒）。查询时间跨度最多为 180 天。</summary>
+    [JsonPropertyName("end_time")]
+    public long? EndTime { get; set; }
 }

@@ -36,5 +36,5 @@ public sealed class OfficialMenuService
     /// </summary>
     /// <param name="ct">取消令牌</param>
     public Task<DeleteMenuResponse> DeleteAsync(CancellationToken ct = default)
-        => _http.GetAsync<DeleteMenuResponse>("/cgi-bin/menu/delete", ct: ct);
+        => _http.GetWithoutTransientRetryAsync<DeleteMenuResponse>("/cgi-bin/menu/delete", ct: ct);
 }

@@ -8,6 +8,10 @@ public sealed class GetTfaInfoResponse : WecomBaseResponse
     /// <summary>用户userid</summary>
     [JsonPropertyName("userid")] public string? UserId { get; set; }
 
-    /// <summary>用户状态，1-已激活 2-已禁用 4-未激活 5-退出企业</summary>
+    /// <summary>用于完成使用二次验证的一次性授权码，有效期为五分钟。</summary>
+    [JsonPropertyName("tfa_code")] public string? TfaCode { get; set; }
+
+    /// <summary>服务端返回该字段时的用户状态。</summary>
+    [Obsolete("获取二次验证信息接口的正式响应字段为 UserId 和 TfaCode。")]
     [JsonPropertyName("status")] public int Status { get; set; }
 }

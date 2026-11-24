@@ -20,6 +20,12 @@ public class AddExternalContactEvent : ExternalContactCallbackEventBase
     /// <summary>外部联系人 UserID</summary>
     public string ExternalUserId { get; set; } = string.Empty;
 
+    /// <summary>添加客户所用「联系我」方式设置的渠道标识</summary>
+    public string? State { get; set; }
+
+    /// <summary>用于发送新客户欢迎语的凭证</summary>
+    public string? WelcomeCode { get; set; }
+
     /// <summary>下次跟进时间</summary>
     public long NextRemindTime { get; set; }
 
@@ -40,6 +46,25 @@ public class DelExternalContactEvent : ExternalContactCallbackEventBase
 
     /// <summary>外部联系人 UserID</summary>
     public string ExternalUserId { get; set; } = string.Empty;
+
+    /// <summary>删除来源，例如在职继承触发的 DELETE_BY_TRANSFER</summary>
+    public string? Source { get; set; }
+}
+
+/// <summary>客户信息变更、客户删除跟进成员或接替失败等事件</summary>
+public sealed class ExternalContactChangeEvent : ExternalContactCallbackEventBase
+{
+    /// <summary>变更类型</summary>
+    public string ChangeType { get; set; } = string.Empty;
+
+    /// <summary>企业成员 UserID</summary>
+    public string UserId { get; set; } = string.Empty;
+
+    /// <summary>外部联系人 UserID</summary>
+    public string ExternalUserId { get; set; } = string.Empty;
+
+    /// <summary>客户接替失败原因，仅在接替失败时返回</summary>
+    public string? FailReason { get; set; }
 }
 
 /// <summary>

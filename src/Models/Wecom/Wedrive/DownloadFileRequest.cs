@@ -6,11 +6,16 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Wedrive;
 /// <remarks>对应文档：https://developer.work.weixin.qq.com/document/path/97881</remarks>
 public record DownloadFileRequest
 {
-    /// <summary>文件 ID</summary>
+    /// <summary>普通文件 ID，或改用文件选择凭证</summary>
     [JsonPropertyName("fileid")]
-    public required string FileId { get; init; }
+    public string? FileId { get; init; }
 
-    /// <summary>返回下载链接的格式，1 - url，2 - json（仅管理员可获取他人文件下载链接）</summary>
-    [JsonPropertyName("download_type")]
+    /// <summary>选中的微盘文件凭证</summary>
+    [JsonPropertyName("selected_ticket")]
+    public string? SelectedTicket { get; init; }
+
+    /// <summary>旧模型的下载格式字段</summary>
+    [Obsolete("微盘下载接口返回链接和 Cookie。")]
+    [JsonIgnore]
     public int DownloadType { get; init; } = 1;
 }

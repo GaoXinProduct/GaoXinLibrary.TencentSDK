@@ -79,7 +79,7 @@ public sealed class AgentService
     /// </summary>
     /// <param name="ct">取消令牌</param>
     public async Task DeleteMenuAsync(CancellationToken ct = default)
-        => await _http.GetAsync<WecomBaseResponse>("/cgi-bin/menu/delete",
+        => await _http.GetWithoutTransientRetryAsync<WecomBaseResponse>("/cgi-bin/menu/delete",
             new() { ["agentid"] = _options.AgentId.ToString() }, ct).ConfigureAwait(false);
 
     /// <summary>

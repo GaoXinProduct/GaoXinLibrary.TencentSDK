@@ -6,7 +6,7 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Meeting;
 public sealed class GetUserMeetingIdResponse : WecomBaseResponse
 {
     /// <summary>会议ID列表</summary>
-    [JsonPropertyName("meeting_id_list")] public string[]? MeetingIdList { get; set; }
+    [JsonPropertyName("meetingid_list")] public string[]? MeetingIdList { get; set; }
 
     /// <summary>分页游标</summary>
     [JsonPropertyName("next_cursor")] public string? NextCursor { get; set; }

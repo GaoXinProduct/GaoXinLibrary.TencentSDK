@@ -24,7 +24,9 @@ internal sealed class StringOrIntJsonConverter : JsonConverter<int>
         if (reader.TokenType == JsonTokenType.String)
         {
             var s = reader.GetString();
-            return int.TryParse(s, out var i) ? i : 0;
+            return int.TryParse(s, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var i)
+                ? i
+                : throw new JsonException("errcode 必须是整数或整数字符串。");
         }
         return reader.GetInt32();
     }

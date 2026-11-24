@@ -12,5 +12,14 @@ public sealed class GetOperationLogResponse : WecomBaseResponse
     [JsonPropertyName("next_cursor")] public string? NextCursor { get; set; }
 
     /// <summary>操作记录列表</summary>
-    [JsonPropertyName("operation_records")] public OperationRecord[]? OperationRecords { get; set; }
+    [JsonPropertyName("record_list")] public OperationRecord[]? OperationRecords { get; set; }
+
+    [JsonInclude]
+    [JsonPropertyName("operation_records")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    private OperationRecord[]? LegacyOperationRecords
+    {
+        get => null;
+        set => OperationRecords ??= value;
+    }
 }

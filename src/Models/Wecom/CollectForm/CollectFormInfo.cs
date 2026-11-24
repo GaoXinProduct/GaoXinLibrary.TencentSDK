@@ -8,10 +8,22 @@ public sealed class CollectFormInfo
     [JsonPropertyName("formid")] public string? FormId { get; set; }
 
     /// <summary>收集表标题</summary>
-    [JsonPropertyName("title")] public string? Title { get; set; }
+    [JsonPropertyName("form_title")] public string? Title { get; set; }
 
     /// <summary>收集表描述</summary>
-    [JsonPropertyName("description")] public string? Description { get; set; }
+    [JsonPropertyName("form_desc")] public string? Description { get; set; }
+
+    /// <summary>表头背景图 URL。</summary>
+    [JsonPropertyName("form_header")] public string? Header { get; set; }
+
+    /// <summary>收集表的问题。</summary>
+    [JsonPropertyName("form_question")] public CollectFormQuestions? Questions { get; set; }
+
+    /// <summary>填写和定时设置。</summary>
+    [JsonPropertyName("form_setting")] public CollectFormSettings? Settings { get; set; }
+
+    /// <summary>用于查询统计和答案的收集表周期 ID。</summary>
+    [JsonPropertyName("repeated_id")] public string[]? RepeatedIds { get; set; }
 
     /// <summary>创建者userid</summary>
     [JsonPropertyName("creator")] public string? Creator { get; set; }
@@ -20,7 +32,16 @@ public sealed class CollectFormInfo
     [JsonPropertyName("create_time")] public long CreateTime { get; set; }
 
     /// <summary>截止时间（Unix时间戳，0表示不限制）</summary>
-    [JsonPropertyName("end_time")] public long EndTime { get; set; }
+    [JsonIgnore]
+    public long EndTime
+    {
+        get => Settings?.TimedFinish ?? 0;
+        set
+        {
+            var timedFinish = checked((uint)value);
+            (Settings ??= new()).TimedFinish = timedFinish;
+        }
+    }
 
     /// <summary>收集表状态，1-进行中，2-已结束</summary>
     [JsonPropertyName("status")] public int Status { get; set; }
@@ -32,5 +53,10 @@ public sealed class CollectFormInfo
     [JsonPropertyName("form_url")] public string? FormUrl { get; set; }
 
     /// <summary>问题列表</summary>
-    [JsonPropertyName("question_list")] public CollectQuestion[]? QuestionList { get; set; }
+    [JsonIgnore]
+    public CollectQuestion[]? QuestionList
+    {
+        get => Questions?.Items;
+        set => Questions = value is null ? null : new() { Items = value };
+    }
 }

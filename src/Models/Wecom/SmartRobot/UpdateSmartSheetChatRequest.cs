@@ -7,10 +7,13 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 /// </summary>
 public sealed class UpdateSmartSheetChatRequest
 {
+    /// <summary>创建群聊的智能表格文档 ID。</summary>
+    [JsonPropertyName("docid")] public string DocId { get; set; } = string.Empty;
+
     /// <summary>群聊唯一标识</summary>
     [JsonPropertyName("chatid")] public string ChatId { get; set; } = string.Empty;
 
-    /// <summary>新的群聊名称（不超过50个utf8字符），不填时不修改</summary>
+    /// <summary>旧版群聊名称字段。官方修改接口只支持调整成员与群主，请留空。</summary>
     [JsonPropertyName("name")] public string? Name { get; set; }
 
     /// <summary>新的群主 userid，不填时不修改</summary>

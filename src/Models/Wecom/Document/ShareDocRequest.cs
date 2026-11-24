@@ -8,7 +8,8 @@ public sealed class ShareDocRequest
     [JsonPropertyName("docid")]
     public string DocId { get; set; } = string.Empty;
 
-    /// <summary>分享给的用户 userid 列表</summary>
-    [JsonPropertyName("userid_list")]
+    /// <summary>旧版成员列表。通过文档成员接口设置文档权限。</summary>
+    [Obsolete("请使用 ModifyDocMembersAsync 设置文档成员权限。")]
+    [JsonIgnore]
     public string[] UserIdList { get; set; } = [];
 }

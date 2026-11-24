@@ -10,4 +10,7 @@ public sealed class CreateMeetingResponse : WecomBaseResponse
 
     /// <summary>会议号</summary>
     [JsonPropertyName("meeting_code")] public string? MeetingCode { get; set; }
+
+    /// <summary>没有有效会议账号的参会成员。</summary>
+    [JsonPropertyName("excess_users")] public string[]? ExcessUsers { get; set; }
 }

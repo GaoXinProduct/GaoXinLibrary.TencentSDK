@@ -43,8 +43,14 @@ public sealed class WecomClient : IDisposable
     /// <summary>标签管理</summary>
     public TagService Tag { get; }
 
+    /// <summary>通讯录查看权限规则</summary>
+    public ContactRuleService ContactRule { get; }
+
     /// <summary>应用消息发送</summary>
     public MessageService Message { get; }
+
+    /// <summary>待办详情与状态管理</summary>
+    public TodoService Todo { get; }
 
     /// <summary>应用管理（查询/配置自建应用及自定义菜单）</summary>
     public AgentService Agent { get; }
@@ -125,6 +131,9 @@ public sealed class WecomClient : IDisposable
     /// <summary>文档</summary>
     public DocumentService Document { get; }
 
+    /// <summary>智能文档页面、内容块、数据源与发布管理</summary>
+    public SmartDocumentService SmartDocument { get; }
+
     /// <summary>日程</summary>
     public CalendarService Calendar { get; }
 
@@ -185,11 +194,13 @@ public sealed class WecomClient : IDisposable
         User = new UserService(_http);
         Department = new DepartmentService(_http);
         Tag = new TagService(_http);
+        ContactRule = new ContactRuleService(_http);
         Message = new MessageService(_http, options.AgentId);
+        Todo = new TodoService(_http);
         var agentSvc = new AgentService(_http, options);
         Agent = agentSvc;
         Menu = agentSvc;
-        Media = new MediaService(_http, _tokenProvider, httpClient, options.BaseUrl);
+        Media = new MediaService(_http);
         GroupChat = new GroupChatService(_http);
         OAuth = new OAuthService(_http, options);
         CorpGroup = new CorpGroupService(_http);
@@ -230,6 +241,7 @@ public sealed class WecomClient : IDisposable
         CorpPay = new CorpPayService(_http);
         Email = new EmailService(_http);
         Document = new DocumentService(_http);
+        SmartDocument = new SmartDocumentService(_http);
         Calendar = new CalendarService(_http);
         Meeting = new MeetingService(_http);
         Wedrive = new WedriveService(_http);

@@ -42,7 +42,7 @@ public sealed class TagService
     /// <param name="tagId">标签 ID</param>
     /// <param name="ct">取消令牌</param>
     public async Task DeleteTagAsync(int tagId, CancellationToken ct = default)
-        => await _http.GetAsync<WecomBaseResponse>("/cgi-bin/tag/delete",
+        => await _http.GetWithoutTransientRetryAsync<WecomBaseResponse>("/cgi-bin/tag/delete",
             new() { ["tagid"] = tagId.ToString() }, ct).ConfigureAwait(false);
 
     /// <summary>

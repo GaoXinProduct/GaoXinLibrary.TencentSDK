@@ -12,15 +12,26 @@ public class GetScheduleListRequest
     [JsonPropertyName("cal_id")]
     public string CalId { get; set; } = string.Empty;
 
-    /// <summary>日程开始时间（Unix时间戳）</summary>
-    [JsonPropertyName("start_time")]
+    /// <summary>起始偏移量，从 0 开始</summary>
+    [JsonPropertyName("offset")]
+    public int? Offset { get; set; }
+
+    /// <summary>每页数量，范围为 1 到 1000</summary>
+    [JsonPropertyName("limit")]
+    public int? Limit { get; set; }
+
+    /// <summary>旧版请求属性</summary>
+    [Obsolete("日程列表接口仅支持按 Offset 和 Limit 分页。")]
+    [JsonIgnore]
     public long StartTime { get; set; }
 
-    /// <summary>日程结束时间（Unix时间戳）</summary>
-    [JsonPropertyName("end_time")]
+    /// <summary>旧版请求属性</summary>
+    [Obsolete("日程列表接口仅支持按 Offset 和 Limit 分页。")]
+    [JsonIgnore]
     public long EndTime { get; set; }
 
-    /// <summary>日程过滤类型（0-仅查询日历本身的日程 1-查询日历及其共享日历的全部日程）</summary>
-    [JsonPropertyName("filter_type")]
+    /// <summary>旧版请求属性</summary>
+    [Obsolete("日程列表接口仅支持按 Offset 和 Limit 分页。")]
+    [JsonIgnore]
     public int FilterType { get; set; }
 }

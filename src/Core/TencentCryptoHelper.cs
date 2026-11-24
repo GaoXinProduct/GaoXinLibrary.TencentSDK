@@ -22,10 +22,17 @@ public abstract class TencentCryptoHelper
     /// <param name="encodingAesKey">回调配置中的 EncodingAESKey（43 位字符）</param>
     /// <param name="receiverId">接收方标识（企业微信为 CorpId，微信为 AppId）</param>
     protected TencentCryptoHelper(string token, string encodingAesKey, string receiverId)
+        : this(token, encodingAesKey, receiverId, allowEmptyReceiverId: false) { }
+
+    /// <summary>
+    /// 初始化加解密工具。仅允许使用空接收方标识的回调协议可以启用该选项。
+    /// </summary>
+    protected TencentCryptoHelper(string token, string encodingAesKey, string receiverId, bool allowEmptyReceiverId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(token);
         ArgumentException.ThrowIfNullOrWhiteSpace(encodingAesKey);
-        ArgumentException.ThrowIfNullOrWhiteSpace(receiverId);
+        if (!allowEmptyReceiverId || receiverId != string.Empty)
+            ArgumentException.ThrowIfNullOrWhiteSpace(receiverId);
 
         _token = token;
         _receiverId = receiverId;

@@ -10,31 +10,74 @@ public sealed class EmailService
 
     public EmailService(WecomHttpClient http) => _http = http;
 
-    /// <summary>发送普通邮件</summary>
+    /// <summary>使用当前应用邮箱发送普通邮件。</summary>
+    /// <remarks>接口成功时只保证返回错误码和说明，邮件 ID 可能为空。</remarks>
     public async Task<string?> SendMailAsync(SendMailRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<SendMailResponse>("/cgi-bin/exmail/app/compose_send", request, ct).ConfigureAwait(false);
+        ArgumentNullException.ThrowIfNull(request);
+        var recipients = MergeRecipients(request.Recipients, request.To);
+        if (recipients?.Emails is not { Length: > 0 } && recipients?.UserIds is not { Length: > 0 })
+            throw new ArgumentException("至少需要一个收件邮箱或成员 userid。", nameof(request));
+
+        var resp = await _http.PostAsync<SendMailResponse>("/cgi-bin/exmail/app/compose_send", new
+        {
+            to = recipients,
+            cc = MergeRecipients(request.CopyRecipients, request.Cc),
+            bcc = MergeRecipients(request.BlindCopyRecipients, request.Bcc),
+            subject = request.Subject,
+            content = request.Content,
+            content_type = request.ContentType,
+            attachment_list = request.Attachments,
+            enable_id_trans = request.EnableIdTranslation
+        }, ct).ConfigureAwait(false);
         return resp.MailId;
+    }
+
+    /// <summary>按时间范围分页查询应用收件箱的邮件 ID。</summary>
+    /// <remarks><see href="https://developer.work.weixin.qq.com/document/path/97369"/></remarks>
+    public Task<GetMailListResponse> GetMailListAsync(GetMailListRequest request, CancellationToken ct = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        if (request.BeginTime > request.EndTime)
+            throw new ArgumentException("开始时间不能晚于结束时间。", nameof(request));
+        if (request.Limit > 1000)
+            throw new ArgumentOutOfRangeException(nameof(request), request.Limit, "每页最多返回 1000 封邮件。");
+        return _http.PostQueryAsync<GetMailListResponse>("/cgi-bin/exmail/app/get_mail_list", request, ct);
+    }
+
+    /// <summary>获取指定邮件的 EML 内容。</summary>
+    /// <remarks><see href="https://developer.work.weixin.qq.com/document/path/97979"/></remarks>
+    public Task<ReadMailResponse> ReadMailAsync(ReadMailRequest request, CancellationToken ct = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrWhiteSpace(request.MailId);
+        return _http.PostQueryAsync<ReadMailResponse>("/cgi-bin/exmail/app/read_mail", request, ct);
     }
 
     /// <summary>获取邮件未读数</summary>
     public async Task<int> GetUnreadCountAsync(GetMailUnreadCountRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetMailUnreadCountResponse>("/cgi-bin/exmail/app/get_unread_count", request, ct).ConfigureAwait(false);
+        var resp = await _http.PostQueryAsync<GetMailUnreadCountResponse>("/cgi-bin/exmail/mail/get_newcount", request, ct).ConfigureAwait(false);
         return resp.UnreadCount;
     }
 
-    /// <summary>更新应用邮箱账号</summary>
-    public async Task<UpdateEmailAccountResponse> UpdateEmailAccountAsync(UpdateEmailAccountRequest request, CancellationToken ct = default)
+    /// <summary>更新应用邮箱账号，旧地址保留为收信别名。</summary>
+    /// <remarks><see href="https://developer.work.weixin.qq.com/document/path/97373"/></remarks>
+    public Task<UpdateEmailAccountResponse> UpdateEmailAccountAsync(UpdateEmailAccountRequest request, CancellationToken ct = default)
     {
-        return await _http.PostAsync<UpdateEmailAccountResponse>("/cgi-bin/exmail/app/update_email_account", request, ct).ConfigureAwait(false);
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrWhiteSpace(request.NewEmail);
+        return _http.PostAsync<UpdateEmailAccountResponse>("/cgi-bin/exmail/app/update_email_alias", request, ct);
     }
 
-    /// <summary>查询应用邮箱账号</summary>
-    public async Task<GetEmailAccountResponse> GetEmailAccountAsync(GetEmailAccountRequest request, CancellationToken ct = default)
-    {
-        return await _http.PostAsync<GetEmailAccountResponse>("/cgi-bin/exmail/app/get_email_account", request, ct).ConfigureAwait(false);
-    }
+    /// <summary>兼容入口，查询当前应用的主邮箱和别名。</summary>
+    public Task<GetEmailAccountResponse> GetEmailAccountAsync(GetEmailAccountRequest request, CancellationToken ct = default)
+        => GetEmailAliasesAsync(ct);
+
+    /// <summary>查询当前应用的主邮箱和别名。</summary>
+    /// <remarks><see href="https://developer.work.weixin.qq.com/document/path/97991"/></remarks>
+    public Task<GetEmailAccountResponse> GetEmailAliasesAsync(CancellationToken ct = default)
+        => _http.PostQueryAsync<GetEmailAccountResponse>("/cgi-bin/exmail/app/get_email_alias", null, ct);
 
     /// <summary>创建邮件群组</summary>
     public async Task<CreateMailGroupResponse> CreateMailGroupAsync(CreateMailGroupRequest request, CancellationToken ct = default)
@@ -111,7 +154,7 @@ public sealed class EmailService
     /// <summary>获取邮件未读数</summary>
     public async Task<GetEmailUnreadCountResponse> GetEmailUnreadCountAsync(GetEmailUnreadCountRequest request, CancellationToken ct = default)
     {
-        return await _http.PostAsync<GetEmailUnreadCountResponse>("/cgi-bin/exmail/app/get_unread_count", request, ct).ConfigureAwait(false);
+        return await _http.PostQueryAsync<GetEmailUnreadCountResponse>("/cgi-bin/exmail/mail/get_newcount", request, ct).ConfigureAwait(false);
     }
 
     /// <summary>更改用户功能属性</summary>
@@ -124,5 +167,17 @@ public sealed class EmailService
     public async Task<GetFunctionAttrResponse> GetFunctionAttrAsync(GetFunctionAttrRequest request, CancellationToken ct = default)
     {
         return await _http.PostAsync<GetFunctionAttrResponse>("/cgi-bin/exmail/app/get_function_attr", request, ct).ConfigureAwait(false);
+    }
+
+    private static MailRecipients? MergeRecipients(MailRecipients? recipients, EmailAddress[]? addresses)
+    {
+        if (addresses is not { Length: > 0 })
+            return recipients;
+
+        return new MailRecipients
+        {
+            Emails = (recipients?.Emails ?? []).Concat(addresses.Select(static address => address.Addr)).ToArray(),
+            UserIds = recipients?.UserIds
+        };
     }
 }

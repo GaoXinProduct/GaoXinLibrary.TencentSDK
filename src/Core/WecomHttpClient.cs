@@ -7,5 +7,11 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Core;
 public sealed class WecomHttpClient : TencentHttpClient<WecomBaseResponse>
 {
     public WecomHttpClient(HttpClient httpClient, AccessTokenProvider tokenProvider, WecomOptions options, ILogger? logger = null)
-        : base(httpClient, tokenProvider, options.BaseUrl, "企业微信", logger, options.RetryOptions) { }
+        : this(httpClient, tokenProvider, options.BaseUrl, logger, options.RetryOptions) { }
+
+    private WecomHttpClient(HttpClient httpClient, AccessTokenProvider tokenProvider, string baseUrl, ILogger? logger, TencentRetryOptions? retryOptions)
+        : base(httpClient, tokenProvider, baseUrl, "企业微信", logger, retryOptions) { }
+
+    internal WecomHttpClient WithTransport(HttpClient httpClient, AccessTokenProvider tokenProvider, string baseUrl)
+        => new(httpClient, tokenProvider, baseUrl, Logger, RetryOptions);
 }

@@ -40,7 +40,7 @@
 dotnet add package GaoXinLibrary.TencentSDK
 ```
 
-要求 .NET 8.0 / 9.0 / 10.0。
+支持 .NET 8.0 / 9.0 / 10.0 / 11.0。从源码构建需要 .NET 11 SDK。
 
 ---
 
@@ -52,7 +52,7 @@ dotnet add package GaoXinLibrary.TencentSDK
 - **自动 Token 管理**：内置缓存 + 自动刷新（提前 60 秒判定过期）+ 手动写入 + Token 变更回调
 - **备服务器模式**：多台服务器共享同一 `access_token`，避免多点刷新冲突（ChaCha20-Poly1305 加密传输）
 - **消息回调加解密**：AES-256-CBC 签名校验、消息解密、回复加密，开箱即用
-- **瞬态故障重试**：`HttpRequestException`、超时、5xx 按指数退避重试；Token 失效由独立内层机制处理
+- **瞬态故障重试**：可重放的只读请求遇到瞬态错误时按指数退避重试，Token 失效单独处理
 - **会话内容存档**：企业微信 Finance C SDK P/Invoke 封装（需自行提供原生库）
 
 ---
@@ -433,10 +433,12 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 | `User` | `UserService` | 成员管理（增删改查、部门成员列表） |
 | `Department` | `DepartmentService` | 部门管理 |
 | `Tag` | `TagService` | 标签管理 |
+| `ContactRule` | `ContactRuleService` | 通讯录查看权限规则 |
 | `Message` | `MessageService` | 应用消息发送（文本、图片、视频、卡片等） |
+| `Todo` | `TodoService` | 待办详情及状态更新 |
 | `Agent` | `AgentService` | 应用管理与配置（含工作台自定义展示） |
 | `Menu` | `AgentService` | 自定义菜单（与 `Agent` 共用同一 `AgentService` 实例） |
-| `Media` | `MediaService` | 素材管理（上传/下载） |
+| `Media` | `MediaService` | 素材管理（上传、流式下载和 Range 分片） |
 | `GroupChat` | `GroupChatService` | 应用群聊会话管理 |
 | `OAuth` | `OAuthService` | 网页授权登录（OAuth2） |
 | `CorpGroup` | `CorpGroupService` | 企业互联 |
@@ -449,20 +451,21 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 | `Export` | `ExportService` | 异步导出 |
 | `AsyncImport` | `AsyncImportService` | 异步导入 |
 | `SecondVerify` | `SecondVerifyService` | 二次验证 |
-| `Security` | `SecurityService` | 安全管理 |
+| `Security` | `SecurityService` | 可信设备、文件操作日志、截屏和录屏记录 |
 | `AdvancedAccount` | `AdvancedAccountService` | 高级功能账号管理 |
 | `OperationLog` | `OperationLogService` | 操作日志 |
-| `AccountId` | `AccountIdService` | 账号 ID 管理 |
+| `AccountId` | `AccountIdService` | 账号 ID 管理和智能机器人 OpenUserId 转换 |
 | `IpRange` | `IpRangeService` | IP 段查询 |
-| `ExternalContact` | `ExternalContactService` | 客户联系（含客户朋友圈、获客助手、商品图册、聊天敏感词） |
+| `ExternalContact` | `ExternalContactService` | 客户联系（含客户规则组标签、客户朋友圈、获客助手、商品图册、聊天敏感词） |
 | `CustomerMoments` | `CustomerMomentsService` | 客户朋友圈独立服务 |
 | `VisitorAssistant` | `VisitorAssistantService` | 获客助手独立服务 |
 | `CorpPay` | `CorpPayService` | 企业支付（含对外收款） |
-| `Email` | `EmailService` | 邮件 |
-| `Document` | `DocumentService` | 文档 |
+| `Email` | `EmailService` | 应用邮箱、邮件列表和邮件读取 |
+| `Document` | `DocumentService` | 文档、权限与素材上传 |
+| `SmartDocument` | `SmartDocumentService` | 智能文档页面、内容块、数据源、导出与发布 |
 | `Calendar` | `CalendarService` | 日程 |
-| `Meeting` | `MeetingService` | 会议 |
-| `Wedrive` | `WedriveService` | 微盘 |
+| `Meeting` | `MeetingService` | 会议、实时参会人、录制和网络研讨会 |
+| `Wedrive` | `WedriveService` | 微盘空间、成员权限和文件传输 |
 | `Living` | `LivingService` | 直播 |
 | `Dial` | `DialService` | 公费电话 |
 | `Report` | `ReportService` | 汇报 |
@@ -472,7 +475,6 @@ builder.Services.AddWecomSmartBotService(builder.Configuration.GetSection("Wecom
 | `SmartSheet` | `SmartSheetService` | 智能表格 |
 | `CollectForm` | `CollectFormService` | 收集表 |
 | `HomeSchool` | `HomeSchoolService` | 家校沟通 |
-| `DataIntelligence` | `DataIntelligenceService` | 数据与智能专区 |
 | `Callback` | `CallbackService?` | 应用消息回调（URL 验证 / 消息解密 / 加密回复）；未配置 `CallbackToken` + `CallbackEncodingAesKey` 时为 `null` |
 
 > 群机器人
@@ -842,13 +844,13 @@ builder.Services.AddWecomService(options =>
 
 ## 瞬态故障重试
 
-SDK 对以下错误内置指数退避重试：
+SDK 对可重放的只读请求按指数退避处理以下错误：
 
 - `HttpRequestException`（连接失败、DNS 解析失败等网络错误）
 - 请求超时（`TaskCanceledException`）
-- HTTP 5xx 服务端错误
+- HTTP 408、429 和 5xx
 
-Token 失效（腾讯返回 token 过期错误码）由独立的内层机制处理，**不受** `RetryOptions` 控制。
+发送消息、修改数据以及兑换一次性授权码遇到瞬态错误时会直接将错误返回给调用方。服务端明确因 Token 失效拒绝请求时，SDK 刷新该 Token 并重试一次，并发请求会复用刷新结果。此流程独立于 `RetryOptions`。
 
 **自定义重试策略**：
 

@@ -18,5 +18,8 @@ public sealed class AccessTokenProvider : TencentAccessTokenProvider
 
     /// <inheritdoc/>
     protected override string BuildTokenUrl()
-        => $"{_options.BaseUrl}/cgi-bin/gettoken?corpid={_options.CorpId}&corpsecret={_options.CorpSecret}";
+        => $"{_options.BaseUrl.TrimEnd('/')}/cgi-bin/gettoken?corpid={Uri.EscapeDataString(_options.CorpId)}&corpsecret={Uri.EscapeDataString(_options.CorpSecret)}";
+
+    // 企业微信 40001 表示应用 Secret 无效。
+    internal override bool IsRejectedTokenError(int errCode) => errCode is 40014 or 42001;
 }

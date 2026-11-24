@@ -9,6 +9,15 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.SmartRobot;
 /// </summary>
 public sealed class GetSmartSheetChatResponse : WecomBaseResponse
 {
-    /// <summary>群聊信息</summary>
+    /// <summary>群聊信息，供原有调用方读取。</summary>
     [JsonPropertyName("chat_info")] public GroupChatInfo? ChatInfo { get; set; }
+
+    /// <summary>群聊名称。</summary>
+    [JsonPropertyName("name")] public string? Name { get; set; }
+
+    /// <summary>群主 userid。</summary>
+    [JsonPropertyName("owner")] public string? Owner { get; set; }
+
+    /// <summary>群内当前企业的成员 userid。</summary>
+    [JsonPropertyName("user_list")] public string[]? UserList { get; set; }
 }

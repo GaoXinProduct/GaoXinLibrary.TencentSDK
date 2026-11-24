@@ -206,6 +206,26 @@ public sealed class ExternalContactService
     public async Task DeleteCorpTagAsync(DeleteCorpTagRequest request, CancellationToken ct = default)
         => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/del_corp_tag", request, ct).ConfigureAwait(false);
 
+    /// <summary>获取指定规则组下的企业客户标签。</summary>
+    /// <seealso href="https://developer.work.weixin.qq.com/document/path/94882"/>
+    public Task<GetStrategyTagListResponse> GetStrategyTagListAsync(GetStrategyTagListRequest? request = null, CancellationToken ct = default)
+        => _http.PostQueryAsync<GetStrategyTagListResponse>("/cgi-bin/externalcontact/get_strategy_tag_list", request ?? new(), ct);
+
+    /// <summary>向指定规则组添加企业客户标签。</summary>
+    /// <seealso href="https://developer.work.weixin.qq.com/document/path/94882"/>
+    public Task<AddStrategyTagResponse> AddStrategyTagAsync(AddStrategyTagRequest request, CancellationToken ct = default)
+        => _http.PostAsync<AddStrategyTagResponse>("/cgi-bin/externalcontact/add_strategy_tag", request, ct);
+
+    /// <summary>编辑规则组中的企业客户标签或标签组。</summary>
+    /// <seealso href="https://developer.work.weixin.qq.com/document/path/94882"/>
+    public Task UpdateStrategyTagAsync(UpdateStrategyTagRequest request, CancellationToken ct = default)
+        => _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/edit_strategy_tag", request, ct);
+
+    /// <summary>删除规则组中的企业客户标签或标签组。</summary>
+    /// <seealso href="https://developer.work.weixin.qq.com/document/path/94882"/>
+    public Task DeleteStrategyTagAsync(DeleteStrategyTagRequest request, CancellationToken ct = default)
+        => _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/del_strategy_tag", request, ct);
+
     /// <summary>编辑客户企业标签</summary>
     public async Task MarkTagAsync(MarkTagRequest request, CancellationToken ct = default)
         => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/externalcontact/mark_tag", request, ct).ConfigureAwait(false);

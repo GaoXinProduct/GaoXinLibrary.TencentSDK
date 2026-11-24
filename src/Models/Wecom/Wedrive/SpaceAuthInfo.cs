@@ -7,12 +7,22 @@ public sealed class SpaceAuthInfo
     /// <summary>类型，1-userid，2-departmentid</summary>
     [JsonPropertyName("type")] public int Type { get; set; }
 
-    /// <summary>userid或departmentid</summary>
+    /// <summary>成员 ID</summary>
     [JsonPropertyName("userid")] public string? UserId { get; set; }
 
-    /// <summary>部门id</summary>
-    [JsonPropertyName("departmentid")] public int? DepartmentId { get; set; }
+    /// <summary>部门 ID，支持完整的 32 位无符号范围</summary>
+    [JsonPropertyName("departmentid")]
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+    public uint? DepartmentIdValue { get; set; }
 
-    /// <summary>权限类型，1-可下载，2-可编辑，3-仅预览</summary>
+    /// <summary>兼容字段，读取可表示为有符号整数的部门 ID</summary>
+    [JsonIgnore]
+    public int? DepartmentId
+    {
+        get => DepartmentIdValue is <= int.MaxValue ? (int?)DepartmentIdValue : null;
+        set => DepartmentIdValue = checked((uint?)value);
+    }
+
+    /// <summary>空间权限值</summary>
     [JsonPropertyName("auth")] public int Auth { get; set; }
 }

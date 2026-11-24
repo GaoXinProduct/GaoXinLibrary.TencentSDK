@@ -6,5 +6,5 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Email;
 public sealed class GetMailUnreadCountResponse : WecomBaseResponse
 {
     /// <summary>未读邮件数</summary>
-    [JsonPropertyName("unread_count")] public int UnreadCount { get; set; }
+    [JsonPropertyName("count")] public int UnreadCount { get; set; }
 }

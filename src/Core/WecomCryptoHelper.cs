@@ -18,4 +18,10 @@ public sealed class WecomCryptoHelper : TencentCryptoHelper
     /// <param name="corpId">企业 ID</param>
     public WecomCryptoHelper(string token, string encodingAesKey, string corpId)
         : base(token, encodingAesKey, corpId) { }
+
+    private WecomCryptoHelper(string token, string encodingAesKey)
+        : base(token, encodingAesKey, string.Empty, allowEmptyReceiverId: true) { }
+
+    internal static WecomCryptoHelper CreateForSmartRobot(string token, string encodingAesKey)
+        => new(token, encodingAesKey);
 }

@@ -38,7 +38,7 @@ public sealed class OfficialOAuthService
     {
         var baseUrl = _options.BaseUrl.TrimEnd('/');
         var url = $"{baseUrl}/sns/oauth2/access_token?appid={Uri.EscapeDataString(_options.AppId)}&secret={Uri.EscapeDataString(_options.AppSecret)}&code={Uri.EscapeDataString(code)}&grant_type=authorization_code";
-        return _http.GetWithoutTokenAsync<OAuthAccessTokenResponse>(url, ct);
+        return _http.GetWithoutTokenOnceAsync<OAuthAccessTokenResponse>(url, ct);
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ public sealed class OfficialOAuthService
     {
         var baseUrl = _options.BaseUrl.TrimEnd('/');
         var url = $"{baseUrl}/sns/oauth2/refresh_token?appid={Uri.EscapeDataString(_options.AppId)}&grant_type=refresh_token&refresh_token={Uri.EscapeDataString(refreshToken)}";
-        return _http.GetWithoutTokenAsync<OAuthRefreshTokenResponse>(url, ct);
+        return _http.GetWithoutTokenOnceAsync<OAuthRefreshTokenResponse>(url, ct);
     }
 
     /// <summary>

@@ -40,7 +40,7 @@ public sealed class OpenPlatformService
     public Task<OpenAccessTokenResponse> GetAccessTokenAsync(string code, CancellationToken ct = default)
     {
         var url = $"{_baseUrl}/sns/oauth2/access_token?appid={Uri.EscapeDataString(_appId)}&secret={Uri.EscapeDataString(_appSecret)}&code={Uri.EscapeDataString(code)}&grant_type=authorization_code";
-        return _http.GetWithoutTokenAsync<OpenAccessTokenResponse>(url, ct);
+        return _http.GetWithoutTokenOnceAsync<OpenAccessTokenResponse>(url, ct);
     }
 
     /// <summary>
@@ -51,7 +51,7 @@ public sealed class OpenPlatformService
     public Task<OpenRefreshTokenResponse> RefreshTokenAsync(string refreshToken, CancellationToken ct = default)
     {
         var url = $"{_baseUrl}/sns/oauth2/refresh_token?appid={Uri.EscapeDataString(_appId)}&grant_type=refresh_token&refresh_token={Uri.EscapeDataString(refreshToken)}";
-        return _http.GetWithoutTokenAsync<OpenRefreshTokenResponse>(url, ct);
+        return _http.GetWithoutTokenOnceAsync<OpenRefreshTokenResponse>(url, ct);
     }
 
     /// <summary>

@@ -17,7 +17,9 @@ public sealed class MessageService
     /// <summary>发送自定义应用消息</summary>
     public async Task<SendMessageResponse> SendAsync(SendMessageRequest request, CancellationToken ct = default)
     {
-        if (request.AgentId == 0) request.AgentId = _defaultAgentId;
+        if (request.AgentId == 0)
+            request = request with { AgentId = _defaultAgentId };
+
         return await _http.PostAsync<SendMessageResponse>("/cgi-bin/message/send", request, ct).ConfigureAwait(false);
     }
 

@@ -8,6 +8,6 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Wedrive;
 public class GetSpaceInviteLinkResponse : WecomBaseResponse
 {
     /// <summary>邀请链接</summary>
-    [JsonPropertyName("share_url")]
+    [JsonPropertyName("space_share_url")]
     public string? ShareUrl { get; set; }
 }

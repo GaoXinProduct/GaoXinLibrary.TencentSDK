@@ -10,7 +10,11 @@ public record GetRealTimeParticipantsRequest
     [JsonPropertyName("meetingid")]
     public string MeetingId { get; init; } = string.Empty;
 
-    /// <summary>返回的最大记录数，最大3000，默认100</summary>
+    /// <summary>周期性会议的子会议 ID。查询周期性会议时必填。</summary>
+    [JsonPropertyName("sub_meetingid")]
+    public string? SubMeetingId { get; init; }
+
+    /// <summary>单次请求返回的记录数，最多 50 条。分页时须与首次请求相同。</summary>
     [JsonPropertyName("limit")]
     public int? Limit { get; init; }
 
@@ -18,7 +22,8 @@ public record GetRealTimeParticipantsRequest
     [JsonPropertyName("cursor")]
     public string? Cursor { get; init; }
 
-    /// <summary>是否需要返回成员房间信息</summary>
-    [JsonPropertyName("need_room_info")]
+    /// <summary>旧版属性。实时会中成员接口不提供房间信息。</summary>
+    [Obsolete("实时会中成员接口不支持 need_room_info。")]
+    [JsonIgnore]
     public bool? NeedRoomInfo { get; init; }
 }

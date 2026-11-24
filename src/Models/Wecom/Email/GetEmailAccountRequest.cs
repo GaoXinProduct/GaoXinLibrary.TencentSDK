@@ -8,7 +8,8 @@ namespace GaoXinLibrary.TencentSDK.Wecom.Models.Email;
 /// </remarks>
 public record GetEmailAccountRequest
 {
-    /// <summary>用户userid</summary>
-    [JsonPropertyName("userid")]
+    /// <summary>旧版成员字段。查询使用当前应用的身份。</summary>
+    [Obsolete("应用邮件账号查询不接受成员 userid。")]
+    [JsonIgnore]
     public string UserId { get; set; } = string.Empty;
 }

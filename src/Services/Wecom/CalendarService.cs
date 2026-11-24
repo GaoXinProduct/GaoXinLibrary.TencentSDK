@@ -25,7 +25,7 @@ public sealed class CalendarService
     /// <summary>获取日历详情</summary>
     public async Task<CalendarInfo[]> GetCalendarAsync(GetCalendarRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetCalendarResponse>("/cgi-bin/oa/calendar/get", request, ct).ConfigureAwait(false);
+        var resp = await _http.PostQueryAsync<GetCalendarResponse>("/cgi-bin/oa/calendar/get", request, ct).ConfigureAwait(false);
         return resp.CalendarList ?? [];
     }
 
@@ -47,7 +47,7 @@ public sealed class CalendarService
     /// <summary>获取日程详情</summary>
     public async Task<ScheduleInfo[]> GetScheduleAsync(GetScheduleRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetScheduleResponse>("/cgi-bin/oa/schedule/get", request, ct).ConfigureAwait(false);
+        var resp = await _http.PostQueryAsync<GetScheduleResponse>("/cgi-bin/oa/schedule/get", request, ct).ConfigureAwait(false);
         return resp.ScheduleList ?? [];
     }
 
@@ -58,7 +58,7 @@ public sealed class CalendarService
     /// <summary>获取日历下的日程列表</summary>
     public async Task<ScheduleInfo[]> GetScheduleByCalendarAsync(GetScheduleByCalendarRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetScheduleResponse>("/cgi-bin/oa/schedule/get_by_calendar", request, ct).ConfigureAwait(false);
+        var resp = await _http.PostQueryAsync<GetScheduleResponse>("/cgi-bin/oa/schedule/get_by_calendar", request, ct).ConfigureAwait(false);
         return resp.ScheduleList ?? [];
     }
 
@@ -81,17 +81,22 @@ public sealed class CalendarService
         => await _http.PostAsync<WecomBaseResponse>("/cgi-bin/oa/schedule/del_attendees", request, ct).ConfigureAwait(false);
 
     /// <summary>获取日历下的日程列表</summary>
-    public async Task<ScheduleInfo[]> GetScheduleListAsync(GetScheduleListRequest request, CancellationToken ct = default)
+    public Task<ScheduleInfo[]> GetScheduleListAsync(GetScheduleListRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetScheduleListResponse>("/cgi-bin/oa/schedule/get_by_calendar", request, ct).ConfigureAwait(false);
-        return resp.ScheduleList ?? [];
+        ArgumentNullException.ThrowIfNull(request);
+        return GetScheduleByCalendarAsync(new GetScheduleByCalendarRequest
+        {
+            CalId = request.CalId,
+            Offset = request.Offset,
+            Limit = request.Limit
+        }, ct);
     }
 
     /// <summary>获取日程详情</summary>
-    public async Task<ScheduleInfo[]> GetScheduleDetailAsync(GetScheduleDetailRequest request, CancellationToken ct = default)
+    public Task<ScheduleInfo[]> GetScheduleDetailAsync(GetScheduleDetailRequest request, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsync<GetScheduleDetailResponse>("/cgi-bin/oa/schedule/get", request, ct).ConfigureAwait(false);
-        return resp.ScheduleList ?? [];
+        ArgumentNullException.ThrowIfNull(request);
+        return GetScheduleAsync(new GetScheduleRequest { ScheduleIdList = [request.ScheduleId] }, ct);
     }
 
     /// <summary>取消重复日程</summary>

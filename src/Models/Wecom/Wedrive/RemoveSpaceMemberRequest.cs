@@ -10,11 +10,32 @@ public record RemoveSpaceMemberRequest
     [JsonPropertyName("spaceid")]
     public required string SpaceId { get; init; }
 
-    /// <summary>成员类型，1-成员，2-部门</summary>
+    /// <summary>要移除的成员和部门</summary>
+    [JsonPropertyName("auth_info")]
+    public SpaceMemberIdentity[]? AuthInfo { get; init; }
+
+    /// <summary>兼容字段，指定 AuthIdList 中的 ID 类型</summary>
+    [JsonIgnore]
+    public int Type { get; init; }
+
+    /// <summary>兼容字段，用于移除同一类型的多个成员或部门</summary>
+    [JsonIgnore]
+    public string[]? AuthIdList { get; init; }
+}
+
+/// <summary>空间成员或部门的标识</summary>
+public sealed class SpaceMemberIdentity
+{
+    /// <summary>1 为成员，2 为部门</summary>
     [JsonPropertyName("type")]
     public required int Type { get; init; }
 
-    /// <summary>成员 ID 列表或部门 ID 列表</summary>
-    [JsonPropertyName("auth_id_list")]
-    public required string[] AuthIdList { get; init; }
+    /// <summary>成员 ID</summary>
+    [JsonPropertyName("userid")]
+    public string? UserId { get; init; }
+
+    /// <summary>部门 ID</summary>
+    [JsonPropertyName("departmentid")]
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString | JsonNumberHandling.WriteAsString)]
+    public uint? DepartmentId { get; init; }
 }

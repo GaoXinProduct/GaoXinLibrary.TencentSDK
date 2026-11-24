@@ -9,7 +9,8 @@ public record CreateStudentRequest
     [JsonPropertyName("name")] public string Name { get; init; } = string.Empty;
     [JsonPropertyName("department")] public int[]? Department { get; init; }
     [JsonPropertyName("mobile")] public string? Mobile { get; init; }
-    [JsonPropertyName("students")] public StudentInfo? Students { get; init; }
+    [JsonPropertyName("to_invite")] public bool? ToInvite { get; init; }
+    [Obsolete("创建学生时，请直接设置请求字段。"), JsonIgnore] public StudentInfo? Students { get; init; }
 }
 
 public class CreateStudentResponse : WecomBaseResponse
@@ -38,7 +39,8 @@ public record UpdateStudentRequest
     [JsonPropertyName("name")] public string? Name { get; init; }
     [JsonPropertyName("department")] public int[]? Department { get; init; }
     [JsonPropertyName("mobile")] public string? Mobile { get; init; }
-    [JsonPropertyName("students")] public StudentInfo? Students { get; init; }
+    [JsonPropertyName("new_student_userid")] public string? NewStudentUserid { get; init; }
+    [Obsolete("更新学生时，请直接设置请求字段。"), JsonIgnore] public StudentInfo? Students { get; init; }
 }
 
 public class UpdateStudentResponse : WecomBaseResponse
@@ -52,23 +54,24 @@ public record BatchCreateStudentRequest
 
 public class BatchCreateStudentResponse : WecomBaseResponse
 {
-    [JsonPropertyName("result")] public StudentBatchResult[]? Result { get; set; }
+    [JsonPropertyName("result_list")] public StudentBatchResult[]? Result { get; set; }
 }
 
 public record StudentBatchResult
 {
     [JsonPropertyName("student_userid")] public string? StudentUserid { get; init; }
-    [JsonPropertyName("err_msg")] public string? ErrMsg { get; init; }
+    [JsonPropertyName("errcode")] public int ErrCode { get; init; }
+    [JsonPropertyName("errmsg")] public string? ErrMsg { get; init; }
 }
 
 public record BatchDeleteStudentRequest
 {
-    [JsonPropertyName("student_userids")] public string[] StudentUserids { get; init; } = [];
+    [JsonPropertyName("useridlist")] public string[] StudentUserids { get; init; } = [];
 }
 
 public class BatchDeleteStudentResponse : WecomBaseResponse
 {
-    [JsonPropertyName("result")] public StudentBatchResult[]? Result { get; set; }
+    [JsonPropertyName("result_list")] public StudentBatchResult[]? Result { get; set; }
 }
 
 public record BatchUpdateStudentRequest
@@ -78,7 +81,7 @@ public record BatchUpdateStudentRequest
 
 public class BatchUpdateStudentResponse : WecomBaseResponse
 {
-    [JsonPropertyName("result")] public StudentBatchResult[]? Result { get; set; }
+    [JsonPropertyName("result_list")] public StudentBatchResult[]? Result { get; set; }
 }
 
 public record GetStudentRequest
@@ -88,7 +91,8 @@ public record GetStudentRequest
 
 public class GetStudentResponse : WecomBaseResponse
 {
-    [JsonPropertyName("student_info")] public StudentInfo? StudentInfo { get; set; }
+    [JsonPropertyName("user_type")] public int UserType { get; set; }
+    [JsonPropertyName("student")] public StudentInfo? StudentInfo { get; set; }
 }
 
 public record StudentInfo
@@ -99,6 +103,18 @@ public record StudentInfo
     [JsonPropertyName("mobile")] public string? Mobile { get; init; }
     [JsonPropertyName("student_number")] public string? StudentNumber { get; init; }
     [JsonPropertyName("classes")] public StudentClassInfo[]? Classes { get; init; }
+    [JsonPropertyName("parents")] public StudentParentInfo[]? Parents { get; init; }
+    [JsonPropertyName("to_invite")] public bool? ToInvite { get; init; }
+    [JsonPropertyName("new_student_userid")] public string? NewStudentUserid { get; init; }
+}
+
+public sealed record StudentParentInfo
+{
+    [JsonPropertyName("parent_userid")] public string? ParentUserid { get; init; }
+    [JsonPropertyName("relation")] public string? Relation { get; init; }
+    [JsonPropertyName("mobile")] public string? Mobile { get; init; }
+    [JsonPropertyName("is_subscribe")] public int? IsSubscribe { get; init; }
+    [JsonPropertyName("external_userid")] public string? ExternalUserid { get; init; }
 }
 
 public record StudentClassInfo
@@ -110,31 +126,31 @@ public record StudentClassInfo
 public record GetDepartmentStudentsDetailRequest
 {
     [JsonPropertyName("department_id")] public int DepartmentId { get; init; }
-    [JsonPropertyName("fetch_child")] public int? FetchChild { get; init; }
-    [JsonPropertyName("cursor")] public string? Cursor { get; init; }
-    [JsonPropertyName("limit")] public int? Limit { get; init; }
+    [Obsolete("部门学生列表仅接受 DepartmentId。"), JsonIgnore] public int? FetchChild { get; init; }
+    [Obsolete("部门学生列表不支持分页。"), JsonIgnore] public string? Cursor { get; init; }
+    [Obsolete("部门学生列表不支持分页。"), JsonIgnore] public int? Limit { get; init; }
 }
 
 public class GetDepartmentStudentsDetailResponse : WecomBaseResponse
 {
     [JsonPropertyName("students")] public StudentInfo[]? Students { get; set; }
-    [JsonPropertyName("next_cursor")] public string? NextCursor { get; set; }
-    [JsonPropertyName("has_more")] public int HasMore { get; set; }
+    [Obsolete("部门学生列表不支持分页。"), JsonIgnore] public string? NextCursor { get; set; }
+    [Obsolete("部门学生列表不支持分页。"), JsonIgnore] public int HasMore { get; set; }
 }
 
 public record GetDepartmentParentsDetailRequest
 {
     [JsonPropertyName("department_id")] public int DepartmentId { get; init; }
-    [JsonPropertyName("fetch_child")] public int? FetchChild { get; init; }
-    [JsonPropertyName("cursor")] public string? Cursor { get; init; }
-    [JsonPropertyName("limit")] public int? Limit { get; init; }
+    [Obsolete("部门家长列表仅接受 DepartmentId。"), JsonIgnore] public int? FetchChild { get; init; }
+    [Obsolete("部门家长列表不支持分页。"), JsonIgnore] public string? Cursor { get; init; }
+    [Obsolete("部门家长列表不支持分页。"), JsonIgnore] public int? Limit { get; init; }
 }
 
 public class GetDepartmentParentsDetailResponse : WecomBaseResponse
 {
-    [JsonPropertyName("parent_list")] public ParentInfo[]? ParentList { get; set; }
-    [JsonPropertyName("next_cursor")] public string? NextCursor { get; set; }
-    [JsonPropertyName("has_more")] public int HasMore { get; set; }
+    [JsonPropertyName("parents")] public ParentInfo[]? ParentList { get; set; }
+    [Obsolete("部门家长列表不支持分页。"), JsonIgnore] public string? NextCursor { get; set; }
+    [Obsolete("部门家长列表不支持分页。"), JsonIgnore] public int HasMore { get; set; }
 }
 
 public record ParentInfo
@@ -143,13 +159,15 @@ public record ParentInfo
     [JsonPropertyName("name")] public string? Name { get; init; }
     [JsonPropertyName("department")] public int[]? Department { get; init; }
     [JsonPropertyName("mobile")] public string? Mobile { get; init; }
+    [JsonPropertyName("is_subscribe")] public int? IsSubscribe { get; init; }
+    [JsonPropertyName("external_userid")] public string? ExternalUserid { get; init; }
     [JsonPropertyName("children")] public ParentChildInfo[]? Children { get; init; }
 }
 
 public record ParentChildInfo
 {
     [JsonPropertyName("student_userid")] public string? StudentUserid { get; init; }
-    [JsonPropertyName("student_name")] public string? StudentName { get; init; }
+    [JsonPropertyName("name")] public string? StudentName { get; init; }
     [JsonPropertyName("relation")] public string? Relation { get; init; }
 }
 

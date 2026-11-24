@@ -27,7 +27,7 @@ public sealed class UserService
 
     /// <summary>删除成员</summary>
     public async Task DeleteUserAsync(string userId, CancellationToken ct = default)
-        => await _http.GetAsync<WecomBaseResponse>("/cgi-bin/user/delete",
+        => await _http.GetWithoutTransientRetryAsync<WecomBaseResponse>("/cgi-bin/user/delete",
             new() { ["userid"] = userId }, ct).ConfigureAwait(false);
 
     /// <summary>批量删除成员</summary>
@@ -88,7 +88,7 @@ public sealed class UserService
 
     /// <summary>邀请成员（企业微信、邮件或短信）</summary>
     public async Task<InviteMemberResponse> InviteMemberAsync(InviteMemberRequest request, CancellationToken ct = default)
-        => await _http.PostAsync<InviteMemberResponse>("/cgi-bin/batch/inviteuser", request, ct).ConfigureAwait(false);
+        => await _http.PostAsync<InviteMemberResponse>("/cgi-bin/batch/invite", request, ct).ConfigureAwait(false);
 
     /// <summary>获取成员ID列表（支持分页）</summary>
     public async Task<GetUserIdListResponse> GetUserIdListAsync(int? departmentId = null, string? cursor = null, int limit = 10000, CancellationToken ct = default)
@@ -104,6 +104,6 @@ public sealed class UserService
     /// <param name="userId">成员 userid</param>
     /// <param name="ct">取消令牌</param>
     public async Task AuthSuccAsync(string userId, CancellationToken ct = default)
-        => await _http.GetAsync<WecomBaseResponse>("/cgi-bin/user/authsucc",
+        => await _http.GetWithoutTransientRetryAsync<WecomBaseResponse>("/cgi-bin/user/authsucc",
             new() { ["userid"] = userId }, ct).ConfigureAwait(false);
 }

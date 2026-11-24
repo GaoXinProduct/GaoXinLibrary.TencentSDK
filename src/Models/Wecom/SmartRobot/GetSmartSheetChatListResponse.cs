@@ -14,6 +14,9 @@ public sealed class GetSmartSheetChatListResponse : WecomBaseResponse
     /// <summary>是否还有更多数据</summary>
     [JsonPropertyName("has_more")] public bool HasMore { get; set; }
 
-    /// <summary>下次拉取的偏移量</summary>
+    /// <summary>旧版偏移量字段。官方群聊列表返回 <see cref="NextCursor"/>。</summary>
     [JsonPropertyName("next_offset")] public int NextOffset { get; set; }
+
+    /// <summary>下一页的查询游标。</summary>
+    [JsonPropertyName("next_cursor")] public string? NextCursor { get; set; }
 }

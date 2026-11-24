@@ -3,8 +3,8 @@ namespace GaoXinLibrary.TencentSDK.Core;
 /// <summary>
 /// 瞬态故障重试配置
 /// <para>
-/// 适用于网络抖动、连接超时、服务端 5xx 错误等临时性故障的自动重试。<br/>
-/// Token 失效重试由 SDK 内部独立处理，不受此配置影响。
+/// 适用于可重放的只读操作，覆盖网络抖动、连接超时、HTTP 408、429 及 5xx。<br/>
+/// Token 失效重试由 SDK 独立处理。
 /// </para>
 /// </summary>
 public sealed class TencentRetryOptions

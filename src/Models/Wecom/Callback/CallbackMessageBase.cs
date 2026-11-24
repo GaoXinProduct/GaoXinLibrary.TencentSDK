@@ -1,4 +1,5 @@
 using System.Xml.Linq;
+using GaoXinLibrary.TencentSDK.Wecom.Models.Callback.ExternalContact;
 
 namespace GaoXinLibrary.TencentSDK.Wecom.Models.Callback;
 
@@ -152,6 +153,9 @@ public class CallbackMessageBase
             "open_approval_change" => ParseApprovalChangeEvent(root),
             "batch_job_result" => ParseBatchJobEvent(root),
             "change_contact" => ParseChangeContactEvent(root),
+            "change_external_contact" => ParseExternalContactChangeEvent(root),
+            "change_external_chat" => ParseExternalChatChangeEvent(root),
+            "kf_msg_or_event" => ParseKfMessageOrEventCallback(root),
             "delete_calendar" => ParseDeleteCalendarEvent(root),
             "modify_calendar" => ParseModifyCalendarEvent(root),
             "modify_schedule" => ParseModifyScheduleEvent(root),
@@ -163,6 +167,66 @@ public class CallbackMessageBase
             "doc_changed" => ParseDocumentChangeEvent(root),
             _ => FillEvent<CallbackEventBase>(root)
         };
+    }
+
+    private static ExternalContactCallbackEventBase ParseExternalContactChangeEvent(XElement root)
+    {
+        var changeType = root.Element("ChangeType")?.Value ?? string.Empty;
+        var userId = root.Element("UserID")?.Value ?? string.Empty;
+        var externalUserId = root.Element("ExternalUserID")?.Value ?? string.Empty;
+
+        if (changeType is "add_external_contact" or "add_half_external_contact")
+        {
+            var added = FillEvent<AddExternalContactEvent>(root);
+            added.ChangeType = changeType;
+            added.UserId = userId;
+            added.ExternalUserId = externalUserId;
+            added.State = root.Element("State")?.Value;
+            added.WelcomeCode = root.Element("WelcomeCode")?.Value;
+            return added;
+        }
+
+        if (changeType == "del_external_contact")
+        {
+            var deleted = FillEvent<DelExternalContactEvent>(root);
+            deleted.ChangeType = changeType;
+            deleted.UserId = userId;
+            deleted.ExternalUserId = externalUserId;
+            deleted.Source = root.Element("Source")?.Value;
+            return deleted;
+        }
+
+        var changed = FillEvent<ExternalContactChangeEvent>(root);
+        changed.ChangeType = changeType;
+        changed.UserId = userId;
+        changed.ExternalUserId = externalUserId;
+        changed.FailReason = root.Element("FailReason")?.Value;
+        return changed;
+    }
+
+    private static ExternalChatChangeEvent ParseExternalChatChangeEvent(XElement root)
+    {
+        var evt = FillEvent<ExternalChatChangeEvent>(root);
+        evt.ChatId = root.Element("ChatId")?.Value ?? string.Empty;
+        evt.ChangeType = root.Element("ChangeType")?.Value ?? string.Empty;
+        evt.UpdateDetail = root.Element("UpdateDetail")?.Value;
+        evt.JoinScene = GetOptionalInt(root, "JoinScene");
+        evt.QuitScene = GetOptionalInt(root, "QuitScene");
+        evt.MemberChangeCount = GetOptionalInt(root, "MemChangeCnt");
+        evt.MemberChangeList = root.Element("MemChangeList")?.Elements("Item")
+            .Select(item => item.Value)
+            .ToArray();
+        evt.LastMemberVersion = root.Element("LastMemVer")?.Value;
+        evt.CurrentMemberVersion = root.Element("CurMemVer")?.Value;
+        return evt;
+    }
+
+    private static KfMessageOrEventCallback ParseKfMessageOrEventCallback(XElement root)
+    {
+        var evt = FillEvent<KfMessageOrEventCallback>(root);
+        evt.Token = root.Element("Token")?.Value ?? string.Empty;
+        evt.OpenKfId = root.Element("OpenKfId")?.Value ?? string.Empty;
+        return evt;
     }
 
     private static CallbackLocationEvent ParseLocationEvent(XElement root)
@@ -581,7 +645,10 @@ public class CallbackMessageBase
         => long.TryParse(root?.Element(name)?.Value, out var v) ? v : 0;
 
     private static int GetInt(XElement? root, string name)
-        => int.TryParse(root?.Element(name)?.Value, out var v) ? v : 0;
+        => GetOptionalInt(root, name) ?? 0;
+
+    private static int? GetOptionalInt(XElement? root, string name)
+        => int.TryParse(root?.Element(name)?.Value, out var value) ? value : null;
 
     private static double GetDouble(XElement? root, string name)
         => double.TryParse(root?.Element(name)?.Value, out var v) ? v : 0;

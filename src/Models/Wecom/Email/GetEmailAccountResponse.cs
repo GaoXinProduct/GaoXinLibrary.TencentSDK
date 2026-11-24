@@ -20,4 +20,8 @@ public class GetEmailAccountResponse : WecomBaseResponse
     /// <summary>邮箱账号</summary>
     [JsonPropertyName("email")]
     public string? Email { get; set; }
+
+    /// <summary>可收信的别名邮箱地址。</summary>
+    [JsonPropertyName("alias_list")]
+    public string[]? AliasList { get; set; }
 }

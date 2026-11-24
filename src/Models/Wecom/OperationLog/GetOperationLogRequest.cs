@@ -12,6 +12,14 @@ public sealed class GetOperationLogRequest
     [JsonPropertyName("end_time")]
     public long EndTime { get; set; }
 
+    /// <summary>按操作成员账号筛选。</summary>
+    [JsonPropertyName("userid")]
+    public string? UserId { get; set; }
+
+    /// <summary>按操作类型筛选。</summary>
+    [JsonPropertyName("oper_type")]
+    public int? OperateType { get; set; }
+
     /// <summary>分页游标</summary>
     [JsonPropertyName("cursor")]
     public string Cursor { get; set; } = string.Empty;

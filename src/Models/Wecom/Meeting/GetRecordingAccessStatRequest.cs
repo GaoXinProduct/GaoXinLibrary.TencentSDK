@@ -8,24 +8,34 @@ public sealed class GetRecordingAccessStatRequest
     [JsonPropertyName("meetingid")]
     public string MeetingId { get; set; } = string.Empty;
 
+    [JsonPropertyName("meeting_record_id")]
+    public string MeetingRecordId { get; set; } = string.Empty;
+
     [JsonPropertyName("start_time")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public long StartTime { get; set; }
 
     [JsonPropertyName("end_time")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public long EndTime { get; set; }
 
-    [JsonPropertyName("record_fileid")]
+    [Obsolete("请使用会议录制 ID，而不是录制文件 ID。")]
+    [JsonIgnore]
     public string? RecordFileId { get; set; }
 }
 
 public sealed class GetRecordingAccessStatResponse : WecomBaseResponse
 {
-    [JsonPropertyName("access_stats")]
+    [JsonPropertyName("summaries")]
     public List<AccessStatItem>? AccessStats { get; set; }
 }
 
 public sealed class AccessStatItem
 {
+    /// <summary>统计日期（yyyy-MM-dd）。</summary>
+    [JsonPropertyName("date")]
+    public string? Date { get; set; }
+
     [JsonPropertyName("record_fileid")]
     public string RecordFileId { get; set; } = string.Empty;
 

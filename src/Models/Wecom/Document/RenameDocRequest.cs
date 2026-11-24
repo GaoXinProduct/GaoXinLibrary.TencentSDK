@@ -9,6 +9,6 @@ public sealed class RenameDocRequest
     public string DocId { get; set; } = string.Empty;
 
     /// <summary>新文档名称</summary>
-    [JsonPropertyName("doc_name")]
+    [JsonPropertyName("new_name")]
     public string DocName { get; set; } = string.Empty;
 }

@@ -97,7 +97,7 @@ public sealed class OAuthService
     /// 若 scope 为 snsapi_privateinfo，还会返回 <see cref="OAuthUserInfoResponse.UserTicket"/>
     /// </returns>
     public Task<OAuthUserInfoResponse> GetUserInfoAsync(string code, CancellationToken ct = default)
-        => _http.GetAsync<OAuthUserInfoResponse>("/cgi-bin/auth/getuserinfo",
+        => _http.GetWithoutTransientRetryAsync<OAuthUserInfoResponse>("/cgi-bin/auth/getuserinfo",
             new() { ["code"] = code }, ct);
 
     /// <summary>
@@ -118,7 +118,7 @@ public sealed class OAuthService
     /// <see cref="WebLoginUserInfoResponse.ExternalUserId"/>
     /// </returns>
     public Task<WebLoginUserInfoResponse> GetWebLoginUserInfoAsync(string code, CancellationToken ct = default)
-        => _http.GetAsync<WebLoginUserInfoResponse>("/cgi-bin/auth/getuserinfo",
+        => _http.GetWithoutTransientRetryAsync<WebLoginUserInfoResponse>("/cgi-bin/auth/getuserinfo",
             new() { ["code"] = code }, ct);
 
     /// <summary>
@@ -126,7 +126,7 @@ public sealed class OAuthService
     /// <para>
     /// 对应企业微信接口：POST /cgi-bin/auth/getuserdetail<br/>
     /// 仅当 scope 为 <see cref="OAuthScope.PrivateInfo"/> 时才能获取到 <c>user_ticket</c>，
-    /// 有效期5分钟。
+    /// 有效期为 1800 秒。
     /// </para>
     /// </summary>
     /// <param name="userTicket">由 <see cref="GetUserInfoAsync"/> 返回的 user_ticket</param>

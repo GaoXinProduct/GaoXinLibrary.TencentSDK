@@ -49,10 +49,10 @@ public sealed class WebhookService : IDisposable
     public async Task SendAsync(WebhookMessageRequest request, CancellationToken ct = default)
     {
         var bytes = JsonSerializer.SerializeToUtf8Bytes(request, JsonOptions);
-        var content = new ByteArrayContent(bytes);
+        using var content = new ByteArrayContent(bytes);
         content.Headers.ContentType = new MediaTypeHeaderValue("application/json") { CharSet = "utf-8" };
 
-        var response = await _http.PostAsync(_sendUrl, content, ct).ConfigureAwait(false);
+        using var response = await _http.PostAsync(_sendUrl, content, ct).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadAsStringAsync(ct).ConfigureAwait(false);
